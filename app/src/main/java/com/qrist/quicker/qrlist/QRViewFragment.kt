@@ -1,7 +1,9 @@
 package com.qrist.quicker.qrlist
 
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,10 @@ import com.qrist.quicker.R
 
 
 class QRViewFragment : Fragment() {
+    private val position by lazy { arguments!!.getInt("position") }
+    private val viewModel: QRViewViewModel by lazy {
+        ViewModelProviders.of(activity!!).get(position.toString(), QRViewViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +24,11 @@ class QRViewFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_qrview, container, false)
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.e("", "$position $viewModel")
     }
 
     companion object {
