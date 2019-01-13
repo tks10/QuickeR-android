@@ -19,4 +19,14 @@ class QRViewFragment : Fragment() {
 
         return view
     }
+
+    companion object {
+        fun newInstance(position: Int): QRViewFragment {
+            return QRViewFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("position", position)
+                }
+            }
+        }
+    }
 }

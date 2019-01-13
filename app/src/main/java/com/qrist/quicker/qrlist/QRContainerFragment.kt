@@ -17,7 +17,7 @@ class QRContainerFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
-        val pagerAdapter = QRViewFragmentPagerAdapter(fragmentManager!!)
+        val pagerAdapter = QRViewFragmentPagerAdapter(activity!!.supportFragmentManager)
 
         view.viewPager.offscreenPageLimit = 2
         view.viewPager.adapter = pagerAdapter
