@@ -8,7 +8,7 @@
     <fragment
             android:id="@+id/qrContainerFragment"
             android:name="com.qrist.quicker.qrlist.QRContainerFragment"
-            tools:layout="@layout/fragment_qrlist">
+            tools:layout="@layout/fragment_qrcontainer">
     </fragment>
 
 </navigation>
