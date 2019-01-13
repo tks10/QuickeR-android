@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.qrist.quicker.R
 
 
-class QRListFragment : Fragment() {
+class QRContainerFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

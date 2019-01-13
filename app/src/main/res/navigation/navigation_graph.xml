@@ -3,11 +3,11 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/navigation_graph"
-            app:startDestination="@id/qrListFragment">
+            app:startDestination="@id/qrContainerFragment">
 
     <fragment
-            android:id="@+id/qrListFragment"
-            android:name="com.qrist.quicker.qrlist.QRListFragment"
+            android:id="@+id/qrContainerFragment"
+            android:name="com.qrist.quicker.qrlist.QRContainerFragment"
             tools:layout="@layout/fragment_qrlist">
     </fragment>
 
