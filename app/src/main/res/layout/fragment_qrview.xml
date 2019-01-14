@@ -35,7 +35,7 @@
             <ImageView
                     android:id="@+id/qrImageView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:src="@drawable/ic_launcher_foreground"
                     app:layout_constraintTop_toBottomOf="@id/headerImageView"
                     app:layout_constraintBottom_toBottomOf="parent"
