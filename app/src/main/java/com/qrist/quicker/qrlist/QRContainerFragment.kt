@@ -2,6 +2,7 @@ package com.qrist.quicker.qrlist
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,23 @@ class QRContainerFragment : Fragment() {
 
         view.viewPager.offscreenPageLimit = 2
         view.viewPager.adapter = pagerAdapter
+
+        view.tool_bar.inflateMenu(R.menu.menu)
+        view.tool_bar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_capture -> {
+                    Log.d("Menu", "Capture was tapped.")
+                    true
+                }
+                R.id.menu_settings -> {
+                    Log.d("Menu", "Settings was tapped.")
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
 
         view.tabLayout.setupWithViewPager(view.viewPager)
 
