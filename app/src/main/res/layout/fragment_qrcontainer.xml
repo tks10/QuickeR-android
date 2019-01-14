@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
+            app:tabMode="scrollable"
             app:layout_constraintTop_toBottomOf="@id/viewPager"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
