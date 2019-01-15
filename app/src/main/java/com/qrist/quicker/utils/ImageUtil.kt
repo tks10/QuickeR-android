@@ -14,6 +14,7 @@ object ImageUtil {
             outputStream.close()
             true
         } catch (exception: IOException) {
+            exception.printStackTrace()
             false
         }
 }
