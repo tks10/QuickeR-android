@@ -2,12 +2,15 @@ package com.qrist.quicker.qrlist
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.qrist.quicker.R
+import kotlinx.android.synthetic.main.fragment_qrview.view.*
 
 
 class QRViewFragment : Fragment() {
@@ -22,7 +25,9 @@ class QRViewFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_qrview, container, false)
-
+        Glide.with(this)
+            .load(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/QuickeR/qr_code.png")
+            .into(view.qrImageView)
         return view
     }
 
