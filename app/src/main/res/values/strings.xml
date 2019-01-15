@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">QuickeR</string>
-    <string name="accept_me">If you do not accepted, you cannot use this app…</string>
+    <string name="accept_me">Please accept to use this application</string>
 </resources>
