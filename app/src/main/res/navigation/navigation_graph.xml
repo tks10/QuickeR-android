@@ -9,6 +9,15 @@
             android:id="@+id/qrContainerFragment"
             android:name="com.qrist.quicker.qrlist.QRContainerFragment"
             tools:layout="@layout/fragment_qrcontainer">
+
+        <action
+                android:id="@+id/action_qr_container_to_register"
+                app:enterAnim="@anim/slide_from_bottom"
+                app:exitAnim="@anim/stay_out"
+                app:popEnterAnim="@anim/stay_in"
+                app:popExitAnim="@anim/slide_to_bottom"
+                app:destination="@id/registerFragment" />
+
     </fragment>
 
     <fragment
