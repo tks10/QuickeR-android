@@ -11,4 +11,10 @@
             tools:layout="@layout/fragment_qrcontainer">
     </fragment>
 
+    <fragment
+            android:id="@+id/registerFragment"
+            android:name="com.qrist.quicker.register.RegisterFragment"
+            tools:layout="@layout/fragment_register">
+    </fragment>
+
 </navigation>
