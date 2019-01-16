@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import com.qrist.quicker.R
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 
@@ -38,6 +39,10 @@ class QRContainerFragment : Fragment() {
                     false
                 }
             }
+        }
+
+        view.floatingActionButton.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_register)
         }
 
         view.tabLayout.setupWithViewPager(view.viewPager)
