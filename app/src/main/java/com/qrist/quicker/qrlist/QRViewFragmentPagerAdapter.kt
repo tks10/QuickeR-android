@@ -5,9 +5,10 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 
 
-class QRViewFragmentPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
-    private val tabTitles = arrayOf<CharSequence>("タブ1", "タブ2", "タブ3", "タブ1", "タブ2", "タブ3", "タブ1", "タブ2", "タブ3")
+class QRViewFragmentPagerAdapter(
+    private val tabTitles: List<String>,
+    fm: FragmentManager
+) : FragmentPagerAdapter(fm) {
 
     override fun getPageTitle(position: Int): CharSequence? {
         return tabTitles[position]
