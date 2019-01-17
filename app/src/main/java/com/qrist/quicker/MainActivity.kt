@@ -17,7 +17,7 @@ import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.Service
-import com.qrist.quicker.utils.ImageUtil
+import com.qrist.quicker.utils.saveImage
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveImageOnDevice() {
         val bitmap: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.qr_code)
         makeAppDirectory(directory)
-        ImageUtil.saveImage(bitmap, directory.absolutePath + "/qr_code.png")
+        saveImage(bitmap, directory.absolutePath + "/qr_code.png")
         repository.saveQRCodes(testCode)
     }
 
