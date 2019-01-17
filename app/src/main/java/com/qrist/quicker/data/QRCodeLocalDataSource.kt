@@ -25,7 +25,13 @@ class QRCodeLocalDataSource(
 
     override fun getQRCodes(): List<QRCode> {
         val json: String? = sharedPreferences.getString(PREF_NAME, "{}")
-        return qrCodeListAdapter.fromJson(json ?: "{}") ?: listOf() // TODO: null preparation
+        return qrCodeListAdapter.fromJson(
+            json ?: "{}"
+        ) ?: listOf(
+            QRCode.Error(
+                message = "json parse error"
+            )
+        )
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -50,5 +56,5 @@ class QRCodeLocalDataSource(
         @JvmStatic fun destroyInstance() {
             INSTANCE = null
         }
-    }
+   }
 }

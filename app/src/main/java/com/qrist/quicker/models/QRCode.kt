@@ -37,4 +37,9 @@ sealed class QRCode(
         override val qrCodeUrl: String,
         val service: Service
     ) : QRCode(id, qrCodeUrl)
+
+    data class Error(
+        val message: String
+    ) : QRCode(id = "error", qrCodeUrl = "")
 }
+
