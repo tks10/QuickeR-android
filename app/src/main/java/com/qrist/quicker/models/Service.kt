@@ -19,6 +19,10 @@ sealed class Service(
         override val id: String
     ) : Service(id = id, name = "Facebook", iconUrl = "facebook_icon")
 
+    data class LineService(
+        override val id: String
+    ) : Service(id = id, name = "LINE", iconUrl = "line_icon")
+
     @JsonClass(generateAdapter = true)
     data class UserService(
         override val id: String,

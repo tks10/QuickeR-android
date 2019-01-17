@@ -17,6 +17,7 @@ sealed class QRCode(
         val service: Service? = when(serviceId) {
             TWITTER_SERVICE_ID -> Service.TwitterService(id)
             FACEBOOK_SERVICE_ID -> Service.FacebookService(id)
+            LINE_SERVICE_ID -> Service.LineService(id)
             else -> {
                 IllegalStateException("Service id does not fit.")
                 null
@@ -26,6 +27,7 @@ sealed class QRCode(
         companion object {
             private const val TWITTER_SERVICE_ID = 0
             private const val FACEBOOK_SERVICE_ID = 1
+            private const val LINE_SERVICE_ID = 2
         }
     }
 
