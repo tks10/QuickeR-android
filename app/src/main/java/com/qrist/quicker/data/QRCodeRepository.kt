@@ -1,5 +1,6 @@
 package com.qrist.quicker.data
 
+import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
 
 class QRCodeRepository(
@@ -13,6 +14,9 @@ class QRCodeRepository(
 
     fun saveQRCodes(codes: List<QRCode>): Boolean =
         local.saveQRCodes(codes)
+
+    fun saveQRCode(code: QRCode, image: Bitmap): Boolean =
+        local.saveQRCode(code, image)
 
     companion object {
         private var INSTANCE: QRCodeRepository? = null

@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.Service
+import com.qrist.quicker.utils.saveImage
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -23,21 +24,10 @@ class QRCodeLocalDataSource(
             .withSubtype(QRCode.User::class.java, "QRCode.User"))
         .build().adapter(Types.newParameterizedType(List::class.java, QRCode::class.java))
 
-    private val qrCodeAdapter: JsonAdapter<QRCode> = Moshi.Builder()
-        .add(PolymorphicJsonAdapterFactory.of(Service::class.java, "Service")
-            .withSubtype(Service.TwitterService::class.java, "Service.TwitterService")
-            .withSubtype(Service.FacebookService::class.java, "Service.FacebookService")
-            .withSubtype(Service.UserService::class.java, "Service.UserService"))
-        .add(PolymorphicJsonAdapterFactory.of(QRCode::class.java, "QRCode")
-            .withSubtype(QRCode.Default::class.java, "QRCode.Define")
-            .withSubtype(QRCode.User::class.java, "QRCode.User"))
-        .build().adapter(Types.newParameterizedType(QRCode::class.java))
-
-
     override fun getQRCodes(): List<QRCode> {
-        val json: String? = sharedPreferences.getString(PREF_NAME, "{}")
+        val json: String? = sharedPreferences.getString(PREF_NAME, "[]")
         return qrCodeListAdapter.fromJson(
-            json ?: "{}"
+            json ?: "[]"
         ) ?: listOf(
             QRCode.Error(
                 message = "Json parse error"
@@ -53,11 +43,12 @@ class QRCodeLocalDataSource(
     }
 
     override fun saveQRCode(code: QRCode, image: Bitmap): Boolean {
-        val json: String = sharedPreferences.getString(PREF_NAME, "{}") ?: return false
+        val qrCodes = mutableListOf(code)
+        qrCodes.addAll(getQRCodes())
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
-        editor.putString(PREF_NAME, json + qrCodeAdapter.toJson(code))
+        editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
-        return true
+        return saveImage(image, code.qrCodeUrl)
     }
 
     override fun saveQRCodes(codes: List<QRCode>): Boolean {
