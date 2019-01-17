@@ -19,6 +19,7 @@ sealed class Service(
         override val id: String
     ) : Service(id = id, name = "Facebook")
 
+    @JsonClass(generateAdapter = true)
     data class LineService(
         override val id: String
     ) : Service(id = id, name = "LINE")
@@ -30,3 +31,4 @@ sealed class Service(
         val iconUrl: String
     ) : Service(id = id, name = name)
 }
+
