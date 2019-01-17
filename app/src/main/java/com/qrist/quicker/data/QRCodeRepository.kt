@@ -3,14 +3,16 @@ package com.qrist.quicker.data
 import com.qrist.quicker.models.QRCode
 
 class QRCodeRepository(
-    private val local: QRCodeLocalDataSource
+    private val local: QRCodeDataSource
 ) {
-    fun getQRCodes(): List<QRCode> {
-        return local.getQRCodes()
-    }
-    fun saveQRCodes(codes: List<QRCode>): Boolean {
-        return local.saveQRCodes(codes)
-    }
+    fun getQRCodes(): List<QRCode> =
+        local.getQRCodes()
+
+    fun getQRCode(id: String): QRCode =
+        local.getQRCode(id)
+
+    fun saveQRCodes(codes: List<QRCode>): Boolean =
+        local.saveQRCodes(codes)
 
     companion object {
         private var INSTANCE: QRCodeRepository? = null
