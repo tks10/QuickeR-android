@@ -5,9 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -58,18 +56,10 @@ class QRContainerFragment : Fragment() {
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) requestExternalStoragePermission(this.context!! as AppCompatActivity)
-        else saveImageOnDevice()
-    }
-
-    private fun saveImageOnDevice() {
-        makeAppDirectory(directory)
-        viewModel.qrCodes = testCode
-        viewModel.saveQRCodes()
-        pagerAdapter.notifyDataSetChanged()
+        if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) requestExternalStoragePermission()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -100,27 +90,32 @@ class QRContainerFragment : Fragment() {
         return view
     }
 
+    private fun saveImageOnDevice() {
+        makeAppDirectory(directory)
+        viewModel.qrCodes = testCode
+        viewModel.saveQRCodes()
+        // do not change state dynamically: dynamic view change with view pager seems very hard.
+        pagerAdapter.notifyDataSetChanged()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             saveImageOnDevice()
     }
 
-    private fun requestExternalStoragePermission(activity: AppCompatActivity) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                activity,
+    private fun requestExternalStoragePermission() {
+        if (shouldShowRequestPermissionRationale(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )) {
             val toast = Toast.makeText(activity, R.string.accept_me, Toast.LENGTH_SHORT)
             toast.show()
-            ActivityCompat.requestPermissions(
-                activity,
+            requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 REQUEST_PERMISSION
             )
         } else {
-            ActivityCompat.requestPermissions(
-                activity,
+            requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 REQUEST_PERMISSION
             )
