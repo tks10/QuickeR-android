@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.Service
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
@@ -28,29 +27,20 @@ class QRContainerFragment : Fragment() {
         QRCode.User(
             "1",
             directory.absolutePath + "/qr_code.png",
-            Service.UserService(
-                "1",
-                "user",
-                directory.absolutePath + "/qr_code.png"
-            )
+            "user",
+            directory.absolutePath + "/qr_code.png"
         ),
         QRCode.User(
             "2",
             directory.absolutePath + "/qr_code.png",
-            Service.UserService(
-                "2",
-                "user2",
-                directory.absolutePath + "/qr_code.png"
-            )
+            "user2",
+            directory.absolutePath + "/qr_code.png"
         ),
         QRCode.User(
             "3",
             directory.absolutePath + "/qr_code.png",
-            Service.UserService(
-                "3",
-                "user3",
-                directory.absolutePath + "/qr_code.png"
-            )
+            "user3",
+            directory.absolutePath + "/qr_code.png"
         )
     )
 

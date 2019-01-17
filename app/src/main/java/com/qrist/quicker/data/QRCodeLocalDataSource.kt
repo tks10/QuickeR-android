@@ -3,7 +3,6 @@ package com.qrist.quicker.data
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.Service
 import com.qrist.quicker.utils.saveImage
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.JsonAdapter
@@ -15,10 +14,6 @@ class QRCodeLocalDataSource(
 ) : QRCodeDataSource {
 
     private val qrCodeListAdapter: JsonAdapter<List<QRCode>> = Moshi.Builder()
-        .add(PolymorphicJsonAdapterFactory.of(Service::class.java, "Service")
-            .withSubtype(Service.TwitterService::class.java, "Service.TwitterService")
-            .withSubtype(Service.FacebookService::class.java, "Service.FacebookService")
-            .withSubtype(Service.UserService::class.java, "Service.UserService"))
         .add(PolymorphicJsonAdapterFactory.of(QRCode::class.java, "QRCode")
             .withSubtype(QRCode.Default::class.java, "QRCode.Define")
             .withSubtype(QRCode.User::class.java, "QRCode.User"))

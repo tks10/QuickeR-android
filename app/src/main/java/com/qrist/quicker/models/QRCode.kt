@@ -7,17 +7,19 @@ sealed class QRCode(
     open val id: String,
     open val qrCodeUrl: String
 ) {
+
     @JsonClass(generateAdapter = true)
     data class Default(
         override val id: String,
         override val qrCodeUrl: String,
+        val userName: String,
         val serviceId: Int
     ) : QRCode(id, qrCodeUrl) {
 
-        val service: Service? = when(serviceId) {
-            TWITTER_SERVICE_ID -> Service.TwitterService(id)
-            FACEBOOK_SERVICE_ID -> Service.FacebookService(id)
-            LINE_SERVICE_ID -> Service.LineService(id)
+        val serviceName: String? = when(serviceId) {
+            TWITTER_SERVICE_ID -> "Twitter"
+            FACEBOOK_SERVICE_ID -> "Facebook"
+            LINE_SERVICE_ID -> "Line"
             else -> {
                 IllegalStateException("Service id does not fit.")
                 null
@@ -35,11 +37,8 @@ sealed class QRCode(
     data class User(
         override val id: String,
         override val qrCodeUrl: String,
-        val service: Service.UserService
+        val serviceName: String,
+        val serviceIconUrl: String
     ) : QRCode(id, qrCodeUrl)
-
-    data class Error(
-        val message: String
-    ) : QRCode(id = "error", qrCodeUrl = "")
 }
 

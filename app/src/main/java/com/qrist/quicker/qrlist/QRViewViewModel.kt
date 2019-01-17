@@ -9,7 +9,6 @@ import android.util.Log
 import com.qrist.quicker.R
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.Service
 import com.qrist.quicker.utils.convertUrlFromDrawableResId
 
 @SuppressLint("StaticFieldLeak")
@@ -31,18 +30,8 @@ class QRViewViewModel(
         qrCodeImageLiveData.value = qrCode?.qrCodeUrl
         iconImageLiveData.value = qrCode?.let {
             when (qrCode) {
-                is QRCode.User -> qrCode.service.iconUrl
-                is QRCode.Default -> {
-                    val service = qrCode.service
-                    when (service) {
-                        is Service.TwitterService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
-                        is Service.FacebookService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
-                        is Service.LineService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
-                        // if null TODO: remove ability of UserService from QRCode.Default#service
-                        else -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
-                    }
-                }
-                is QRCode.Error -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
+                is QRCode.User -> qrCode.serviceIconUrl
+                is QRCode.Default -> qrCode.serviceName
             }
         }
     }
