@@ -13,7 +13,7 @@ class QRContainerViewModel(
 ) : AndroidViewModel(context) {
 
     fun getQRCodes(): List<String> =
-        repository.getQRCodes()?.map {
+        repository.getQRCodes().map {
             Log.d("QRCode", it.toString())
             when (it) {
                 is QRCode.User -> {

@@ -23,9 +23,9 @@ class QRCodeLocalDataSource(
             .withSubtype(QRCode.User::class.java, "QRCode.User"))
         .build().adapter(Types.newParameterizedType(List::class.java, QRCode::class.java))
 
-    override fun getQRCodes(): List<QRCode>? {
+    override fun getQRCodes(): List<QRCode> {
         val json: String? = sharedPreferences.getString(PREF_NAME, "{}")
-        return qrCodeListAdapter.fromJson(json ?: "{}")
+        return qrCodeListAdapter.fromJson(json ?: "{}") ?: listOf() // TODO: null preparation
     }
 
     @SuppressLint("CommitPrefEdits")
