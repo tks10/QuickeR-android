@@ -5,7 +5,7 @@ import com.qrist.quicker.models.QRCode
 
 interface QRCodeDataSource {
     fun getQRCodes(): List<QRCode>
-    fun getQRCode(id: String): QRCode
+    fun getQRCode(id: String): QRCode?
     fun saveQRCode(code: QRCode, image: Bitmap): Boolean
     fun saveQRCodes(codes: List<QRCode>): Boolean
 }

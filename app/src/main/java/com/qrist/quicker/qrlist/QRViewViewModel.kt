@@ -28,20 +28,22 @@ class QRViewViewModel(
     fun getImageUrl(codeId: String) {
         val qrCode = repository.getQRCode(codeId)
         Log.d("imagepath", convertUrlFromDrawableResId(context, R.drawable.qr_code))
-        qrCodeImageLiveData.value = qrCode.qrCodeUrl
-        iconImageLiveData.value = when (qrCode) {
-            is QRCode.User -> qrCode.service.iconUrl
-            is QRCode.Default -> {
-                val service = qrCode.service
-                when (service) {
-                    is Service.TwitterService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
-                    is Service.FacebookService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
-                    is Service.LineService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
-                    // if null TODO: remove ability of UserService from QRCode.Default#service
-                    else -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
+        qrCodeImageLiveData.value = qrCode?.qrCodeUrl
+        iconImageLiveData.value = qrCode?.let {
+            when (qrCode) {
+                is QRCode.User -> qrCode.service.iconUrl
+                is QRCode.Default -> {
+                    val service = qrCode.service
+                    when (service) {
+                        is Service.TwitterService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
+                        is Service.FacebookService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
+                        is Service.LineService -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
+                        // if null TODO: remove ability of UserService from QRCode.Default#service
+                        else -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
+                    }
                 }
+                is QRCode.Error -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
             }
-            is QRCode.Error -> convertUrlFromDrawableResId(context, R.drawable.qr_code)
         }
     }
 }

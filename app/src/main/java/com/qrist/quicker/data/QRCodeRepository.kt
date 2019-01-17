@@ -9,7 +9,7 @@ class QRCodeRepository(
     fun getQRCodes(): List<QRCode> =
         local.getQRCodes()
 
-    fun getQRCode(id: String): QRCode =
+    fun getQRCode(id: String): QRCode? =
         local.getQRCode(id)
 
     fun saveQRCodes(codes: List<QRCode>): Boolean =

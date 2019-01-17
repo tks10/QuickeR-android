@@ -28,23 +28,18 @@ class QRCodeLocalDataSource(
         val json: String? = sharedPreferences.getString(PREF_NAME, "[]")
         return qrCodeListAdapter.fromJson(
             json ?: "[]"
-        ) ?: listOf(
-            QRCode.Error(
-                message = "Json parse error"
-            )
-        )
+        )!!
     }
 
-    override fun getQRCode(id: String): QRCode {
+    override fun getQRCode(id: String): QRCode? {
         val qrCodes: List<QRCode> = this.getQRCodes()
         return qrCodes.findLast {
             it.id == id
-        } ?: QRCode.Error(message = "QRCode is not found")
+        }
     }
 
     override fun saveQRCode(code: QRCode, image: Bitmap): Boolean {
-        val qrCodes = mutableListOf(code)
-        qrCodes.addAll(getQRCodes())
+        val qrCodes = getQRCodes() + listOf(code)
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
