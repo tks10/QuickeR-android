@@ -35,7 +35,7 @@ sealed class QRCode(
     data class User(
         override val id: String,
         override val qrCodeUrl: String,
-        val service: Service
+        val service: Service.UserService
     ) : QRCode(id, qrCodeUrl)
 
     data class Error(
