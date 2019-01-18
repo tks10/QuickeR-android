@@ -42,14 +42,6 @@ class QRCodeLocalDataSource(
         return saveImage(image, code.qrCodeUrl)
     }
 
-    override fun saveQRCodes(codes: List<QRCode>): Boolean {
-        val json: String = qrCodeListAdapter.toJson(codes)
-        val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
-        editor.putString(PREF_NAME, json)
-        editor.apply()
-        return true
-    }
-
     companion object {
         private var INSTANCE: QRCodeLocalDataSource? = null
         private const val PREF_NAME = "QRCodesJson"

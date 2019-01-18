@@ -12,9 +12,6 @@ class QRCodeRepository(
     fun getQRCode(id: String): QRCode? =
         local.getQRCode(id)
 
-    fun saveQRCodes(codes: List<QRCode>): Boolean =
-        local.saveQRCodes(codes)
-
     fun saveQRCode(code: QRCode, image: Bitmap): Boolean =
         local.saveQRCode(code, image)
 
