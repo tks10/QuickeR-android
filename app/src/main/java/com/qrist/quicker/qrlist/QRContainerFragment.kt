@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.qrist.quicker.models.QRCode
+import androidx.navigation.Navigation
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
@@ -73,6 +74,10 @@ class QRContainerFragment : Fragment() {
                     false
                 }
             }
+        }
+
+        view.floatingActionButton.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_register)
         }
 
         view.tabLayout.setupWithViewPager(view.viewPager)
