@@ -34,7 +34,8 @@ class QRCodeLocalDataSource(
     }
 
     override fun saveQRCode(code: QRCode, image: Bitmap): Boolean {
-        val qrCodes = getQRCodes() + listOf(code)
+        // if there are same id in the shared preference, overwrite the QRCodes
+        val qrCodes = getQRCodes().filter { it.id != code.id } + listOf(code)
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
