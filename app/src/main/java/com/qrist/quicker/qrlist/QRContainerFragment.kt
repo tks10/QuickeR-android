@@ -28,7 +28,7 @@ import java.io.File
 class QRContainerFragment : Fragment() {
     val RESULT_PICK_QRCODE: Int = 1001
 
-    private val pagerAdapter by lazy { QRViewFragmentPagerAdapter(viewModel.qrCodes, activity!!.supportFragmentManager) }
+    private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/QuickeR/")
     private val testCode = listOf(
         QRCode.User(
@@ -51,8 +51,6 @@ class QRContainerFragment : Fragment() {
         )
     )
 
-    private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,7 +61,7 @@ class QRContainerFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
 
         view.viewPager.offscreenPageLimit = 2
-        view.viewPager.adapter = pagerAdapter
+        view.viewPager.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, activity!!.supportFragmentManager)
 
         view.tool_bar.inflateMenu(R.menu.menu)
         view.tool_bar.setOnMenuItemClickListener { item ->
@@ -112,8 +110,9 @@ class QRContainerFragment : Fragment() {
         makeAppDirectory(directory)
         viewModel.qrCodes = testCode
         viewModel.saveQRCodes()
-        // do not change state dynamically: dynamic view change with view pager seems very hard.
-        pagerAdapter.notifyDataSetChanged()
+        viewModel.getQRCodes()
+        view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, activity!!.supportFragmentManager)
+        view?.viewPager?.adapter?.notifyDataSetChanged()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
