@@ -61,7 +61,7 @@ class QRContainerFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
 
         view.viewPager.offscreenPageLimit = 2
-        view.viewPager.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, activity!!.supportFragmentManager)
+        view.viewPager.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
 
         view.tool_bar.inflateMenu(R.menu.menu)
         view.tool_bar.setOnMenuItemClickListener { item ->
@@ -111,7 +111,7 @@ class QRContainerFragment : Fragment() {
         viewModel.qrCodes = testCode
         viewModel.saveQRCodes()
         viewModel.getQRCodes()
-        view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, activity!!.supportFragmentManager)
+        view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
         view?.viewPager?.adapter?.notifyDataSetChanged()
     }
 
