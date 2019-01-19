@@ -12,7 +12,6 @@ sealed class QRCode(
     data class Default(
         override val id: String,
         override val qrCodeUrl: String,
-        val userName: String,
         val serviceId: Int
     ) : QRCode(id, qrCodeUrl) {
 
