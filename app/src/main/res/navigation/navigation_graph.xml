@@ -11,12 +11,12 @@
             tools:layout="@layout/fragment_qrcontainer">
 
         <action
-                android:id="@+id/action_qr_container_to_register"
+                android:id="@+id/action_qr_container_to_servicelist"
                 app:enterAnim="@anim/slide_from_bottom"
                 app:exitAnim="@anim/stay_out"
                 app:popEnterAnim="@anim/stay_in"
                 app:popExitAnim="@anim/slide_to_bottom"
-                app:destination="@id/registerFragment" />
+                app:destination="@id/serviceListFragment" />
 
     </fragment>
 
@@ -24,6 +24,12 @@
             android:id="@+id/registerFragment"
             android:name="com.qrist.quicker.register.RegisterFragment"
             tools:layout="@layout/fragment_register">
+    </fragment>
+
+    <fragment
+            android:id="@+id/serviceListFragment"
+            android:name="com.qrist.quicker.servicelist.ServiceListFragment"
+            tools:layout="@layout/fragment_servicelist">
     </fragment>
 
 </navigation>
