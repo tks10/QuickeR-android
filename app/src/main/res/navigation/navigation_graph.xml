@@ -16,7 +16,22 @@
                 app:exitAnim="@anim/stay_out"
                 app:popEnterAnim="@anim/stay_in"
                 app:popExitAnim="@anim/slide_to_bottom"
-                app:destination="@id/serviceListFragment" />
+                app:destination="@id/serviceListFragment"/>
+
+    </fragment>
+
+    <fragment
+            android:id="@+id/serviceListFragment"
+            android:name="com.qrist.quicker.servicelist.ServiceListFragment"
+            tools:layout="@layout/fragment_servicelist">
+
+        <action
+                android:id="@+id/action_servicelist_to_register"
+                app:enterAnim="@anim/slide_from_right"
+                app:exitAnim="@anim/stay_out"
+                app:popEnterAnim="@anim/stay_in"
+                app:popExitAnim="@anim/slide_to_right"
+                app:destination="@id/registerFragment"/>
 
     </fragment>
 
@@ -24,12 +39,12 @@
             android:id="@+id/registerFragment"
             android:name="com.qrist.quicker.register.RegisterFragment"
             tools:layout="@layout/fragment_register">
-    </fragment>
-
-    <fragment
-            android:id="@+id/serviceListFragment"
-            android:name="com.qrist.quicker.servicelist.ServiceListFragment"
-            tools:layout="@layout/fragment_servicelist">
+        <argument
+                android:name="serviceName"
+                app:argType="string"/>
+        <argument
+                android:name="serviceIconUrl"
+                app:argType="string"/>
     </fragment>
 
 </navigation>

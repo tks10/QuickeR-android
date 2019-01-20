@@ -9,6 +9,8 @@ import com.qrist.quicker.R
 
 
 class RegisterFragment : Fragment() {
+    private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName}
+    private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

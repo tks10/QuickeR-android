@@ -5,20 +5,20 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentServicelistBinding
 import com.qrist.quicker.extentions.obtainViewModel
 import kotlinx.android.synthetic.main.fragment_servicelist.view.*
-import kotlinx.android.synthetic.main.servicelist_item.view.*
 
 
 class ServiceListFragment : Fragment() {
     private val viewModel: ServiceListViewModel
             by lazy { obtainViewModel(ServiceListViewModel::class.java) }
+    private val serviceListViewers by lazy { viewModel.getServiceListViewers() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +31,16 @@ class ServiceListFragment : Fragment() {
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
 
-        binding.root.serviceList.adapter = ServiceListAdapter(activity!!, viewModel.getServiceListViewers()).apply {
+        binding.root.serviceList.adapter = ServiceListAdapter(activity!!, serviceListViewers).apply {
             setOnItemClickListener(View.OnClickListener {
-                Log.d("Position", (it.parent as ConstraintLayout).id.toString())
+                val position = (it.parent as ConstraintLayout).id
+                val service = serviceListViewers[position]
+                val action =
+                    ServiceListFragmentDirections.actionServicelistToRegister(
+                        service.serviceName,
+                        service.serviceIconUrl
+                    )
+                Navigation.findNavController(view!!).navigate(action)
             })
         }
 
