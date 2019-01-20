@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.qrist.quicker.databinding.ServicelistItemBinding
 import com.qrist.quicker.models.ServiceListViewer
+import kotlinx.android.synthetic.main.servicelist_item.view.*
 
 class ServiceListAdapter(val context: Context, private val serviceListViewers: List<ServiceListViewer>)
     : RecyclerView.Adapter<ServiceListAdapter.ViewHolder>() {
@@ -32,7 +33,7 @@ class ServiceListAdapter(val context: Context, private val serviceListViewers: L
 
         // Set Click Listener
         holder.binding.root.id = holder.adapterPosition
-        holder.binding.root.setOnClickListener {
+        holder.binding.root.addButton.setOnClickListener {
             listener?.onClick(it)
         }
     }
