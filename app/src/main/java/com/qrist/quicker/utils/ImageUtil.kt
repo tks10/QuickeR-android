@@ -22,7 +22,8 @@ fun saveImage(bitmap: Bitmap, imageUrl: String): Boolean =
     }
 
 @BindingAdapter("app:imageUrl")
-fun imageUrl(imageView: ImageView, url: String) {
+fun imageUrl(imageView: ImageView, url: String?) {
+    if (url == null) return
     Glide.with(imageView.context).load(url).into(imageView)
 }
 

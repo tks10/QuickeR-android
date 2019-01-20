@@ -12,15 +12,19 @@ class RegisterViewModel(
     private val context: Application,
     private val repository: QRCodeRepository
 ) : AndroidViewModel(context) {
-    private val serviceNameLiveData: MutableLiveData<Int> = MutableLiveData()
-    private val iconImageUrlLiveData: MutableLiveData<String> = MutableLiveData()
+    private val serviceNameLiveData: MutableLiveData<String> = MutableLiveData()
+    private val serviceIconUrlLiveData: MutableLiveData<String> = MutableLiveData()
 
-    val iconImageUrl: LiveData<String>
-        get() = iconImageUrlLiveData
-    val serviceName: LiveData<Int>
+    val serviceIconUrl: LiveData<String>
+        get() = serviceIconUrlLiveData
+    val serviceName: LiveData<String>
         get() = serviceNameLiveData
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
 
 
+    fun initServiceInformation(serviceName: String, serviceIconUrl: String) {
+        serviceNameLiveData.value = serviceName
+        serviceIconUrlLiveData.value = serviceIconUrl
+    }
 }
