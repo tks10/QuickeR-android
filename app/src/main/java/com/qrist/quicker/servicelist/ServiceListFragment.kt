@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.qrist.quicker.R
-import com.qrist.quicker.databinding.FragmentQrviewBinding
+import com.qrist.quicker.databinding.FragmentServicelistBinding
 import com.qrist.quicker.extentions.obtainViewModel
 
 
@@ -21,7 +21,7 @@ class ServiceListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val binding: FragmentQrviewBinding =
+        val binding: FragmentServicelistBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_servicelist, container, false)
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
