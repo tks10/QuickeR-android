@@ -75,13 +75,13 @@ class RegisterViewModel(
         val qrCode = if (isDefaultService.value!!) {
             QRCode.Default(
                 id = "100",
-                qrCodeUrl = directory.absolutePath + "/qr_code.png",
+                qrCodeUrl = directory.absolutePath + "/qr_code2.png",
                 serviceId = serviceNameToServiceId(serviceName.value!!)
             )
         } else {
             QRCode.User(
                 id = "100",
-                qrCodeUrl = directory.absolutePath + "/qr_code.png",
+                qrCodeUrl = directory.absolutePath + "/qr_code2.png",
                 serviceName = serviceName.value!!,
                 serviceIconUrl = serviceIconUrl.value!!
             )
