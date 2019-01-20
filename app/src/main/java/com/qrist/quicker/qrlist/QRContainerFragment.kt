@@ -36,20 +36,30 @@ class QRContainerFragment : Fragment() {
             directory.absolutePath + "/qr_code.png",
             QRCode.Default.TWITTER_SERVICE_ID
         ),
-        QRCode.User(
+        QRCode.Default(
             "1",
+            directory.absolutePath + "/qr_code.png",
+            QRCode.Default.FACEBOOK_SERVICE_ID
+        ),
+        QRCode.Default(
+            "2",
+            directory.absolutePath + "/qr_code.png",
+            QRCode.Default.LINE_SERVICE_ID
+        ),
+        QRCode.User(
+            "3",
             directory.absolutePath + "/qr_code.png",
             "user",
             directory.absolutePath + "/qr_code.png"
         ),
         QRCode.User(
-            "2",
+            "4",
             directory.absolutePath + "/qr_code.png",
             "user2",
             directory.absolutePath + "/qr_code.png"
         ),
         QRCode.User(
-            "3",
+            "5",
             directory.absolutePath + "/qr_code.png",
             "user3",
             directory.absolutePath + "/qr_code.png"

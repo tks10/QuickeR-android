@@ -36,6 +36,7 @@
                         android:layout_height="64dp"
                         android:background="@{viewmodel.getBackgroundColor(viewmodel.serviceId)}"
                         android:scaleType="fitCenter"
+                        android:padding="8dp"
                         app:imageUrl="@{viewmodel.iconImage}"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toTopOf="@id/qrImageView"
