@@ -6,12 +6,10 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
-import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.qrist.quicker.R
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.utils.MyApplication
 import com.qrist.quicker.utils.convertUrlFromDrawableResId
 import com.qrist.quicker.utils.serviceIdToColorDrawable
 

@@ -21,8 +21,8 @@ import kotlinx.android.synthetic.main.fragment_register.view.*
 class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
-    private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName}
-    private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl}
+    private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
+    private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +32,12 @@ class RegisterFragment : Fragment() {
         val binding: FragmentRegisterBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
         binding.setLifecycleOwner(this)
-        binding.viewmodel = viewModel.apply { initServiceInformation(
-            this@RegisterFragment.serviceName,
-            this@RegisterFragment.serviceIconUrl
-        )}
+        binding.viewmodel = viewModel.apply {
+            initServiceInformation(
+                this@RegisterFragment.serviceName,
+                this@RegisterFragment.serviceIconUrl
+            )
+        }
 
         binding.root.addQRButton.setOnClickListener {
             onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
@@ -43,6 +45,10 @@ class RegisterFragment : Fragment() {
 
         binding.root.serviceIconImageView.setOnClickListener {
             onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
+        }
+
+        binding.root.addButton.setOnClickListener {
+
         }
 
         return binding.root
