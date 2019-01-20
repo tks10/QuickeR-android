@@ -4,12 +4,10 @@ import android.content.ContentResolver
 import android.content.Context
 import android.databinding.BindingAdapter
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URL
 
 fun saveImage(bitmap: Bitmap, imageUrl: String): Boolean =
     try {

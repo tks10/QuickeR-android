@@ -34,7 +34,7 @@
                         android:id="@+id/headerImageView"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:background="#ccc"
+                        android:background="@{viewmodel.getBackgroundColor(viewmodel.serviceId)}"
                         android:scaleType="fitCenter"
                         app:imageUrl="@{viewmodel.iconImage}"
                         app:layout_constraintTop_toTopOf="parent"
