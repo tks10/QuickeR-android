@@ -22,4 +22,9 @@
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
+    <style name="AppTheme.FlatButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">#FF64A4</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
 </resources>

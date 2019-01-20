@@ -18,13 +18,12 @@ sealed class QRCode(
         val serviceId: Int
     ) : QRCode(id, qrCodeUrl) {
 
-        val serviceName: String? = when(serviceId) {
+        val serviceName: String = when(serviceId) {
             TWITTER_SERVICE_ID -> "Twitter"
             FACEBOOK_SERVICE_ID -> "Facebook"
             LINE_SERVICE_ID -> "Line"
             else -> {
-                IllegalStateException("Service id does not fit.")
-                null
+                throw IllegalStateException("Service id does not fit.")
             }
         }
 

@@ -8,6 +8,7 @@ import android.support.annotation.VisibleForTesting
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.qrlist.QRContainerViewModel
 import com.qrist.quicker.qrlist.QRViewViewModel
+import com.qrist.quicker.servicelist.ServiceListViewModel
 
 class ViewModelFactory private constructor(
         private val application: Application,
@@ -22,6 +23,8 @@ class ViewModelFactory private constructor(
                         QRContainerViewModel(application, qrCodeRepository)
                     isAssignableFrom(QRViewViewModel::class.java) ->
                         QRViewViewModel(application, qrCodeRepository)
+                    isAssignableFrom(ServiceListViewModel::class.java) ->
+                        ServiceListViewModel(application, qrCodeRepository)
                     else ->
                         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
                 }
