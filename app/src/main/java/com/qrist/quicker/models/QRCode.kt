@@ -29,8 +29,8 @@ sealed class QRCode(
         }
 
         val serviceIconUrl: String = when(serviceId) {
-            TWITTER_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.twitter)
-            FACEBOOK_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.facebook)
+            TWITTER_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.twitter_logo)
+            FACEBOOK_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.facebook_logo)
             LINE_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.line_logo)
             else -> {
                 IllegalStateException("Service id does not fit.")

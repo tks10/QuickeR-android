@@ -14,7 +14,7 @@ import java.net.URL
 fun saveImage(bitmap: Bitmap, imageUrl: String): Boolean =
     try {
         val outputStream = FileOutputStream(imageUrl)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 70, outputStream)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
         outputStream.flush()
         outputStream.close()
         true

@@ -33,7 +33,7 @@ class QRViewViewModel(
         iconImageLiveData.value = qrCode?.let {
             when (qrCode) {
                 is QRCode.User -> qrCode.serviceIconUrl
-                is QRCode.Default -> qrCode.serviceName
+                is QRCode.Default -> qrCode.serviceIconUrl
             }
         } ?: run {
             Log.e("service", "service image is null")
