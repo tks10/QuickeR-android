@@ -36,3 +36,11 @@ fun serviceIdToServiceName(serviceId: Int): String {
 fun serviceIdToIconUrl(serviceId: Int): String {
     return convertUrlFromDrawableResId(MyApplication.instance, serviceIdToIconDrawableResId(serviceId))
 }
+
+fun serviceNameToServiceId(serviceName: String): Int {
+    QRCode.Default.DEFAULT_SERVICES_ID.forEach { id ->
+        if (serviceIdToServiceName(id) == serviceName) return id
+    }
+
+    return -1
+}

@@ -3,6 +3,7 @@ package com.qrist.quicker.register
 import android.app.Activity
 import android.content.Intent
 import android.databinding.DataBindingUtil
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -10,10 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
-import com.qrist.quicker.extentions.IntentActionType
-import com.qrist.quicker.extentions.obtainViewModel
-import com.qrist.quicker.extentions.onClickImagePicker
-import com.qrist.quicker.extentions.onPickImageFile
+import com.qrist.quicker.extentions.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 
@@ -23,6 +21,7 @@ class RegisterFragment : Fragment() {
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
     private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
+    private var qrImageBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +47,14 @@ class RegisterFragment : Fragment() {
         }
 
         binding.root.addButton.setOnClickListener {
+            qrImageBitmap?.let { bmp ->
+                viewModel.saveQRCode(bmp)
+                activity!!.supportFragmentManager.popBackStack()
+            }
+        }
 
+        binding.root.serviceNameEditText.afterTextChanged {
+            viewModel.updateServiceName(it)
         }
 
         return binding.root
@@ -61,11 +67,14 @@ class RegisterFragment : Fragment() {
                     onPickImageFile(resultData) { bmp, uri ->
                         this@RegisterFragment.view?.qrImage?.setImageBitmap(bmp)
                         this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                        viewModel.updateQRCodeImageUrl(uri.toString())
+                        qrImageBitmap = bmp
                     }
                 }
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {
                     onPickImageFile(resultData) { bmp, uri ->
                         this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
+                        viewModel.updateServiceIconUrl(uri.toString())
                     }
                 }
             }
