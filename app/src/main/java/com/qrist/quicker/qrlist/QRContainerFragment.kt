@@ -31,6 +31,11 @@ class QRContainerFragment : Fragment() {
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/QuickeR/")
     private val testCode = listOf(
+        QRCode.Default(
+            "0",
+            directory.absolutePath + "/qr_code.png",
+            QRCode.Default.TWITTER_SERVICE_ID
+        ),
         QRCode.User(
             "1",
             directory.absolutePath + "/qr_code.png",
