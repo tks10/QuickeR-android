@@ -3,6 +3,7 @@
         xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View"/>
+        <import type="android.text.InputType"/>
         <import type="com.qrist.quicker.R"/>
         <variable
                 name="viewmodel"
@@ -14,7 +15,7 @@
             android:padding="8dp">
 
         <ImageView
-                android:id="@+id/rqImage"
+                android:id="@+id/qrImage"
                 android:layout_width="match_parent"
                 android:layout_height="256dp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -23,7 +24,7 @@
                 app:layout_constraintBottom_toTopOf="@id/serviceNameTextInputLayout"/>
 
         <ImageButton
-                android:id="@+id/addPhotoButton"
+                android:id="@+id/addQRButton"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_gravity="center_horizontal"
@@ -31,10 +32,10 @@
                 android:layout_marginBottom="16dp"
                 app:srcCompat="@drawable/add_photo"
                 tools:ignore="ContentDescription"
-                app:layout_constraintTop_toTopOf="@id/rqImage"
-                app:layout_constraintStart_toStartOf="@id/rqImage"
-                app:layout_constraintEnd_toEndOf="@id/rqImage"
-                app:layout_constraintBottom_toBottomOf="@id/rqImage"/>
+                app:layout_constraintTop_toTopOf="@id/qrImage"
+                app:layout_constraintStart_toStartOf="@id/qrImage"
+                app:layout_constraintEnd_toEndOf="@id/qrImage"
+                app:layout_constraintBottom_toBottomOf="@id/qrImage"/>
 
         <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/serviceIconImageView"
@@ -44,10 +45,11 @@
                 android:src="@drawable/add_photo"
                 android:padding="8dp"
                 app:imageUrl="@{viewmodel.serviceIconUrl}"
+                android:clickable="@{!viewmodel.isDefaultService()}"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/serviceNameTextInputLayout"
-                app:layout_constraintTop_toBottomOf="@id/rqImage"
+                app:layout_constraintTop_toBottomOf="@id/qrImage"
                 app:layout_constraintBottom_toTopOf="@id/addButton"/>
 
         <android.support.design.widget.TextInputLayout
@@ -55,7 +57,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_service_name"
-                app:layout_constraintTop_toBottomOf="@id/rqImage"
+                app:layout_constraintTop_toBottomOf="@id/qrImage"
                 app:layout_constraintStart_toEndOf="@id/serviceIconImageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/addButton">
@@ -64,7 +66,7 @@
                     android:id="@+id/serviceNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
+                    android:enabled="@{!viewmodel.isDefaultService}"
                     android:text="@{viewmodel.serviceName}"
                     android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
