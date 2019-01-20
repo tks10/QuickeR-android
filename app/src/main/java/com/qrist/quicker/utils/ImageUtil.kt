@@ -26,6 +26,11 @@ fun imageUrl(imageView: ImageView, url: String) {
     Glide.with(imageView.context).load(url).into(imageView)
 }
 
+@BindingAdapter("app:srcCompat")
+fun srcCompat(view: ImageView, resourceId: Int) {
+    view.setImageResource(resourceId)
+}
+
 fun convertUrlFromDrawableResId(context: Context, drawableResId: Int): String {
     val sb = StringBuilder()
     sb.append(ContentResolver.SCHEME_ANDROID_RESOURCE)

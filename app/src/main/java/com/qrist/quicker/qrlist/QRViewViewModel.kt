@@ -13,6 +13,7 @@ import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.utils.MyApplication
 import com.qrist.quicker.utils.convertUrlFromDrawableResId
+import com.qrist.quicker.utils.serviceIdToColorDrawable
 
 @SuppressLint("StaticFieldLeak")
 class QRViewViewModel(
@@ -54,12 +55,6 @@ class QRViewViewModel(
     }
 
     fun getBackgroundColor(serviceId: Int): ColorDrawable {
-        val colorId = when (serviceId) {
-            QRCode.Default.TWITTER_SERVICE_ID -> R.color.twitter
-            QRCode.Default.FACEBOOK_SERVICE_ID -> R.color.facebook
-            QRCode.Default.LINE_SERVICE_ID -> R.color.line
-            else -> R.color.etc
-        }
-        return ColorDrawable(ContextCompat.getColor(MyApplication.instance, colorId))
+        return serviceIdToColorDrawable(serviceId)
     }
 }

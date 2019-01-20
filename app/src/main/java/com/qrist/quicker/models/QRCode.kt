@@ -41,6 +41,12 @@ sealed class QRCode(
             const val TWITTER_SERVICE_ID = 0
             const val FACEBOOK_SERVICE_ID = 1
             const val LINE_SERVICE_ID = 2
+
+            val DEFAULT_SERVICES_ID = arrayListOf(
+                TWITTER_SERVICE_ID,
+                FACEBOOK_SERVICE_ID,
+                LINE_SERVICE_ID
+            )
         }
     }
 

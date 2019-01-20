@@ -5,6 +5,8 @@ import android.arch.lifecycle.AndroidViewModel
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.ServiceListViewer
+import com.qrist.quicker.utils.serviceIdToIconUrl
+import com.qrist.quicker.utils.serviceIdToServiceName
 
 
 class ServiceListViewModel(
@@ -16,24 +18,42 @@ class ServiceListViewModel(
 
     fun getServiceListViewers(): List<ServiceListViewer> {
         val serviceListViewers = mutableListOf<ServiceListViewer>()
+        val defaultServices = mutableListOf<QRCode.Default>()
+        val userServices = mutableListOf<QRCode.User>()
+
         qrCodes.forEach {
-            val serviceListViewer = when(it) {
+            when (it) {
                 is QRCode.Default -> {
-                    ServiceListViewer(
-                        serviceName = it.serviceName,
-                        serviceIconUrl = it.serviceIconUrl,
-                        isRegistered = false
-                    )
+                    defaultServices.add(it)
                 }
                 is QRCode.User -> {
-                    ServiceListViewer(
-                        serviceName = it.serviceName,
-                        serviceIconUrl = it.serviceIconUrl,
-                        isRegistered = false
-                    )
+                    userServices.add(it)
                 }
             }
-            serviceListViewers.add(serviceListViewer)
+        }
+
+        QRCode.Default.DEFAULT_SERVICES_ID.forEach { id ->
+            val myService = defaultServices.findLast { it.serviceId == id }
+            val isRegistered = myService != null
+            val serviceName = serviceIdToServiceName(id)
+            val serviceIcon = myService?.serviceIconUrl ?: serviceIdToIconUrl(id)
+            val viewer = ServiceListViewer(
+                serviceName = serviceName,
+                serviceIconUrl = serviceIcon,
+                isRegistered = isRegistered
+            )
+
+            serviceListViewers.add(viewer)
+        }
+
+        userServices.forEach {
+            val viewer = ServiceListViewer(
+                serviceName = it.serviceName,
+                serviceIconUrl = it.serviceIconUrl,
+                isRegistered = true
+            )
+
+            serviceListViewers.add(viewer)
         }
 
         return serviceListViewers
