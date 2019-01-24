@@ -31,7 +31,9 @@
                 app:exitAnim="@anim/stay_out"
                 app:popEnterAnim="@anim/stay_in"
                 app:popExitAnim="@anim/slide_to_right"
-                app:destination="@id/registerFragment"/>
+                app:destination="@id/registerFragment"
+                app:popUpTo="@id/serviceListFragment"
+                app:popUpToInclusive="true"/>
 
     </fragment>
 
