@@ -18,7 +18,7 @@ class QRViewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.getImageUrl(codeId)
+        viewModel.fetchImageUrl(codeId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -32,6 +32,7 @@ class QRViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e("", "$codeId $viewModel")
+        viewModel.fetchImageUrl(codeId)
     }
 
     companion object {

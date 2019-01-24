@@ -105,6 +105,13 @@ class QRContainerFragment : Fragment() {
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchQRCodes()
+        view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
+        view?.viewPager?.adapter?.notifyDataSetChanged()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -120,7 +127,7 @@ class QRContainerFragment : Fragment() {
         makeAppDirectory(directory)
         viewModel.qrCodes = testCode
         viewModel.saveQRCodes()
-        viewModel.getQRCodes()
+        viewModel.fetchQRCodes()
         view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
         view?.viewPager?.adapter?.notifyDataSetChanged()
     }

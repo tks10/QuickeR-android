@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.databinding.BindingAdapter
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import java.io.FileOutputStream
@@ -23,7 +24,10 @@ fun saveImage(bitmap: Bitmap, imageUrl: String): Boolean =
 
 @BindingAdapter("app:imageUrl")
 fun imageUrl(imageView: ImageView, url: String?) {
-    if (url == null) return
+    if (url == null) {
+        Log.e("Glide Binding", "URL is null")
+        return
+    }
     Glide.with(imageView.context).load(url).into(imageView)
 }
 
