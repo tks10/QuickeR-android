@@ -5,7 +5,6 @@ import android.content.Intent
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Environment
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -22,6 +21,7 @@ import com.qrist.quicker.extentions.makeAppDirectory
 import com.qrist.quicker.extentions.obtainViewModel
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 import com.journeyapps.barcodescanner.CaptureActivity
+import com.qrist.quicker.utils.storeDirectory
 
 import java.io.File
 
@@ -29,7 +29,7 @@ class QRContainerFragment : Fragment() {
     val RESULT_PICK_QRCODE: Int = 1001
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
-    private val directory = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/QuickeR/")
+    private val directory = File(storeDirectory)
     private val testCode = listOf(
         QRCode.Default(
             "0",

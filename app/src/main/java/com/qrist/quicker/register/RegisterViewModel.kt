@@ -5,11 +5,11 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
-import android.os.Environment
 import android.util.Log
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.utils.serviceNameToServiceId
+import com.qrist.quicker.utils.storeDirectory
 import java.io.File
 import java.util.*
 
@@ -24,7 +24,7 @@ class RegisterViewModel(
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
 
-    private val directory = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/QuickeR/")
+    private val directory = File(storeDirectory)
 
     val serviceIconUrl: LiveData<String>
         get() = serviceIconUrlLiveData
