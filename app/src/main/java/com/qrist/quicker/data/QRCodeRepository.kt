@@ -15,6 +15,12 @@ class QRCodeRepository(
     fun saveQRCode(code: QRCode, image: Bitmap): Boolean =
         local.saveQRCode(code, image)
 
+    fun saveQRCode(serviceId: Int, qrImage: Bitmap): Boolean =
+        local.saveQRCode(serviceId, qrImage)
+
+    fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean =
+        local.saveQRCode(serviceName, qrImage, iconImage)
+
     companion object {
         private var INSTANCE: QRCodeRepository? = null
 

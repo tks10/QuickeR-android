@@ -22,6 +22,7 @@ class RegisterFragment : Fragment() {
     private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
     private var qrImageBitmap: Bitmap? = null
+    private var serviceIconImageBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +49,7 @@ class RegisterFragment : Fragment() {
 
         binding.root.addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
-                viewModel.saveQRCode(bmp)
+                viewModel.saveQRCode(bmp, serviceIconImageBitmap)
                 activity!!.supportFragmentManager.popBackStack()
             }
         }
@@ -75,6 +76,7 @@ class RegisterFragment : Fragment() {
                     onPickImageFile(resultData) { bmp, uri ->
                         this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
                         viewModel.updateServiceIconUrl(uri.toString())
+                        serviceIconImageBitmap = bmp
                     }
                 }
             }

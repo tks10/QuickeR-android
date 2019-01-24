@@ -68,28 +68,17 @@ class RegisterViewModel(
         isValidAsServiceLiveData.value = isServiceNameValid && isServiceIconUrlValid && isQRCodeImageUrlValid
     }
 
-    fun saveQRCode(qrCodeImage: Bitmap) {
+    fun saveQRCode(qrImage: Bitmap, serviceIconImage: Bitmap?) {
         if (!isValidAsService.value!!) {
             Log.e("Register", "This implementation must have bugs...")
             return
         }
-        val id = UUID.randomUUID().toString()
-        val url = "${directory.absolutePath}/$id.png"
-        val qrCode = if (isDefaultService.value!!) {
-            QRCode.Default(
-                id = id,
-                qrCodeUrl = url,
-                serviceId = serviceNameToServiceId(serviceName.value!!)
-            )
+        if (isDefaultService.value!!) {
+            repository.saveQRCode(serviceNameToServiceId(serviceName.value!!), qrImage)
         } else {
-            QRCode.User(
-                id = id,
-                qrCodeUrl = url,
-                serviceName = serviceName.value!!,
-                serviceIconUrl = serviceIconUrl.value!!
-            )
+            serviceIconImage?.let {
+                repository.saveQRCode(serviceName.value!!, qrImage, it)
+            }
         }
-
-        repository.saveQRCode(qrCode, qrCodeImage)
     }
 }
