@@ -11,6 +11,7 @@ import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.utils.serviceNameToServiceId
 import java.io.File
+import java.util.*
 
 
 class RegisterViewModel(
@@ -72,16 +73,18 @@ class RegisterViewModel(
             Log.e("Register", "This implementation must have bugs...")
             return
         }
+        val id = UUID.randomUUID().toString()
+        val url = "${directory.absolutePath}/$id.png"
         val qrCode = if (isDefaultService.value!!) {
             QRCode.Default(
-                id = "100",
-                qrCodeUrl = directory.absolutePath + "/qr_code2.png",
+                id = id,
+                qrCodeUrl = url,
                 serviceId = serviceNameToServiceId(serviceName.value!!)
             )
         } else {
             QRCode.User(
-                id = "100",
-                qrCodeUrl = directory.absolutePath + "/qr_code2.png",
+                id = id,
+                qrCodeUrl = url,
                 serviceName = serviceName.value!!,
                 serviceIconUrl = serviceIconUrl.value!!
             )
