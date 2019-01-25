@@ -88,6 +88,7 @@ class QRContainerFragment : Fragment() {
                 }
                 R.id.menu_settings -> {
                     Log.d("Menu", "Settings was tapped.")
+                    Navigation.findNavController(view).navigate(R.id.action_qr_container_to_registeredservicelist)
                     true
                 }
                 else -> {

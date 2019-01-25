@@ -19,15 +19,11 @@ class ServiceAddListViewModel(
     fun getServiceAddItems(): List<ServiceAddItem> {
         val serviceAddItems = mutableListOf<ServiceAddItem>()
         val defaultServices = mutableListOf<QRCode.Default>()
-        val userServices = mutableListOf<QRCode.User>()
 
         qrCodes.forEach {
             when (it) {
                 is QRCode.Default -> {
                     defaultServices.add(it)
-                }
-                is QRCode.User -> {
-                    userServices.add(it)
                 }
             }
         }
@@ -41,16 +37,6 @@ class ServiceAddListViewModel(
                 serviceName = serviceName,
                 serviceIconUrl = serviceIcon,
                 isRegistered = isRegistered
-            )
-
-            serviceAddItems.add(viewer)
-        }
-
-        userServices.forEach {
-            val viewer = ServiceAddItem(
-                serviceName = it.serviceName,
-                serviceIconUrl = it.serviceIconUrl,
-                isRegistered = true
             )
 
             serviceAddItems.add(viewer)

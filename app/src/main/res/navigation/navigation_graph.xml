@@ -18,6 +18,14 @@
                 app:popExitAnim="@anim/slide_to_bottom"
                 app:destination="@id/serviceAddListFragment"/>
 
+        <action
+                android:id="@+id/action_qr_container_to_registeredservicelist"
+                app:enterAnim="@anim/slide_from_bottom"
+                app:exitAnim="@anim/stay_out"
+                app:popEnterAnim="@anim/stay_in"
+                app:popExitAnim="@anim/slide_to_bottom"
+                app:destination="@id/registeredServiceListFragment"/>
+
     </fragment>
 
     <fragment
@@ -36,6 +44,11 @@
                 app:popUpToInclusive="true"/>
 
     </fragment>
+
+    <fragment
+            android:id="@+id/registeredServiceListFragment"
+            android:name="com.qrist.quicker.registeredservicelist.RegisteredServiceListFragment"
+            tools:layout="@layout/fragment_registeredservicelist"/>
 
     <fragment
             android:id="@+id/registerFragment"
