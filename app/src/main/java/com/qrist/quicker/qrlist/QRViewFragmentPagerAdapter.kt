@@ -12,10 +12,11 @@ class QRViewFragmentPagerAdapter(
 ) : FragmentStatePagerAdapter(fm) {
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return when(qrCodes[position]) {
-            is QRCode.Default ->(qrCodes[position] as QRCode.Default).serviceName
-            is QRCode.User -> (qrCodes[position] as QRCode.User).serviceName
-        }
+        return ""
+//        return when(qrCodes[position]) {
+//            is QRCode.Default ->(qrCodes[position] as QRCode.Default).serviceName
+//            is QRCode.User -> (qrCodes[position] as QRCode.User).serviceName
+//        }
     }
 
     override fun getItem(position: Int): Fragment? {
