@@ -9,6 +9,7 @@ import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.qrlist.QRContainerViewModel
 import com.qrist.quicker.qrlist.QRViewViewModel
 import com.qrist.quicker.register.RegisterViewModel
+import com.qrist.quicker.registeredservicelist.RegisteredServiceListViewModel
 import com.qrist.quicker.serviceaddlist.ServiceAddListViewModel
 
 class ViewModelFactory private constructor(
@@ -28,6 +29,8 @@ class ViewModelFactory private constructor(
                         ServiceAddListViewModel(application, qrCodeRepository)
                     isAssignableFrom(RegisterViewModel::class.java) ->
                         RegisterViewModel(application, qrCodeRepository)
+                    isAssignableFrom(RegisteredServiceListViewModel::class.java) ->
+                        RegisteredServiceListViewModel(application, qrCodeRepository)
                     else ->
                         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
                 }
