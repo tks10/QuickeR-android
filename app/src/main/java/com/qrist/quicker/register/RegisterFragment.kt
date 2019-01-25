@@ -33,14 +33,24 @@ class RegisterFragment : Fragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel.apply {
-            initServiceInformation(
-                this@RegisterFragment.serviceName,
-                this@RegisterFragment.serviceIconUrl
-            )
+            if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
+                initServiceInformation(
+                    this@RegisterFragment.serviceName,
+                    this@RegisterFragment.serviceIconUrl
+                )
+            }
         }
 
         binding.root.addQRButton.setOnClickListener {
             onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+        }
+
+        binding.root.qrImageView.setOnClickListener {
+            onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+        }
+
+        binding.root.addIconButton.setOnClickListener {
+            onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
         }
 
         binding.root.serviceIconImageView.setOnClickListener {
@@ -66,7 +76,7 @@ class RegisterFragment : Fragment() {
             when (requestCode) {
                 IntentActionType.RESULT_PICK_QRCODE -> {
                     onPickImageFile(resultData) { bmp, uri ->
-                        this@RegisterFragment.view?.qrImage?.setImageBitmap(bmp)
+                        this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
                         this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
                         viewModel.updateQRCodeImageUrl(uri.toString())
                         qrImageBitmap = bmp
@@ -75,6 +85,7 @@ class RegisterFragment : Fragment() {
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {
                     onPickImageFile(resultData) { bmp, uri ->
                         this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
+                        this@RegisterFragment.view?.addIconButton?.visibility = View.INVISIBLE
                         viewModel.updateServiceIconUrl(uri.toString())
                         serviceIconImageBitmap = bmp
                     }

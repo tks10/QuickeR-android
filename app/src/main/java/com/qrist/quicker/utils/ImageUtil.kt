@@ -24,8 +24,8 @@ fun saveImage(bitmap: Bitmap, imageUrl: String): Boolean =
 
 @BindingAdapter("app:imageUrl")
 fun imageUrl(imageView: ImageView, url: String?) {
-    if (url == null) {
-        Log.e("Glide Binding", "URL is null")
+    if (url.isNullOrBlank()) {
+        Log.e("Glide Binding", "URL is empty")
         return
     }
     Glide.with(imageView.context).load(url).into(imageView)
