@@ -4,7 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.RegisteredServiceItem
+import com.qrist.quicker.models.ServiceItem
 
 
 class RegisteredServiceListViewModel(
@@ -14,17 +14,17 @@ class RegisteredServiceListViewModel(
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
 
-    fun getRegisteredServiceItems(): List<RegisteredServiceItem> {
-        val registeredServiceItems = mutableListOf<RegisteredServiceItem>()
+    fun getServiceItems(): List<ServiceItem> {
+        val registeredServiceItems = mutableListOf<ServiceItem>()
 
         qrCodes.forEach {
             registeredServiceItems.add(
                 when (it) {
                     is QRCode.Default -> {
-                        RegisteredServiceItem(it.serviceName, it.serviceIconUrl)
+                        ServiceItem(it.serviceName, it.serviceIconUrl)
                     }
                     is QRCode.User -> {
-                        RegisteredServiceItem(it.serviceName, it.serviceIconUrl)
+                        ServiceItem(it.serviceName, it.serviceIconUrl)
                     }
                 }
             )

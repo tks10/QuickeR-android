@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_registeredservicelist.view.*
 class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
             by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java) }
-    private val registeredServiceItems by lazy { viewModel.getRegisteredServiceItems() }
+    private val serviceItems by lazy { viewModel.getServiceItems() }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -29,10 +29,10 @@ class RegisteredServiceListFragment : Fragment() {
         binding.viewmodel = viewModel
 
         binding.root.registeredServiceList.adapter =
-                RegisteredServiceListAdapter(activity!!, registeredServiceItems).apply {
+                RegisteredServiceListAdapter(activity!!, serviceItems).apply {
                     setOnItemClickListener(View.OnClickListener {
                         val position = (it.parent as ConstraintLayout).id
-                        val service = registeredServiceItems[position]
+                        val service = serviceItems[position]
                     })
                 }
 

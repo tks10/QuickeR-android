@@ -5,8 +5,8 @@
         <import type="android.view.View"/>
         <import type="com.qrist.quicker.R"/>
         <variable
-                name="serviceAddItem"
-                type="com.qrist.quicker.models.ServiceAddItem" />
+                name="serviceItem"
+                type="com.qrist.quicker.models.ServiceItem" />
     </data>
     <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -18,7 +18,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:scaleType="centerCrop"
-                app:imageUrl="@{serviceAddItem.serviceIconUrl}"
+                app:imageUrl="@{serviceItem.serviceIconUrl}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/serviceNameTextView"
                 app:layout_constraintHorizontal_chainStyle="spread"
@@ -27,7 +27,7 @@
 
         <TextView
                 android:id="@+id/serviceNameTextView"
-                android:text="@{serviceAddItem.serviceName}"
+                android:text="@{serviceItem.serviceName}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -43,8 +43,7 @@
                 android:scaleType="fitCenter"
                 android:background="#00000000"
                 android:layout_marginEnd="8dp"
-                android:clickable="@{!serviceAddItem.registered}"
-                app:srcCompat="@{serviceAddItem.registered ? R.drawable.done : R.drawable.make_acc}"
+                app:srcCompat="@drawable/make_acc"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>

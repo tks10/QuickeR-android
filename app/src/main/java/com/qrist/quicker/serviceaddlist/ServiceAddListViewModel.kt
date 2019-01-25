@@ -4,7 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.ServiceAddItem
+import com.qrist.quicker.models.ServiceItem
 import com.qrist.quicker.utils.serviceIdToIconUrl
 import com.qrist.quicker.utils.serviceIdToServiceName
 
@@ -16,8 +16,8 @@ class ServiceAddListViewModel(
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
 
-    fun getServiceAddItems(): List<ServiceAddItem> {
-        val serviceAddItems = mutableListOf<ServiceAddItem>()
+    fun getServiceItems(): List<ServiceItem> {
+        val serviceItems = mutableListOf<ServiceItem>()
         val defaultServices = mutableListOf<QRCode.Default>()
 
         qrCodes.forEach {
@@ -30,18 +30,16 @@ class ServiceAddListViewModel(
 
         QRCode.Default.DEFAULT_SERVICES_ID.forEach { id ->
             val myService = defaultServices.findLast { it.serviceId == id }
-            val isRegistered = myService != null
-            val serviceName = serviceIdToServiceName(id)
-            val serviceIcon = myService?.serviceIconUrl ?: serviceIdToIconUrl(id)
-            val viewer = ServiceAddItem(
-                serviceName = serviceName,
-                serviceIconUrl = serviceIcon,
-                isRegistered = isRegistered
-            )
-
-            serviceAddItems.add(viewer)
+            if (myService == null) {
+                serviceItems.add(
+                    ServiceItem(
+                        serviceName = serviceIdToServiceName(id),
+                        serviceIconUrl = serviceIdToIconUrl(id)
+                    )
+                )
+            }
         }
 
-        return serviceAddItems
+        return serviceItems
     }
 }

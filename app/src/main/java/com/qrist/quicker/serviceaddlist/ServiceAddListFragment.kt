@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_serviceaddlist.view.*
 class ServiceAddListFragment : Fragment() {
     private val viewModel: ServiceAddListViewModel
             by lazy { obtainViewModel(ServiceAddListViewModel::class.java) }
-    private val serviceAddItems by lazy { viewModel.getServiceAddItems() }
+    private val serviceItems by lazy { viewModel.getServiceItems() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +31,10 @@ class ServiceAddListFragment : Fragment() {
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
 
-        binding.root.serviceAddList.adapter = ServiceAddListAdapter(activity!!, serviceAddItems).apply {
+        binding.root.serviceAddList.adapter = ServiceAddListAdapter(activity!!, serviceItems).apply {
             setOnItemClickListener(View.OnClickListener {
                 val position = (it.parent as ConstraintLayout).id
-                val service = serviceAddItems[position]
+                val service = serviceItems[position]
                 val action =
                     ServiceAddListFragmentDirections.actionServiceaddlistToRegister(
                         service.serviceName,

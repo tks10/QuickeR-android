@@ -7,10 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.qrist.quicker.databinding.RegisteredservicelistItemBinding
-import com.qrist.quicker.models.RegisteredServiceItem
+import com.qrist.quicker.models.ServiceItem
 import kotlinx.android.synthetic.main.registeredservicelist_item.view.*
 
-class RegisteredServiceListAdapter(val context: Context, private val registeredServiceItems: List<RegisteredServiceItem>)
+class RegisteredServiceListAdapter(val context: Context, private val serviceItems: List<ServiceItem>)
     : RecyclerView.Adapter<RegisteredServiceListAdapter.ViewHolder>() {
     private var listener: View.OnClickListener? = null
 
@@ -29,7 +29,7 @@ class RegisteredServiceListAdapter(val context: Context, private val registeredS
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Binding
-        holder.binding.serviceAddItem = registeredServiceItems[position]
+        holder.binding.serviceItem = serviceItems[position]
 
         // Set Click Listener
         holder.binding.root.id = holder.adapterPosition
@@ -38,5 +38,5 @@ class RegisteredServiceListAdapter(val context: Context, private val registeredS
         }
     }
 
-    override fun getItemCount() = registeredServiceItems.size
+    override fun getItemCount() = serviceItems.size
 }

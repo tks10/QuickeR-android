@@ -1,6 +1,6 @@
 package com.qrist.quicker.models
 
-data class RegisteredServiceItem(
+data class ServiceItem(
     val serviceName: String,
     val serviceIconUrl: String
 )

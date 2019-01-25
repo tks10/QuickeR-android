@@ -7,10 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.qrist.quicker.databinding.ServiceaddlistItemBinding
-import com.qrist.quicker.models.ServiceAddItem
+import com.qrist.quicker.models.ServiceItem
 import kotlinx.android.synthetic.main.serviceaddlist_item.view.*
 
-class ServiceAddListAdapter(val context: Context, private val serviceAddItems: List<ServiceAddItem>)
+class ServiceAddListAdapter(val context: Context, private val serviceItems: List<ServiceItem>)
     : RecyclerView.Adapter<ServiceAddListAdapter.ViewHolder>() {
     private var listener: View.OnClickListener? = null
 
@@ -29,7 +29,7 @@ class ServiceAddListAdapter(val context: Context, private val serviceAddItems: L
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Binding
-        holder.binding.serviceAddItem = serviceAddItems[position]
+        holder.binding.serviceItem = serviceItems[position]
 
         // Set Click Listener
         holder.binding.root.id = holder.adapterPosition
@@ -38,5 +38,5 @@ class ServiceAddListAdapter(val context: Context, private val serviceAddItems: L
         }
     }
 
-    override fun getItemCount() = serviceAddItems.size
+    override fun getItemCount() = serviceItems.size
 }
