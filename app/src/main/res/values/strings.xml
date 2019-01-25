@@ -3,4 +3,5 @@
     <string name="accept_me">Please accept to use this application</string>
     <string name="hint_service_name">Service name</string>
     <string name="button_add">Add</string>
+    <string name="other_service">Other service</string>
 </resources>
