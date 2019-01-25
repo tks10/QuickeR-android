@@ -9,4 +9,5 @@ interface QRCodeDataSource {
     fun saveQRCode(code: QRCode, image: Bitmap): Boolean
     fun saveQRCode(serviceId: Int, qrImage: Bitmap): Boolean
     fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean
+    fun deleteQRCode(id: String): Boolean
 }

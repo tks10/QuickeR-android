@@ -32,4 +32,12 @@ class RegisteredServiceListViewModel(
 
         return registeredServiceItems
     }
+
+    fun fetchQRCodes() {
+        qrCodes = repository.getQRCodes()
+    }
+
+    fun deleteQRCode(id: String): Boolean {
+        return repository.deleteQRCode(id)
+    }
 }

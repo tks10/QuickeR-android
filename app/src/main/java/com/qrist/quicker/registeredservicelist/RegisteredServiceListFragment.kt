@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.fragment_registeredservicelist.view.*
 class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
             by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java) }
-    private val serviceItems by lazy { viewModel.getServiceItems() }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -30,29 +29,41 @@ class RegisteredServiceListFragment : Fragment() {
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
 
-        binding.root.registeredServiceList.adapter =
-                RegisteredServiceListAdapter(activity!!, serviceItems).apply {
-                    setOnItemClickListener(View.OnClickListener {
-                        val position = (it.parent as ConstraintLayout).id
-                        val service = serviceItems[position]
-                        MaterialDialog(activity!!).show {
-                            title(R.string.title_delete)
-                            message(R.string.message_delete)
-                            positiveButton(R.string.agree_delete) { dialog ->
-                                // Do something
-                                Snackbar.make(view!!, "Yes", Snackbar.LENGTH_LONG).show()
-                            }
-                            negativeButton(R.string.cancel) { dialog ->
-                                // Do something
-                                Snackbar.make(view!!, "No", Snackbar.LENGTH_LONG).show()
-                            }
-                        }
-                    })
-                }
+        binding.root.registeredServiceList.adapter = this.createAdapter()
+
 
         val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
         binding.root.registeredServiceList.addItemDecoration(itemDecoration)
 
         return binding.root
+    }
+
+    private fun updateItems() {
+        viewModel.fetchQRCodes()
+        view?.registeredServiceList?.adapter = createAdapter()
+        view?.registeredServiceList?.adapter?.notifyDataSetChanged()
+    }
+
+    private fun createAdapter(): RegisteredServiceListAdapter {
+        return RegisteredServiceListAdapter(activity!!, viewModel.getServiceItems()).apply {
+            setOnItemClickListener(View.OnClickListener {
+                val position = (it.parent as ConstraintLayout).id
+
+                MaterialDialog(activity!!).show {
+                    title(R.string.title_delete)
+                    message(R.string.message_delete)
+                    positiveButton(R.string.agree_delete) { dialog ->
+                        // Do something
+                        val qrCode = viewModel.qrCodes[position]
+                        if (viewModel.deleteQRCode(qrCode.id)) {
+                            this@RegisteredServiceListFragment.updateItems()
+                            Snackbar.make(view!!, "Deleted item", Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+                    negativeButton(R.string.cancel) { dialog ->
+                    }
+                }
+            })
+        }
     }
 }
