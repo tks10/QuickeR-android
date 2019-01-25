@@ -58,4 +58,7 @@ dependencies {
 
     // Circular Image View
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
+    // Material Dialogs
+    implementation 'com.afollestad.material-dialogs:core:2.0.0-alpha12'
 }

@@ -4,4 +4,8 @@
     <string name="hint_service_name">Service name</string>
     <string name="button_add">Add</string>
     <string name="other_service">Other service</string>
+    <string name="agree_delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_delete">Are you sure you want to delete this service?</string>
+    <string name="message_delete">Once it can not be restored after you have deleted.</string>
 </resources>

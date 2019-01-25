@@ -37,7 +37,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageButton
-                android:id="@+id/removeButton"
+                android:id="@+id/deleteButton"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:scaleType="fitCenter"

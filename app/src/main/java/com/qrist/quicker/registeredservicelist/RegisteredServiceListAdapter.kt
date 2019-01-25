@@ -33,7 +33,7 @@ class RegisteredServiceListAdapter(val context: Context, private val serviceItem
 
         // Set Click Listener
         holder.binding.root.id = holder.adapterPosition
-        holder.binding.root.removeButton.setOnClickListener {
+        holder.binding.root.deleteButton.setOnClickListener {
             listener?.onClick(it)
         }
     }
