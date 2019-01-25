@@ -1,4 +1,4 @@
-package com.qrist.quicker.servicelist
+package com.qrist.quicker.serviceaddlist
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -10,15 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.qrist.quicker.R
-import com.qrist.quicker.databinding.FragmentServicelistBinding
+import com.qrist.quicker.databinding.FragmentServiceaddlistBinding
 import com.qrist.quicker.extentions.obtainViewModel
-import kotlinx.android.synthetic.main.fragment_servicelist.view.*
+import kotlinx.android.synthetic.main.fragment_serviceaddlist.view.*
 
 
-class ServiceListFragment : Fragment() {
-    private val viewModel: ServiceListViewModel
-            by lazy { obtainViewModel(ServiceListViewModel::class.java) }
-    private val serviceListViewers by lazy { viewModel.getServiceListViewers() }
+class ServiceAddListFragment : Fragment() {
+    private val viewModel: ServiceAddListViewModel
+            by lazy { obtainViewModel(ServiceAddListViewModel::class.java) }
+    private val serviceAddItems by lazy { viewModel.getServiceAddItems() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,17 +26,17 @@ class ServiceListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val binding: FragmentServicelistBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_servicelist, container, false)
+        val binding: FragmentServiceaddlistBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_serviceaddlist, container, false)
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
 
-        binding.root.serviceList.adapter = ServiceListAdapter(activity!!, serviceListViewers).apply {
+        binding.root.serviceAddList.adapter = ServiceAddListAdapter(activity!!, serviceAddItems).apply {
             setOnItemClickListener(View.OnClickListener {
                 val position = (it.parent as ConstraintLayout).id
-                val service = serviceListViewers[position]
+                val service = serviceAddItems[position]
                 val action =
-                    ServiceListFragmentDirections.actionServicelistToRegister(
+                    ServiceAddListFragmentDirections.actionServiceaddlistToRegister(
                         service.serviceName,
                         service.serviceIconUrl
                     )
@@ -45,7 +45,7 @@ class ServiceListFragment : Fragment() {
         }
 
         val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
-        binding.root.serviceList.addItemDecoration(itemDecoration)
+        binding.root.serviceAddList.addItemDecoration(itemDecoration)
 
         return binding.root
     }

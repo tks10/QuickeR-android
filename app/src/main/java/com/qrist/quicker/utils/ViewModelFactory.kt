@@ -9,7 +9,7 @@ import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.qrlist.QRContainerViewModel
 import com.qrist.quicker.qrlist.QRViewViewModel
 import com.qrist.quicker.register.RegisterViewModel
-import com.qrist.quicker.servicelist.ServiceListViewModel
+import com.qrist.quicker.serviceaddlist.ServiceAddListViewModel
 
 class ViewModelFactory private constructor(
         private val application: Application,
@@ -24,8 +24,8 @@ class ViewModelFactory private constructor(
                         QRContainerViewModel(application, qrCodeRepository)
                     isAssignableFrom(QRViewViewModel::class.java) ->
                         QRViewViewModel(application, qrCodeRepository)
-                    isAssignableFrom(ServiceListViewModel::class.java) ->
-                        ServiceListViewModel(application, qrCodeRepository)
+                    isAssignableFrom(ServiceAddListViewModel::class.java) ->
+                        ServiceAddListViewModel(application, qrCodeRepository)
                     isAssignableFrom(RegisterViewModel::class.java) ->
                         RegisterViewModel(application, qrCodeRepository)
                     else ->

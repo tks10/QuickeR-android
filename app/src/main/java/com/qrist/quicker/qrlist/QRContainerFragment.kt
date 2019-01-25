@@ -97,7 +97,7 @@ class QRContainerFragment : Fragment() {
         }
 
         view.floatingActionButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_servicelist)
+            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
         }
 
         view.tabLayout.setupWithViewPager(view.viewPager)
