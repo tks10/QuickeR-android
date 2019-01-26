@@ -8,4 +8,5 @@
     <string name="cancel">Cancel</string>
     <string name="title_delete">Are you sure you want to delete this service?</string>
     <string name="message_delete">Once it can not be restored after you have deleted.</string>
+    <string name="message_start">Get started by adding your first QR Code from right bottom button!</string>
 </resources>

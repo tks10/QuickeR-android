@@ -33,36 +33,6 @@ class QRContainerFragment : Fragment() {
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(storeDirectory)
-    private val testCode = listOf(
-        QRCode.Default(
-            "0",
-            directory.absolutePath + "/qr_code.png",
-            QRCode.Default.TWITTER_SERVICE_ID
-        ),
-        QRCode.Default(
-            "2",
-            directory.absolutePath + "/qr_code.png",
-            QRCode.Default.LINE_SERVICE_ID
-        ),
-        QRCode.User(
-            "3",
-            directory.absolutePath + "/qr_code.png",
-            "user",
-            directory.absolutePath + "/qr_code.png"
-        ),
-        QRCode.User(
-            "4",
-            directory.absolutePath + "/qr_code.png",
-            "user2",
-            directory.absolutePath + "/qr_code.png"
-        ),
-        QRCode.User(
-            "5",
-            directory.absolutePath + "/qr_code.png",
-            "user3",
-            directory.absolutePath + "/qr_code.png"
-        )
-    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -133,6 +103,8 @@ class QRContainerFragment : Fragment() {
             val drawable = Drawable.createFromStream(inputStream, serviceIconUrl)
             view?.tabLayout?.getTabAt(i)?.icon = drawable
         }
+
+        view?.getStartedTextView?.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -148,8 +120,6 @@ class QRContainerFragment : Fragment() {
 
     private fun saveImageOnDevice() {
         makeAppDirectory(directory)
-        viewModel.qrCodes = testCode
-        viewModel.saveQRCodes()
         updateViewPager()
     }
 
