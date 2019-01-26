@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,6 @@ import com.qrist.quicker.extentions.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 
-
 class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
@@ -24,13 +24,11 @@ class RegisterFragment : Fragment() {
     private var qrImageBitmap: Bitmap? = null
     private var serviceIconImageBitmap: Bitmap? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentRegisterBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
+        val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
+        toolbar.menu.clear()
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel.apply {
             if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {

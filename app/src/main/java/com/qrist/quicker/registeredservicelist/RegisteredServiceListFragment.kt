@@ -6,6 +6,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,16 +16,16 @@ import com.qrist.quicker.databinding.FragmentRegisteredservicelistBinding
 import com.qrist.quicker.extentions.obtainViewModel
 import kotlinx.android.synthetic.main.fragment_registeredservicelist.view.*
 
-
 class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
             by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java) }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val binding: FragmentRegisteredservicelistBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_registeredservicelist, container, false)
+        val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
+        toolbar.menu.clear()
 
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
