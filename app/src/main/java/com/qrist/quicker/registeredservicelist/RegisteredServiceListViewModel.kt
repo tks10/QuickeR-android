@@ -2,6 +2,8 @@ package com.qrist.quicker.registeredservicelist
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.ServiceItem
@@ -13,6 +15,10 @@ class RegisteredServiceListViewModel(
 ) : AndroidViewModel(context) {
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
+    private val isServiceEmptyLiveDate = MutableLiveData<Boolean>().apply { value = qrCodes.isEmpty() }
+
+    val isServiceEmpty: LiveData<Boolean>
+        get() = isServiceEmptyLiveDate
 
     fun getServiceItems(): List<ServiceItem> {
         val registeredServiceItems = mutableListOf<ServiceItem>()
@@ -35,9 +41,16 @@ class RegisteredServiceListViewModel(
 
     fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()
+
     }
 
     fun deleteQRCode(id: String): Boolean {
-        return repository.deleteQRCode(id)
+        if (repository.deleteQRCode(id)) {
+            this.fetchQRCodes()
+            isServiceEmptyLiveDate.value = qrCodes.isEmpty()
+            return true
+        }
+
+        return false
     }
 }
