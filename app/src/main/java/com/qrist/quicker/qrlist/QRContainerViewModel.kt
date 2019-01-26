@@ -17,7 +17,7 @@ class QRContainerViewModel(
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
 
-    fun getQRCodes() {
+    fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()
     }
 

@@ -16,11 +16,6 @@ class QRViewFragment : Fragment() {
     private val viewModel: QRViewViewModel
             by lazy { obtainViewModel(QRViewViewModel::class.java) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.getImageUrl(codeId)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val binding: FragmentQrviewBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_qrview, container, false)
@@ -32,6 +27,7 @@ class QRViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e("", "$codeId $viewModel")
+        viewModel.fetchImageUrl(codeId)
     }
 
     companion object {

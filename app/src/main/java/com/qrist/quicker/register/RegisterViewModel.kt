@@ -5,12 +5,13 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
-import android.os.Environment
 import android.util.Log
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.utils.serviceNameToServiceId
+import com.qrist.quicker.utils.storeDirectory
 import java.io.File
+import java.util.*
 
 
 class RegisterViewModel(
@@ -23,7 +24,7 @@ class RegisterViewModel(
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
 
-    private val directory = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/QuickeR/")
+    private val directory = File(storeDirectory)
 
     val serviceIconUrl: LiveData<String>
         get() = serviceIconUrlLiveData
@@ -67,26 +68,17 @@ class RegisterViewModel(
         isValidAsServiceLiveData.value = isServiceNameValid && isServiceIconUrlValid && isQRCodeImageUrlValid
     }
 
-    fun saveQRCode(qrCodeImage: Bitmap) {
+    fun saveQRCode(qrImage: Bitmap, serviceIconImage: Bitmap?) {
         if (!isValidAsService.value!!) {
             Log.e("Register", "This implementation must have bugs...")
             return
         }
-        val qrCode = if (isDefaultService.value!!) {
-            QRCode.Default(
-                id = "100",
-                qrCodeUrl = directory.absolutePath + "/qr_code2.png",
-                serviceId = serviceNameToServiceId(serviceName.value!!)
-            )
+        if (isDefaultService.value!!) {
+            repository.saveQRCode(serviceNameToServiceId(serviceName.value!!), qrImage)
         } else {
-            QRCode.User(
-                id = "100",
-                qrCodeUrl = directory.absolutePath + "/qr_code2.png",
-                serviceName = serviceName.value!!,
-                serviceIconUrl = serviceIconUrl.value!!
-            )
+            serviceIconImage?.let {
+                repository.saveQRCode(serviceName.value!!, qrImage, it)
+            }
         }
-
-        repository.saveQRCode(qrCode, qrCodeImage)
     }
 }

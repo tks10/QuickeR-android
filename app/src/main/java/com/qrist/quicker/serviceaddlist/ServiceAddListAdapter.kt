@@ -1,4 +1,4 @@
-package com.qrist.quicker.servicelist
+package com.qrist.quicker.serviceaddlist
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,19 +6,19 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.qrist.quicker.databinding.ServicelistItemBinding
-import com.qrist.quicker.models.ServiceListViewer
-import kotlinx.android.synthetic.main.servicelist_item.view.*
+import com.qrist.quicker.databinding.ServiceaddlistItemBinding
+import com.qrist.quicker.models.ServiceItem
+import kotlinx.android.synthetic.main.serviceaddlist_item.view.*
 
-class ServiceListAdapter(val context: Context, private val serviceListViewers: List<ServiceListViewer>)
-    : RecyclerView.Adapter<ServiceListAdapter.ViewHolder>() {
+class ServiceAddListAdapter(val context: Context, private val serviceItems: List<ServiceItem>)
+    : RecyclerView.Adapter<ServiceAddListAdapter.ViewHolder>() {
     private var listener: View.OnClickListener? = null
 
-    class ViewHolder(val binding: ServicelistItemBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ServiceaddlistItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ServicelistItemBinding.inflate(inflater, parent, false)
+        val binding = ServiceaddlistItemBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -29,7 +29,7 @@ class ServiceListAdapter(val context: Context, private val serviceListViewers: L
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Binding
-        holder.binding.serviceListViewer = serviceListViewers[position]
+        holder.binding.serviceItem = serviceItems[position]
 
         // Set Click Listener
         holder.binding.root.id = holder.adapterPosition
@@ -38,5 +38,5 @@ class ServiceListAdapter(val context: Context, private val serviceListViewers: L
         }
     }
 
-    override fun getItemCount() = serviceListViewers.size
+    override fun getItemCount() = serviceItems.size
 }

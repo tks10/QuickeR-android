@@ -13,6 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "APPLICATION_STORE_DIRECTORY", "\"android/data/$applicationId/\""
     }
     buildTypes {
         release {
@@ -57,4 +58,7 @@ dependencies {
 
     // Circular Image View
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
+    // Material Dialogs
+    implementation 'com.afollestad.material-dialogs:core:2.0.0-alpha12'
 }

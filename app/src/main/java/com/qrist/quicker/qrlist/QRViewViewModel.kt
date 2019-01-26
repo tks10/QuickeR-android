@@ -29,7 +29,7 @@ class QRViewViewModel(
     val serviceId: LiveData<Int>
         get() = serviceIdLiveData
 
-    fun getImageUrl(codeId: String) {
+    fun fetchImageUrl(codeId: String) {
         val qrCode = repository.getQRCode(codeId)
         qrCodeImageLiveData.value = qrCode?.qrCodeUrl ?: run {
             Log.e("qr code", "qr code image is null")

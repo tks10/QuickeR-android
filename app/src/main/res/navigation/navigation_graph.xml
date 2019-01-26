@@ -11,29 +11,44 @@
             tools:layout="@layout/fragment_qrcontainer">
 
         <action
-                android:id="@+id/action_qr_container_to_servicelist"
+                android:id="@+id/action_qr_container_to_serviceaddlist"
                 app:enterAnim="@anim/slide_from_bottom"
                 app:exitAnim="@anim/stay_out"
                 app:popEnterAnim="@anim/stay_in"
                 app:popExitAnim="@anim/slide_to_bottom"
-                app:destination="@id/serviceListFragment"/>
+                app:destination="@id/serviceAddListFragment"/>
+
+        <action
+                android:id="@+id/action_qr_container_to_registeredservicelist"
+                app:enterAnim="@anim/slide_from_bottom"
+                app:exitAnim="@anim/stay_out"
+                app:popEnterAnim="@anim/stay_in"
+                app:popExitAnim="@anim/slide_to_bottom"
+                app:destination="@id/registeredServiceListFragment"/>
 
     </fragment>
 
     <fragment
-            android:id="@+id/serviceListFragment"
-            android:name="com.qrist.quicker.servicelist.ServiceListFragment"
-            tools:layout="@layout/fragment_servicelist">
+            android:id="@+id/serviceAddListFragment"
+            android:name="com.qrist.quicker.serviceaddlist.ServiceAddListFragment"
+            tools:layout="@layout/fragment_serviceaddlist">
 
         <action
-                android:id="@+id/action_servicelist_to_register"
+                android:id="@+id/action_serviceaddlist_to_register"
                 app:enterAnim="@anim/slide_from_right"
                 app:exitAnim="@anim/stay_out"
                 app:popEnterAnim="@anim/stay_in"
                 app:popExitAnim="@anim/slide_to_right"
-                app:destination="@id/registerFragment"/>
+                app:destination="@id/registerFragment"
+                app:popUpTo="@id/serviceAddListFragment"
+                app:popUpToInclusive="true"/>
 
     </fragment>
+
+    <fragment
+            android:id="@+id/registeredServiceListFragment"
+            android:name="com.qrist.quicker.registeredservicelist.RegisteredServiceListFragment"
+            tools:layout="@layout/fragment_registeredservicelist"/>
 
     <fragment
             android:id="@+id/registerFragment"

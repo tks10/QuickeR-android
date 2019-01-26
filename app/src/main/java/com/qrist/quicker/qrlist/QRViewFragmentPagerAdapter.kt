@@ -2,20 +2,21 @@ package com.qrist.quicker.qrlist
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.FragmentStatePagerAdapter
 import com.qrist.quicker.models.QRCode
 
 
 class QRViewFragmentPagerAdapter(
     private val qrCodes: List<QRCode>,
     fm: FragmentManager
-) : FragmentPagerAdapter(fm) {
+) : FragmentStatePagerAdapter(fm) {
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return when(qrCodes[position]) {
-            is QRCode.Default ->(qrCodes[position] as QRCode.Default).serviceName
-            is QRCode.User -> (qrCodes[position] as QRCode.User).serviceName
-        }
+        return ""
+//        return when(qrCodes[position]) {
+//            is QRCode.Default ->(qrCodes[position] as QRCode.Default).serviceName
+//            is QRCode.User -> (qrCodes[position] as QRCode.User).serviceName
+//        }
     }
 
     override fun getItem(position: Int): Fragment? {

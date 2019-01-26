@@ -1,11 +1,12 @@
 package com.qrist.quicker.qrlist
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -13,53 +14,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.qrist.quicker.models.QRCode
 import androidx.navigation.Navigation
 import com.google.zxing.integration.android.IntentIntegrator
+import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
 import com.qrist.quicker.extentions.obtainViewModel
+import com.qrist.quicker.models.QRCode
+import com.qrist.quicker.utils.serviceIdToIconUrl
+import com.qrist.quicker.utils.storeDirectory
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
-import com.journeyapps.barcodescanner.CaptureActivity
-
 import java.io.File
+
 
 class QRContainerFragment : Fragment() {
     val RESULT_PICK_QRCODE: Int = 1001
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
-    private val directory = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/QuickeR/")
-    private val testCode = listOf(
-        QRCode.Default(
-            "0",
-            directory.absolutePath + "/qr_code.png",
-            QRCode.Default.TWITTER_SERVICE_ID
-        ),
-        QRCode.Default(
-            "2",
-            directory.absolutePath + "/qr_code.png",
-            QRCode.Default.LINE_SERVICE_ID
-        ),
-        QRCode.User(
-            "3",
-            directory.absolutePath + "/qr_code.png",
-            "user",
-            directory.absolutePath + "/qr_code.png"
-        ),
-        QRCode.User(
-            "4",
-            directory.absolutePath + "/qr_code.png",
-            "user2",
-            directory.absolutePath + "/qr_code.png"
-        ),
-        QRCode.User(
-            "5",
-            directory.absolutePath + "/qr_code.png",
-            "user3",
-            directory.absolutePath + "/qr_code.png"
-        )
-    )
+    private val directory = File(storeDirectory)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,7 +43,7 @@ class QRContainerFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
 
-        view.viewPager.offscreenPageLimit = 2
+        view.viewPager.offscreenPageLimit = 5
         view.viewPager.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
 
         view.tool_bar.inflateMenu(R.menu.menu)
@@ -88,6 +61,7 @@ class QRContainerFragment : Fragment() {
                 }
                 R.id.menu_settings -> {
                     Log.d("Menu", "Settings was tapped.")
+                    Navigation.findNavController(view).navigate(R.id.action_qr_container_to_registeredservicelist)
                     true
                 }
                 else -> {
@@ -97,12 +71,40 @@ class QRContainerFragment : Fragment() {
         }
 
         view.floatingActionButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_servicelist)
+            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
         }
 
         view.tabLayout.setupWithViewPager(view.viewPager)
 
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+        updateViewPager()
+    }
+
+    private fun updateViewPager() {
+        viewModel.fetchQRCodes()
+        view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
+        view?.viewPager?.adapter?.notifyDataSetChanged()
+
+        val serviceCount = viewModel.qrCodes.size
+        for (i in 0..serviceCount - 1) {
+            val qrCode = viewModel.qrCodes[i]
+            val serviceIconUrl = when (qrCode) {
+                is QRCode.Default -> serviceIdToIconUrl(qrCode.serviceId)
+                is QRCode.User -> qrCode.serviceIconUrl
+            }
+            val inputStream = when (qrCode) {
+                is QRCode.Default -> activity!!.contentResolver.openInputStream(Uri.parse(serviceIconUrl))
+                is QRCode.User -> activity!!.contentResolver.openInputStream(Uri.fromFile(File(serviceIconUrl)))
+            }
+            val drawable = Drawable.createFromStream(inputStream, serviceIconUrl)
+            view?.tabLayout?.getTabAt(i)?.icon = drawable
+        }
+
+        view?.getStartedTextView?.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -118,11 +120,7 @@ class QRContainerFragment : Fragment() {
 
     private fun saveImageOnDevice() {
         makeAppDirectory(directory)
-        viewModel.qrCodes = testCode
-        viewModel.saveQRCodes()
-        viewModel.getQRCodes()
-        view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
-        view?.viewPager?.adapter?.notifyDataSetChanged()
+        updateViewPager()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -134,7 +132,8 @@ class QRContainerFragment : Fragment() {
     private fun requestExternalStoragePermission() {
         if (shouldShowRequestPermissionRationale(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )) {
+            )
+        ) {
             val toast = Toast.makeText(activity, R.string.accept_me, Toast.LENGTH_SHORT)
             toast.show()
             requestPermissions(
