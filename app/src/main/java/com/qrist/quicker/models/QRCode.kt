@@ -3,6 +3,7 @@ package com.qrist.quicker.models
 import com.qrist.quicker.R
 import com.qrist.quicker.utils.MyApplication
 import com.qrist.quicker.utils.convertUrlFromDrawableResId
+import com.qrist.quicker.utils.serviceIdToServiceName
 import com.squareup.moshi.JsonClass
 import java.lang.IllegalStateException
 
@@ -18,14 +19,13 @@ sealed class QRCode(
         val serviceId: Int
     ) : QRCode(id, qrCodeUrl) {
 
-        val serviceName: String = when(serviceId) {
-            TWITTER_SERVICE_ID -> "Twitter"
-            FACEBOOK_SERVICE_ID -> "Facebook"
-            LINE_SERVICE_ID -> "Line"
-            else -> {
+        val serviceName: String =
+            if (serviceId in DEFAULT_SERVICES_ID) {
+                serviceIdToServiceName(serviceId)
+            }
+            else {
                 throw IllegalStateException("Service id does not fit.")
             }
-        }
 
         val serviceIconUrl: String = when(serviceId) {
             TWITTER_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.twitter_logo)
