@@ -5,6 +5,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.qrist.quicker.extentions.trim
 
 class QRCodeDetector {
     companion object {
@@ -20,6 +21,16 @@ class QRCodeDetector {
             val firebaseVisionImage = FirebaseVisionImage.fromBitmap(bitmap)
 
             detector.detectInImage(firebaseVisionImage).addOnSuccessListener(onSuccess)
+        }
+
+        fun trimQRCodeIfDetected(srcBitmap: Bitmap, barcodes: List<FirebaseVisionBarcode>): Bitmap {
+            if (barcodes.size != 1) return srcBitmap
+
+            val qrCodeRect = barcodes[0].boundingBox
+
+            qrCodeRect?.let {
+                return srcBitmap.trim(it)
+            } ?: return srcBitmap
         }
     }
 }

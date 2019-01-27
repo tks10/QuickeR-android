@@ -9,9 +9,11 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
 import com.qrist.quicker.extentions.*
+import com.qrist.quicker.utils.QRCodeDetector
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 
@@ -80,6 +82,12 @@ class RegisterFragment : Fragment() {
                         this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
                         viewModel.updateQRCodeImageUrl(uri.toString())
                         qrImageBitmap = bmp
+
+                        QRCodeDetector.detect(bmp) { barcodes: List<FirebaseVisionBarcode> ->
+                            val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
+                            qrImageBitmap = trimmedBitmap
+                            this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
+                        }
                     }
                 }
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {
