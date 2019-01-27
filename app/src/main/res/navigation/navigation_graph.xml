@@ -8,7 +8,7 @@
     <fragment
             android:id="@+id/qrContainerFragment"
             android:name="com.qrist.quicker.qrlist.QRContainerFragment"
-            android:label="QuickeR"
+            android:label="@string/app_name"
             tools:layout="@layout/fragment_qrcontainer">
 
         <action
@@ -32,7 +32,7 @@
     <fragment
             android:id="@+id/serviceAddListFragment"
             android:name="com.qrist.quicker.serviceaddlist.ServiceAddListFragment"
-            android:label="Add Service"
+            android:label="@string/title_add_list"
             tools:layout="@layout/fragment_serviceaddlist">
 
         <action
@@ -48,13 +48,13 @@
     <fragment
             android:id="@+id/registeredServiceListFragment"
             android:name="com.qrist.quicker.registeredservicelist.RegisteredServiceListFragment"
-            android:label="Services"
+            android:label="@string/title_service_list"
             tools:layout="@layout/fragment_registeredservicelist"/>
 
     <fragment
             android:id="@+id/registerFragment"
             android:name="com.qrist.quicker.register.RegisterFragment"
-            android:label="Register"
+            android:label="@string/title_register"
             tools:layout="@layout/fragment_register">
         <argument
                 android:name="serviceName"
