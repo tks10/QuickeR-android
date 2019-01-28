@@ -5,17 +5,19 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.qrist.quicker.extentions.isUnder
 import com.qrist.quicker.extentions.trim
+
 
 class QRCodeDetector {
     companion object {
         private val options = FirebaseVisionBarcodeDetectorOptions.Builder()
             .setBarcodeFormats(
-                FirebaseVisionBarcode.FORMAT_QR_CODE
+                FirebaseVisionBarcode.FORMAT_ALL_FORMATS
             )
             .build()
 
-        private val detector = FirebaseVision.getInstance().visionBarcodeDetector
+        private val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
         fun detect(bitmap: Bitmap, onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit) {
             val firebaseVisionImage = FirebaseVisionImage.fromBitmap(bitmap)
@@ -24,13 +26,24 @@ class QRCodeDetector {
         }
 
         fun trimQRCodeIfDetected(srcBitmap: Bitmap, barcodes: List<FirebaseVisionBarcode>): Bitmap {
-            if (barcodes.size != 1) return srcBitmap
+            val processedBarcodes = dropSmallBarcode(barcodes)
+            if (processedBarcodes.size != 1) return srcBitmap
 
-            val qrCodeRect = barcodes[0].boundingBox
+            val qrCodeRect = processedBarcodes[0].boundingBox ?: return srcBitmap
 
-            qrCodeRect?.let {
-                return srcBitmap.trim(it)
-            } ?: return srcBitmap
+            return srcBitmap.trim(qrCodeRect)
+        }
+
+        private fun dropSmallBarcode(barcodes: List<FirebaseVisionBarcode>, minPixel: Int = 92): List<FirebaseVisionBarcode> {
+            val droppedBarcodes = mutableListOf<FirebaseVisionBarcode>()
+
+            barcodes.forEach {
+                it.boundingBox?.let { boudingBox ->
+                    if (!boudingBox.isUnder(minPixel)) droppedBarcodes.add(it)
+                }
+            }
+
+            return droppedBarcodes
         }
     }
 }
