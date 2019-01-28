@@ -13,7 +13,9 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
 import com.qrist.quicker.extentions.*
+import com.qrist.quicker.utils.MyApplication
 import com.qrist.quicker.utils.QRCodeDetector
+import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 
@@ -91,7 +93,14 @@ class RegisterFragment : Fragment() {
                     }
                 }
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {
-                    onPickImageFile(resultData) { bmp, uri ->
+                    onPickImageFile(resultData) { _, uri ->
+                        CropImage
+                            .activity(uri)
+                            .start(MyApplication.instance, this)
+                    }
+                }
+                CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
+                    onCropImageFile(resultData) { bmp, uri ->
                         this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
                         this@RegisterFragment.view?.addIconButton?.visibility = View.INVISIBLE
                         viewModel.updateServiceIconUrl(uri.toString())

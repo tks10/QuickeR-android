@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import com.qrist.quicker.utils.ViewModelFactory
+import com.theartofdev.edmodo.cropper.CropImage
 import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
@@ -62,12 +63,12 @@ fun Fragment.onPickImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Uni
     // Instead, a URI to that document will be contained in the return intent
     // provided to this method as a parameter.
     // Pull that URI using resultData.getData().
-    if(resultData != null && resultData.data != null){
+    if (resultData != null && resultData.data != null) {
         var pfDescriptor: ParcelFileDescriptor? = null
-        try{
+        try {
             val imageUri: Uri = resultData.data
             pfDescriptor = activity!!.contentResolver.openFileDescriptor(imageUri, "r")
-            if(pfDescriptor != null){
+            if (pfDescriptor != null) {
                 val fileDescriptor: FileDescriptor = pfDescriptor.fileDescriptor
                 val bmp: Bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
                 pfDescriptor.close()
@@ -76,12 +77,42 @@ fun Fragment.onPickImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Uni
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
-            try{
+            try {
                 pfDescriptor?.close()
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
 
+    }
+}
+
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "NAME_SHADOWING")
+fun Fragment.onCropImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Unit) {
+    // The document selected by the user won't be returned in the intent.
+    // Instead, a URI to that document will be contained in the return intent
+    // provided to this method as a parameter.
+    // Pull that URI using resultData.getData().
+    if (resultData != null) {
+        var pfDescriptor: ParcelFileDescriptor? = null
+        try {
+            val result = CropImage.getActivityResult(resultData)
+            val imageUri: Uri = result.uri
+            pfDescriptor = activity!!.contentResolver.openFileDescriptor(imageUri, "r")
+            if (pfDescriptor != null) {
+                val fileDescriptor: FileDescriptor = pfDescriptor.fileDescriptor
+                val bmp: Bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                pfDescriptor.close()
+                callback(bmp, imageUri)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                pfDescriptor?.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }
