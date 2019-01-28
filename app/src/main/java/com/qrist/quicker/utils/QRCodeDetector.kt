@@ -7,6 +7,7 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOption
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.qrist.quicker.extentions.isUnder
 import com.qrist.quicker.extentions.trim
+import java.lang.Exception
 
 
 class QRCodeDetector {
@@ -19,17 +20,24 @@ class QRCodeDetector {
 
         private val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
-        fun detect(bitmap: Bitmap, onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit) {
+        fun detect(
+            bitmap: Bitmap,
+            onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
+            onFailure: (func: Exception) -> Unit
+        ) {
             val firebaseVisionImage = FirebaseVisionImage.fromBitmap(bitmap)
 
-            detector.detectInImage(firebaseVisionImage).addOnSuccessListener(onSuccess)
+            detector
+                .detectInImage(firebaseVisionImage)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure)
         }
 
-        fun trimQRCodeIfDetected(srcBitmap: Bitmap, barcodes: List<FirebaseVisionBarcode>): Bitmap {
+        fun trimQRCodeIfDetected(srcBitmap: Bitmap, barcodes: List<FirebaseVisionBarcode>): Bitmap? {
             val processedBarcodes = dropSmallBarcode(barcodes)
-            if (processedBarcodes.size != 1) return srcBitmap
+            if (processedBarcodes.size != 1) return null
 
-            val qrCodeRect = processedBarcodes[0].boundingBox ?: return srcBitmap
+            val qrCodeRect = processedBarcodes[0].boundingBox ?: return null
 
             return srcBitmap.trim(qrCodeRect)
         }

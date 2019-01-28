@@ -18,6 +18,7 @@ import com.qrist.quicker.utils.QRCodeDetector
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
+import java.lang.Exception
 
 
 class RegisterFragment : Fragment() {
@@ -27,6 +28,10 @@ class RegisterFragment : Fragment() {
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
     private var qrImageBitmap: Bitmap? = null
     private var serviceIconImageBitmap: Bitmap? = null
+
+    private val CROP_QR = 0
+    private val CROP_ICON = 1
+    private var kindOfCrop = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,31 +85,59 @@ class RegisterFragment : Fragment() {
             when (requestCode) {
                 IntentActionType.RESULT_PICK_QRCODE -> {
                     onPickImageFile(resultData) { bmp, uri ->
-                        this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
                         this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
-                        viewModel.updateQRCodeImageUrl(uri.toString())
-                        qrImageBitmap = bmp
 
-                        QRCodeDetector.detect(bmp) { barcodes: List<FirebaseVisionBarcode> ->
+                        val onSuccess = { barcodes: List<FirebaseVisionBarcode> ->
                             val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
-                            qrImageBitmap = trimmedBitmap
-                            this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
+                            trimmedBitmap?.let {
+                                // If Detected
+                                qrImageBitmap = it
+                                this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
+                                viewModel.updateQRCodeImageUrl(uri.toString())
+                            } ?: run {
+                                kindOfCrop = CROP_QR
+                                CropImage
+                                    .activity(uri)
+                                    .start(MyApplication.instance, this)
+                            }
                         }
+
+                        val onFailure = { func: Exception ->
+                            kindOfCrop = CROP_QR
+                            CropImage
+                                .activity(uri)
+                                .start(MyApplication.instance, this)
+                        }
+
+                        QRCodeDetector.detect(bmp, onSuccess, onFailure)
                     }
                 }
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {
                     onPickImageFile(resultData) { _, uri ->
+                        kindOfCrop = CROP_ICON
                         CropImage
                             .activity(uri)
                             .start(MyApplication.instance, this)
                     }
                 }
                 CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
-                    onCropImageFile(resultData) { bmp, uri ->
-                        this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
-                        this@RegisterFragment.view?.addIconButton?.visibility = View.INVISIBLE
-                        viewModel.updateServiceIconUrl(uri.toString())
-                        serviceIconImageBitmap = bmp
+                    when (kindOfCrop) {
+                        CROP_QR -> {
+                            onCropImageFile(resultData) { bmp, uri ->
+                                qrImageBitmap = bmp
+                                this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
+                                viewModel.updateQRCodeImageUrl(uri.toString())
+                            }
+                        }
+                        CROP_ICON -> {
+                            onCropImageFile(resultData) { bmp, uri ->
+                                this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
+                                this@RegisterFragment.view?.addIconButton?.visibility = View.INVISIBLE
+                                viewModel.updateServiceIconUrl(uri.toString())
+                                serviceIconImageBitmap = bmp
+                            }
+                        }
+                        else -> {}
                     }
                 }
             }
