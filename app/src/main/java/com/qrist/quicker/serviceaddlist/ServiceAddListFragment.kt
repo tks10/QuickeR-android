@@ -31,7 +31,7 @@ class ServiceAddListFragment : Fragment() {
 
         binding.root.serviceAddList.adapter = ServiceAddListAdapter(activity!!, serviceItems).apply {
             setOnItemClickListener(View.OnClickListener {
-                val position = (it.parent as ConstraintLayout).id
+                val position = (it as ConstraintLayout).id
                 val service = serviceItems[position]
                 val action =
                     ServiceAddListFragmentDirections.actionServiceaddlistToRegister(

@@ -33,7 +33,7 @@ class ServiceAddListAdapter(val context: Context, private val serviceItems: List
 
         // Set Click Listener
         holder.binding.root.id = holder.adapterPosition
-        holder.binding.root.addButton.setOnClickListener {
+        holder.binding.root.setOnClickListener {
             listener?.onClick(it)
         }
     }
