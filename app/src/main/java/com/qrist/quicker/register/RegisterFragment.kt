@@ -85,14 +85,13 @@ class RegisterFragment : Fragment() {
             when (requestCode) {
                 IntentActionType.RESULT_PICK_QRCODE -> {
                     onPickImageFile(resultData) { bmp, uri ->
-                        this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
-
                         val onSuccess = { barcodes: List<FirebaseVisionBarcode> ->
                             val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
                             trimmedBitmap?.let {
                                 // If Detected
                                 qrImageBitmap = it
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
+                                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
                                 viewModel.updateQRCodeImageUrl(uri.toString())
                             } ?: run {
                                 kindOfCrop = CROP_QR
@@ -126,6 +125,7 @@ class RegisterFragment : Fragment() {
                             onCropImageFile(resultData) { bmp, uri ->
                                 qrImageBitmap = bmp
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
+                                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
                                 viewModel.updateQRCodeImageUrl(uri.toString())
                             }
                         }
