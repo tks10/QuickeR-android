@@ -102,6 +102,7 @@ class RegisterFragment : Fragment() {
                         }
 
                         val onFailure = { func: Exception ->
+                            func.printStackTrace()
                             kindOfCrop = CROP_QR
                             CropImage
                                 .activity(uri)

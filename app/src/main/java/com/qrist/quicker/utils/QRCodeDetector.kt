@@ -8,6 +8,11 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.qrist.quicker.extentions.isUnder
 import com.qrist.quicker.extentions.trim
 import java.lang.Exception
+import com.google.android.gms.vision.barcode.Barcode
+import com.google.android.gms.vision.barcode.BarcodeDetector
+import com.google.zxing.pdf417.detector.Detector.detect
+import android.util.SparseArray
+import com.google.android.gms.vision.Frame
 
 
 class QRCodeDetector {

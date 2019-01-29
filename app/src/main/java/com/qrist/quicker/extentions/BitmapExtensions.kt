@@ -1,8 +1,6 @@
 package com.qrist.quicker.extentions
 
-import android.graphics.Bitmap
-import android.graphics.Matrix
-import android.graphics.Rect
+import android.graphics.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -18,4 +16,20 @@ fun Bitmap.trim(start: Int, top: Int, end: Int, bottom: Int, margin: Int = 10): 
 
 fun Bitmap.trim(rect: Rect, margin: Int = 10): Bitmap {
     return this.trim(rect.left, rect.top, rect.right, rect.bottom, margin)
+}
+
+fun Bitmap.negative(): Bitmap {
+    val mat =
+        floatArrayOf(
+            -1.0f,  0.0f,  0.0f, 0.0f, 255f, // red
+             0.0f, -1.0f,  0.0f, 0.0f, 255f, // green
+             0.0f,  0.0f, -1.0f, 0.0f, 255f, // blue
+             0.0f,  0.0f,  0.0f, 1.0f, 0.0f  // alpha
+        )
+    val paint = Paint().apply { colorFilter = ColorMatrixColorFilter(mat) }
+    val bmp = Bitmap.createBitmap(this, 0, 0, this.width, this.height)
+    val canvas = Canvas(bmp)
+    canvas.drawBitmap(bmp, 0f, 0f, paint)
+
+    return bmp
 }
