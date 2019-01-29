@@ -12,7 +12,7 @@ import com.qrist.quicker.utils.serviceIdToServiceName
 
 class ServiceAddListViewModel(
     private val context: Application,
-    private val repository: QRCodeRepository
+    repository: QRCodeRepository
 ) : AndroidViewModel(context) {
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
