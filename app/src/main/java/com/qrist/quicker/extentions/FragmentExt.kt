@@ -70,7 +70,7 @@ fun Fragment.onPickImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Uni
             pfDescriptor = activity!!.contentResolver.openFileDescriptor(imageUri, "r")
             if (pfDescriptor != null) {
                 val fileDescriptor: FileDescriptor = pfDescriptor.fileDescriptor
-                val bmp: Bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                val bmp: Bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
                 pfDescriptor.close()
                 callback(bmp, imageUri)
             }
