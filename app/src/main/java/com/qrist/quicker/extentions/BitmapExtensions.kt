@@ -4,9 +4,10 @@ import android.graphics.*
 import kotlin.math.max
 import kotlin.math.min
 
-fun Bitmap.trim(start: Int, top: Int, end: Int, bottom: Int, margin: Int = 10): Bitmap {
+fun Bitmap.trim(start: Int, top: Int, end: Int, bottom: Int, marginPercent: Int = 6): Bitmap {
     val width = end - start
     val height = bottom - top
+    val margin = (width * (marginPercent.toFloat() / 100f)).toInt()
     val s = max(0, start - margin)
     val t = max(0, top - margin)
     val w = min(this.width - start - 1, width + margin * 2)
@@ -14,8 +15,8 @@ fun Bitmap.trim(start: Int, top: Int, end: Int, bottom: Int, margin: Int = 10): 
     return Bitmap.createBitmap(this, s, t, w, h, Matrix(), true)
 }
 
-fun Bitmap.trim(rect: Rect, margin: Int = 10): Bitmap {
-    return this.trim(rect.left, rect.top, rect.right, rect.bottom, margin)
+fun Bitmap.trim(rect: Rect, marginPercent: Int = 6): Bitmap {
+    return this.trim(rect.left, rect.top, rect.right, rect.bottom, marginPercent)
 }
 
 fun Bitmap.negative(): Bitmap {
