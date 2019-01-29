@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.databinding.DataBindingUtil
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -19,6 +20,7 @@ import androidx.navigation.Navigation
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
+import com.qrist.quicker.databinding.CustomTabBinding
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
 import com.qrist.quicker.extentions.obtainViewModel
@@ -102,7 +104,9 @@ class QRContainerFragment : Fragment() {
                 is QRCode.User -> activity!!.contentResolver.openInputStream(Uri.fromFile(File(serviceIconUrl)))
             }
             val drawable = Drawable.createFromStream(inputStream, serviceIconUrl)
-            view?.tabLayout?.getTabAt(i)?.icon = drawable
+            val binding: CustomTabBinding = DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
+            binding.imageUrl = serviceIconUrl
+            view?.tabLayout?.getTabAt(i)?.customView = binding.root
         }
 
         view?.getStartedTextView?.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE

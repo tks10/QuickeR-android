@@ -31,9 +31,9 @@
             android:id="@+id/tabLayout"
             style="@style/MyCustomTabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
+            android:layout_height="64dp"
+            android:background="@drawable/gradation"
+            android:elevation="0dp"
             app:tabMode="scrollable"
             app:layout_constraintTop_toBottomOf="@id/viewPager"
             app:layout_constraintBottom_toBottomOf="parent"/>
