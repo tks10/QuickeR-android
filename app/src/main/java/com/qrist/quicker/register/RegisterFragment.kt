@@ -85,7 +85,7 @@ class RegisterFragment : Fragment() {
             when (requestCode) {
                 IntentActionType.RESULT_PICK_QRCODE -> {
                     onPickImageFile(resultData) { bmp, uri ->
-                        val onSuccess = { barcodes: List<FirebaseVisionBarcode> ->
+                        val onDetect = { barcodes: List<FirebaseVisionBarcode> ->
                             val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
                             trimmedBitmap?.let {
                                 // If Detected
@@ -100,7 +100,6 @@ class RegisterFragment : Fragment() {
                                     .start(MyApplication.instance, this)
                             }
                         }
-
                         val onFailure = { func: Exception ->
                             func.printStackTrace()
                             kindOfCrop = CROP_QR
@@ -108,8 +107,22 @@ class RegisterFragment : Fragment() {
                                 .activity(uri)
                                 .start(MyApplication.instance, this)
                         }
+                        val onSuccessNegativeImage = { barcodes: List<FirebaseVisionBarcode> ->
+                            run { onDetect(barcodes) }
+                        }
+                        val onSuccessOriginalImage = { barcodes: List<FirebaseVisionBarcode> ->
+                            if (barcodes.isEmpty()) {
+                                // "The Second Try" using negative bitmap.
+                                // `onSuccessNegativeImage` is called when the detection succeeded.
+                                QRCodeDetector.detectOnNegativeImage(bmp, onSuccessNegativeImage, onFailure)
+                            } else {
+                                run { onDetect(barcodes) }
+                            }
+                        }
 
-                        QRCodeDetector.detect(bmp, onSuccess, onFailure)
+                        // "The First Try" using original bitmap.
+                        // `onSuccessOriginalImage` is called when the detection succeeded.
+                        QRCodeDetector.detect(bmp, onSuccessOriginalImage, onFailure)
                     }
                 }
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {

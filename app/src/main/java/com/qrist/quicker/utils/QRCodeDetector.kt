@@ -13,6 +13,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.zxing.pdf417.detector.Detector.detect
 import android.util.SparseArray
 import com.google.android.gms.vision.Frame
+import com.qrist.quicker.extentions.negative
 
 
 class QRCodeDetector {
@@ -35,7 +36,23 @@ class QRCodeDetector {
             detector
                 .detectInImage(firebaseVisionImage)
                 .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(onFailure)
+                .addOnFailureListener{
+                    // Try negative image if the detection failed.
+                    val negativeImage = bitmap.negative()
+                    val negativeFirebaseVisionImage = FirebaseVisionImage.fromBitmap(negativeImage)
+                    detector
+                        .detectInImage(negativeFirebaseVisionImage)
+                        .addOnSuccessListener(onSuccess)
+                        .addOnFailureListener(onFailure)
+                }
+        }
+
+        fun detectOnNegativeImage(
+            bitmap: Bitmap,
+            onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
+            onFailure: (func: Exception) -> Unit
+        ) {
+            this.detect(bitmap.negative(), onSuccess, onFailure)
         }
 
         fun trimQRCodeIfDetected(srcBitmap: Bitmap, barcodes: List<FirebaseVisionBarcode>): Bitmap? {
