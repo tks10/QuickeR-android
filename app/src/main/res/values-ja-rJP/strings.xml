@@ -11,6 +11,8 @@
     <string name="message_delete">一度削除するともとに戻すことはできません．</string>
     <string name="message_start">右下のボタンを押して1つ目のQRコードを追加してみましょう</string>
     <string name="message_service_empty">登録されているサービスがありません．</string>
+    <string name="title_open_url">このURLに移動してもよいですか？</string>
+    <string name="message_open_url">移動</string>
     <string name="title_service_list">サービス一覧</string>
     <string name="title_add_list">サービスを追加</string>
     <string name="title_register">登録</string>

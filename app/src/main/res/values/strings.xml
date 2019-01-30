@@ -10,6 +10,8 @@
     <string name="message_delete">Once it can not be restored after you have deleted.</string>
     <string name="message_start">Get started by adding your first QR Code from right bottom button!</string>
     <string name="message_service_empty">No registered services</string>
+    <string name="title_open_url">Are you sure you want to open following URL?</string>
+    <string name="message_open_url">Open</string>
     <string name="title_service_list">Services</string>
     <string name="title_add_list">Add Service</string>
     <string name="title_register">Register</string>
