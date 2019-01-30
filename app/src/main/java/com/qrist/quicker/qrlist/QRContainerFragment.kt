@@ -119,8 +119,7 @@ class QRContainerFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                RESULT_PICK_QRCODE -> {
+            if (requestCode == 49374) {
                     val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, resultData)
                     Log.d("QR result", result.contents)
 
@@ -137,7 +136,6 @@ class QRContainerFragment : Fragment() {
                         negativeButton(R.string.cancel) { dialog ->
                         }
                     }
-                }
             }
         }
     }
