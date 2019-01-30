@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.gms.oss.licenses.OssLicensesActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisteredservicelistBinding
@@ -32,8 +33,8 @@ class RegisteredServiceListFragment : Fragment() {
         toolbar.setOnMenuItemClickListener {item ->
             when (item.itemId) {
                 R.id.menu_oss_license -> {
-                    OssLicensesMenuActivity.setActivityTitle(context!!.resources.getString(R.string.open_source_license))
                     startActivity(Intent(context!!, OssLicensesMenuActivity::class.java))
+                    OssLicensesMenuActivity.setActivityTitle(context!!.resources.getString(R.string.open_source_license))
                     true
                 }
                 else -> false

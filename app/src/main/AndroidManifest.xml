@@ -36,6 +36,12 @@
         </activity>
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
                   android:theme="@style/Base.Theme.AppCompat"/>
+        <activity
+                android:theme="@style/OssLicenseTheme"
+                android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"/>
+        <activity
+                android:theme="@style/OssLicenseTheme"
+                android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"/>
     </application>
 
 </manifest>
