@@ -109,7 +109,8 @@ class QRContainerFragment : Fragment() {
                 is QRCode.User -> activity!!.contentResolver.openInputStream(Uri.fromFile(File(serviceIconUrl)))
             }
             val drawable = Drawable.createFromStream(inputStream, serviceIconUrl)
-            val binding: CustomTabBinding = DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
+            val binding: CustomTabBinding =
+                DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
             binding.imageUrl = serviceIconUrl
             view?.tabLayout?.getTabAt(i)?.customView = binding.root
         }
@@ -120,22 +121,22 @@ class QRContainerFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 49374) {
-                    val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, resultData)
-                    Log.d("QR result", result.contents)
+                val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, resultData)
+                Log.d("QR result", result.contents)
 
-                    val url = Uri.parse(result.contents)
-                    val intent = Intent(Intent.ACTION_VIEW, url)
+                val url = Uri.parse(result.contents)
+                val intent = Intent(Intent.ACTION_VIEW, url)
 
-                    MaterialDialog(activity!!).show {
-                        title(R.string.title_open_url)
-                        message(text =  url.toString())
-                        positiveButton(R.string.message_open_url) { dialog ->
-                            this@QRContainerFragment.startActivity(intent)
+                MaterialDialog(activity!!).show {
+                    title(R.string.title_open_url)
+                    message(text = url.toString())
+                    positiveButton(R.string.message_open_url) { dialog ->
+                        this@QRContainerFragment.startActivity(intent)
 
-                        }
-                        negativeButton(R.string.cancel) { dialog ->
-                        }
                     }
+                    negativeButton(R.string.cancel) { dialog ->
+                    }
+                }
             }
         }
     }
