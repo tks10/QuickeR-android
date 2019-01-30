@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.fragment_serviceaddlist.view.*
 class ServiceAddListFragment : Fragment() {
     private val viewModel: ServiceAddListViewModel
             by lazy { obtainViewModel(ServiceAddListViewModel::class.java) }
-    private val serviceItems by lazy { viewModel.getServiceItems() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -29,7 +28,24 @@ class ServiceAddListFragment : Fragment() {
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
 
-        binding.root.serviceAddList.adapter = ServiceAddListAdapter(activity!!, serviceItems).apply {
+        binding.root.serviceAddList.adapter = initAdapter()
+
+        val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
+        binding.root.serviceAddList.addItemDecoration(itemDecoration)
+
+        return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        view?.serviceAddList?.adapter = initAdapter()
+        view?.serviceAddList?.adapter?.notifyDataSetChanged()
+    }
+
+    private fun initAdapter():  ServiceAddListAdapter{
+        val serviceItems = viewModel.getServiceItems()
+
+        return ServiceAddListAdapter(activity!!, serviceItems).apply {
             setOnItemClickListener(View.OnClickListener {
                 val position = (it as ConstraintLayout).id
                 val service = serviceItems[position]
@@ -41,10 +57,5 @@ class ServiceAddListFragment : Fragment() {
                 Navigation.findNavController(view!!).navigate(action)
             })
         }
-
-        val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
-        binding.root.serviceAddList.addItemDecoration(itemDecoration)
-
-        return binding.root
     }
 }
