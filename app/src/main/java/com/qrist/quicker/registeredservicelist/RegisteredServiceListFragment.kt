@@ -1,6 +1,7 @@
 package com.qrist.quicker.registeredservicelist
 
 import android.databinding.DataBindingUtil
+import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
@@ -14,7 +15,10 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisteredservicelistBinding
 import com.qrist.quicker.extentions.obtainViewModel
+import com.qrist.quicker.models.QRCode
+import com.qrist.quicker.utils.getDrawableFromUri
 import kotlinx.android.synthetic.main.fragment_registeredservicelist.view.*
+import java.io.File
 
 class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
@@ -49,10 +53,16 @@ class RegisteredServiceListFragment : Fragment() {
         return RegisteredServiceListAdapter(activity!!, viewModel.getServiceItems()).apply {
             setOnItemClickListener(View.OnClickListener {
                 val position = (it.parent as ConstraintLayout).id
+                val qrCode = viewModel.qrCodes[position]
+                val uri = when(qrCode) {
+                    is QRCode.Default -> Uri.parse(qrCode.serviceIconUrl)
+                    is QRCode.User -> Uri.fromFile(File(qrCode.serviceIconUrl))
+                }
 
                 MaterialDialog(activity!!).show {
                     title(R.string.title_delete)
                     message(R.string.message_delete)
+                    icon(drawable = getDrawableFromUri(uri))
                     positiveButton(R.string.agree_delete) { dialog ->
                         // Do something
                         val qrCode = viewModel.qrCodes[position]
