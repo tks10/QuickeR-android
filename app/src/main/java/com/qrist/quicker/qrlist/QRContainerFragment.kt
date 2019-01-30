@@ -155,10 +155,10 @@ class QRContainerFragment : Fragment() {
             saveImageOnDevice()
         }
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            saveImageOnDevice()
             when (requestCode) {
-                REQUEST_PERMISSION_ON_CREATE -> saveImageOnDevice()
+                REQUEST_PERMISSION_ON_CREATE -> sequence.start()
                 REQUEST_PERMISSION_BY_FAB -> {
-                    saveImageOnDevice()
                     Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_serviceaddlist)
                 }
             }
