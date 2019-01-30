@@ -22,6 +22,7 @@
             android:padding="32dp"
             android:textSize="20sp"
             android:textAlignment="center"
+            app:layout_constraintVertical_bias="0.45"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
