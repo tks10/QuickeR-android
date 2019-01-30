@@ -16,4 +16,5 @@
     <string name="title_service_list">サービス一覧</string>
     <string name="title_add_list">サービスを追加</string>
     <string name="title_register">登録</string>
+    <string name="qr_code">QRコード</string>
 </resources>
