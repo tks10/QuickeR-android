@@ -20,7 +20,7 @@ class QRCodeDetector {
     companion object {
         private val options = FirebaseVisionBarcodeDetectorOptions.Builder()
             .setBarcodeFormats(
-                FirebaseVisionBarcode.FORMAT_ALL_FORMATS
+                FirebaseVisionBarcode.FORMAT_QR_CODE
             )
             .build()
 
