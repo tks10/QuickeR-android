@@ -19,6 +19,7 @@ class QRViewFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val binding: FragmentQrviewBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_qrview, container, false)
+
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
         return binding.root

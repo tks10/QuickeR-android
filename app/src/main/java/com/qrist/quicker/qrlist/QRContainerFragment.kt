@@ -4,11 +4,13 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.databinding.DataBindingUtil
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,7 @@ import androidx.navigation.Navigation
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
+import com.qrist.quicker.databinding.CustomTabBinding
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
 import com.qrist.quicker.extentions.obtainViewModel
@@ -27,9 +30,7 @@ import com.qrist.quicker.utils.storeDirectory
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 import java.io.File
 
-
 class QRContainerFragment : Fragment() {
-    val RESULT_PICK_QRCODE: Int = 1001
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(storeDirectory)
@@ -42,12 +43,14 @@ class QRContainerFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
+        val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
 
         view.viewPager.offscreenPageLimit = 5
         view.viewPager.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
 
-        view.tool_bar.inflateMenu(R.menu.menu)
-        view.tool_bar.setOnMenuItemClickListener { item ->
+        toolbar.menu.clear()
+        toolbar.inflateMenu(R.menu.menu)
+        toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_capture -> {
                     val intentIntegrator = IntentIntegrator.forSupportFragment(this).apply {
@@ -90,7 +93,7 @@ class QRContainerFragment : Fragment() {
         view?.viewPager?.adapter?.notifyDataSetChanged()
 
         val serviceCount = viewModel.qrCodes.size
-        for (i in 0..serviceCount - 1) {
+        for (i in 0 until serviceCount) {
             val qrCode = viewModel.qrCodes[i]
             val serviceIconUrl = when (qrCode) {
                 is QRCode.Default -> serviceIdToIconUrl(qrCode.serviceId)
@@ -101,7 +104,9 @@ class QRContainerFragment : Fragment() {
                 is QRCode.User -> activity!!.contentResolver.openInputStream(Uri.fromFile(File(serviceIconUrl)))
             }
             val drawable = Drawable.createFromStream(inputStream, serviceIconUrl)
-            view?.tabLayout?.getTabAt(i)?.icon = drawable
+            val binding: CustomTabBinding = DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
+            binding.imageUrl = serviceIconUrl
+            view?.tabLayout?.getTabAt(i)?.customView = binding.root
         }
 
         view?.getStartedTextView?.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
@@ -150,6 +155,7 @@ class QRContainerFragment : Fragment() {
 
     companion object {
         private const val REQUEST_PERMISSION: Int = 1000
+        private const val RESULT_PICK_QRCODE: Int = 1001
     }
 }
 
