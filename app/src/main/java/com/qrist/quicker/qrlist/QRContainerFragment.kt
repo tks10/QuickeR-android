@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.Navigation
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
@@ -122,6 +123,20 @@ class QRContainerFragment : Fragment() {
                 RESULT_PICK_QRCODE -> {
                     val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, resultData)
                     Log.d("QR result", result.contents)
+
+                    val url = Uri.parse(result.contents)
+                    val intent = Intent(Intent.ACTION_VIEW, url)
+
+                    MaterialDialog(activity!!).show {
+                        title(R.string.title_open_url)
+                        message(text =  url.toString())
+                        positiveButton(R.string.message_open_url) { dialog ->
+                            this@QRContainerFragment.startActivity(intent)
+
+                        }
+                        negativeButton(R.string.cancel) { dialog ->
+                        }
+                    }
                 }
             }
         }
