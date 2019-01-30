@@ -54,7 +54,7 @@ class QRContainerFragment : Fragment() {
                         .tintTarget(false)
                         .id(1)
                 )
-            requestExternalStoragePermission()
+            requestExternalStoragePermission(byFab = false)
         }
     }
 
@@ -91,7 +91,11 @@ class QRContainerFragment : Fragment() {
         }
 
         view.floatingActionButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
+            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+                requestExternalStoragePermission(byFab = true)
+            } else {
+                Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
+            }
         }
 
         view.tabLayout.setupWithViewPager(view.viewPager)
@@ -147,11 +151,22 @@ class QRContainerFragment : Fragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        if (requestCode == REQUEST_PERMISSION_ON_CREATE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             saveImageOnDevice()
+        }
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                REQUEST_PERMISSION_ON_CREATE -> saveImageOnDevice()
+                REQUEST_PERMISSION_BY_FAB -> {
+                    saveImageOnDevice()
+                    Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_serviceaddlist)
+                }
+            }
+        }
+
     }
 
-    private fun requestExternalStoragePermission() {
+    private fun requestExternalStoragePermission(byFab: Boolean) {
         if (shouldShowRequestPermissionRationale(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
@@ -160,19 +175,20 @@ class QRContainerFragment : Fragment() {
             toast.show()
             requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                REQUEST_PERMISSION
+                if (byFab) REQUEST_PERMISSION_BY_FAB else REQUEST_PERMISSION_ON_CREATE
             )
         } else {
             requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                REQUEST_PERMISSION
+                if (byFab) REQUEST_PERMISSION_BY_FAB else REQUEST_PERMISSION_ON_CREATE
             )
         }
     }
 
     companion object {
-        private const val REQUEST_PERMISSION: Int = 1000
-        private const val RESULT_PICK_QRCODE: Int = 1001
+        private const val REQUEST_PERMISSION_ON_CREATE: Int = 1000
+        private const val REQUEST_PERMISSION_BY_FAB: Int = 1001
+        private const val RESULT_PICK_QRCODE: Int = 1002
     }
 }
 
