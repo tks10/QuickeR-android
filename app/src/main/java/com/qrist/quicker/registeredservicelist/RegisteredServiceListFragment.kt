@@ -1,5 +1,6 @@
 package com.qrist.quicker.registeredservicelist
 
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.gms.oss.licenses.OssLicensesActivity
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisteredservicelistBinding
 import com.qrist.quicker.extentions.obtainViewModel
@@ -30,6 +33,17 @@ class RegisteredServiceListFragment : Fragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_registeredservicelist, container, false)
         val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
         toolbar.menu.clear()
+        toolbar.inflateMenu(R.menu.settings_menu)
+        toolbar.setOnMenuItemClickListener {item ->
+            when (item.itemId) {
+                R.id.menu_oss_license -> {
+                    startActivity(Intent(context!!, OssLicensesMenuActivity::class.java))
+                    OssLicensesMenuActivity.setActivityTitle(context!!.resources.getString(R.string.open_source_license))
+                    true
+                }
+                else -> false
+            }
+        }
 
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel

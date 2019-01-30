@@ -16,4 +16,5 @@
     <string name="title_add_list">Add Service</string>
     <string name="title_register">Register</string>
     <string name="qr_code">QR code</string>
+    <string name="open_source_license">Open Source License</string>
 </resources>
