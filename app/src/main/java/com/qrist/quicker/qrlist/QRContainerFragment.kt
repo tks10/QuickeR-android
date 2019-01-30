@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -104,11 +103,6 @@ class QRContainerFragment : Fragment() {
                 is QRCode.Default -> serviceIdToIconUrl(qrCode.serviceId)
                 is QRCode.User -> qrCode.serviceIconUrl
             }
-            val inputStream = when (qrCode) {
-                is QRCode.Default -> activity!!.contentResolver.openInputStream(Uri.parse(serviceIconUrl))
-                is QRCode.User -> activity!!.contentResolver.openInputStream(Uri.fromFile(File(serviceIconUrl)))
-            }
-            val drawable = Drawable.createFromStream(inputStream, serviceIconUrl)
             val binding: CustomTabBinding =
                 DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
             binding.imageUrl = serviceIconUrl
@@ -130,11 +124,8 @@ class QRContainerFragment : Fragment() {
                 MaterialDialog(activity!!).show {
                     title(R.string.title_open_url)
                     message(text = url.toString())
-                    positiveButton(R.string.message_open_url) { dialog ->
+                    positiveButton(R.string.message_open_url) {
                         this@QRContainerFragment.startActivity(intent)
-
-                    }
-                    negativeButton(R.string.cancel) { dialog ->
                     }
                 }
             }
@@ -185,7 +176,6 @@ class QRContainerFragment : Fragment() {
     companion object {
         private const val REQUEST_PERMISSION_ON_CREATE: Int = 1000
         private const val REQUEST_PERMISSION_BY_FAB: Int = 1001
-        private const val RESULT_PICK_QRCODE: Int = 1002
     }
 }
 
