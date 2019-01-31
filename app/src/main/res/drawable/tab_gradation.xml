@@ -7,10 +7,10 @@
     <gradient
             android:type="radial"
             android:endColor="@color/colorPrimary"
-            android:startColor="#AAAAAA"
-            android:gradientRadius="28dp"
-            android:centerY="0.54"
-            android:centerX="0.53"
+            android:startColor="#888888"
+            android:gradientRadius="20dp"
+            android:centerY="0.55"
+            android:centerX="0.55"
             />
 
 </shape>
