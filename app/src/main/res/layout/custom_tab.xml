@@ -16,8 +16,8 @@
                 android:id="@+id/tab_icon"
                 android:layout_width="?attr/actionBarSize"
                 android:layout_height="0dp"
-                app:imageUrl="@{imageUrl}"
                 android:padding="8dp"
+                app:imageUrl="@{imageUrl}"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 

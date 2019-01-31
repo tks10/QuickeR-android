@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
-import com.bumptech.glide.Glide
 import java.io.FileOutputStream
 import java.io.IOException
 
@@ -30,7 +29,10 @@ fun imageUrl(imageView: ImageView, url: String?) {
         Log.e("Glide Binding", "URL is empty")
         return
     }
-    Glide.with(imageView.context).load(url).into(imageView)
+    GlideApp.with(imageView.context)
+        .load(url)
+        .fitCenter()
+        .into(imageView)
 }
 
 @BindingAdapter("app:srcCompat")
@@ -41,11 +43,11 @@ fun srcCompat(view: ImageView, resourceId: Int) {
 fun convertUrlFromDrawableResId(context: Context, drawableResId: Int): String {
     val sb = StringBuilder()
     sb.append(ContentResolver.SCHEME_ANDROID_RESOURCE)
-    sb.append("://");
+    sb.append("://")
     sb.append(context.resources.getResourcePackageName(drawableResId))
-    sb.append("/");
+    sb.append("/")
     sb.append(context.resources.getResourceTypeName(drawableResId))
-    sb.append("/");
+    sb.append("/")
     sb.append(context.resources.getResourceEntryName(drawableResId))
     return sb.toString()
 }
