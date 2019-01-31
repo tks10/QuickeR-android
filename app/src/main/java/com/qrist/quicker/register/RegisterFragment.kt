@@ -136,10 +136,25 @@ class RegisterFragment : Fragment() {
                     .outerCircleAlpha(0.9f)
                     .cancelable(false)
                     .tintTarget(false)
-                    .id(id)
+                    .id(id++)
             )
 
             viewModel.doneTutorial(TutorialComponent.ServiceNameEditText)
+        }
+
+        if (viewModel.hasNotDoneTutorial(TutorialComponent.DoneButton)) {
+            targets.add(
+                TapTarget.forView(view!!.addButton, context!!.resources.getString(R.string.tutorial_done))
+                    .outerCircleColor(R.color.colorAccent)
+                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .drawShadow(true)
+                    .outerCircleAlpha(0.9f)
+                    .cancelable(false)
+                    .tintTarget(false)
+                    .id(id++)
+            )
+
+            viewModel.doneTutorial(TutorialComponent.DoneButton)
         }
 
         sequence = TapTargetSequence(activity).targets(targets)

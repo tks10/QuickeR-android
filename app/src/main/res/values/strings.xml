@@ -8,7 +8,7 @@
     <string name="cancel">Cancel</string>
     <string name="title_delete">Are you sure you want to delete this service?</string>
     <string name="message_delete">Once it can not be restored after you have deleted.</string>
-    <string name="message_start">Get started by adding your first QR Code from right bottom button!</string>
+    <string name="message_start">Get started by adding your first QR Code from right bottom button.</string>
     <string name="message_service_empty">No registered services</string>
     <string name="title_open_url">Are you sure you want to open following URL?</string>
     <string name="message_open_url">Open</string>
@@ -17,8 +17,8 @@
     <string name="title_register">Register</string>
     <string name="qr_code">QR code</string>
     <string name="open_source_license">Open Source License</string>
-    <string name="tutorial_qr_image">Tap here to set the QR Code</string>
+    <string name="tutorial_qr_image">Tap here to set the QR Code.</string>
     <string name="tutorial_service_icon">Tap here to set the service icon. It will be showed in home.</string>
     <string name="tutorial_service_name">Input the service name here.</string>
-    <string name="tutorial_done">Well done!</string>
+    <string name="tutorial_done">At last, tap here to complete.\nWell done!!</string>
 </resources>
