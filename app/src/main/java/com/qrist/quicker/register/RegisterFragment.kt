@@ -10,13 +10,17 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
 import com.qrist.quicker.extentions.*
+import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.MyApplication
 import com.qrist.quicker.utils.QRCodeDetector
 import com.theartofdev.edmodo.cropper.CropImage
+import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 import java.lang.Exception
@@ -31,6 +35,8 @@ class RegisterFragment : Fragment() {
     private val CROP_QR = 0
     private val CROP_ICON = 1
     private var kindOfCrop = -1
+
+    private lateinit var sequence: TapTargetSequence
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +85,64 @@ class RegisterFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setupTutorial()
+        sequence.start()
+    }
+
+    private fun setupTutorial() {
+        var id = 0
+        val targets = ArrayList<TapTarget>()
+
+        if (viewModel.hasNotDoneTutorial(TutorialComponent.QRImageView)) {
+            targets.add(
+                TapTarget.forView(view!!.addQRButton, context!!.resources.getString(R.string.message_start))
+                    .outerCircleColor(R.color.colorAccent)
+                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .drawShadow(true)
+                    .outerCircleAlpha(0.9f)
+                    .cancelable(false)
+                    .tintTarget(false)
+                    .id(id++)
+            )
+
+            viewModel.doneTutorial(TutorialComponent.QRImageView)
+        }
+
+        if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceIconImageView) && !viewModel.isDefaultService.value!!) {
+            targets.add(
+                TapTarget.forView(view!!.addIconButton, context!!.resources.getString(R.string.message_start))
+                    .outerCircleColor(R.color.colorAccent)
+                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .drawShadow(true)
+                    .outerCircleAlpha(0.9f)
+                    .cancelable(false)
+                    .tintTarget(false)
+                    .id(id++)
+            )
+
+            viewModel.doneTutorial(TutorialComponent.ServiceIconImageView)
+        }
+
+        if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {
+            targets.add(
+                TapTarget.forView(view!!.serviceNameTextInputLayout, context!!.resources.getString(R.string.message_start))
+                    .outerCircleColor(R.color.colorAccent)
+                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .drawShadow(true)
+                    .outerCircleAlpha(0.9f)
+                    .cancelable(false)
+                    .tintTarget(false)
+                    .id(id)
+            )
+
+            viewModel.doneTutorial(TutorialComponent.ServiceNameEditText)
+        }
+
+        sequence = TapTargetSequence(activity).targets(targets)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
