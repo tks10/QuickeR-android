@@ -99,7 +99,7 @@ class RegisterFragment : Fragment() {
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.QRImageView)) {
             targets.add(
-                TapTarget.forView(view!!.addQRButton, context!!.resources.getString(R.string.message_start))
+                TapTarget.forView(view!!.addQRButton, context!!.resources.getString(R.string.tutorial_qr_image))
                     .outerCircleColor(R.color.colorAccent)
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
@@ -114,7 +114,7 @@ class RegisterFragment : Fragment() {
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceIconImageView) && !viewModel.isDefaultService.value!!) {
             targets.add(
-                TapTarget.forView(view!!.addIconButton, context!!.resources.getString(R.string.message_start))
+                TapTarget.forView(view!!.addIconButton, context!!.resources.getString(R.string.tutorial_service_icon))
                     .outerCircleColor(R.color.colorAccent)
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
@@ -129,7 +129,7 @@ class RegisterFragment : Fragment() {
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {
             targets.add(
-                TapTarget.forView(view!!.serviceNameTextInputLayout, context!!.resources.getString(R.string.message_start))
+                TapTarget.forView(view!!.serviceNameTextInputLayout, context!!.resources.getString(R.string.tutorial_service_name))
                     .outerCircleColor(R.color.colorAccent)
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
