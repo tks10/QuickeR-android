@@ -85,9 +85,14 @@ class QRCodeLocalDataSource(
         return true
     }
 
-    override fun hasDoneTutorial(component: TutorialComponent): Boolean {
-        return sharedPreferences.getBoolean(component.toString(), true)
+    override fun doneTutorial(component: TutorialComponent) {
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putBoolean(component.toString(), true)
+        editor.apply()
+    }
 
+    override fun hasDoneTutorial(component: TutorialComponent): Boolean {
+        return sharedPreferences.getBoolean(component.toString(), false)
     }
 
     companion object {

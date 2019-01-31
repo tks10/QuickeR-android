@@ -11,5 +11,6 @@ interface QRCodeDataSource {
     fun saveQRCode(serviceId: Int, qrImage: Bitmap): Boolean
     fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean
     fun deleteQRCode(id: String): Boolean
+    fun doneTutorial(component: TutorialComponent)
     fun hasDoneTutorial(component: TutorialComponent): Boolean
 }
