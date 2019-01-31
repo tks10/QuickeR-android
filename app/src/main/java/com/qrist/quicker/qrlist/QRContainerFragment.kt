@@ -16,6 +16,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.Navigation
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
@@ -27,6 +29,7 @@ import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.utils.serviceIdToIconUrl
 import com.qrist.quicker.utils.storeDirectory
+import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 import java.io.File
 
@@ -34,11 +37,25 @@ class QRContainerFragment : Fragment() {
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(storeDirectory)
+    private lateinit var sequence: TapTargetSequence
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) requestExternalStoragePermission(byFab = false)
+        if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+            sequence = TapTargetSequence(activity)
+                .targets(
+                    TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
+                        .outerCircleColor(R.color.colorAccent)
+                        .titleTextColor(R.color.colorTextOnSecondary)
+                        .drawShadow(true)
+                        .outerCircleAlpha(1.0f)
+                        .cancelable(false)
+                        .tintTarget(false)
+                        .id(1)
+                )
+            requestExternalStoragePermission(byFab = false)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -143,10 +160,10 @@ class QRContainerFragment : Fragment() {
             saveImageOnDevice()
         }
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            saveImageOnDevice()
             when (requestCode) {
-                REQUEST_PERMISSION_ON_CREATE -> saveImageOnDevice()
+                REQUEST_PERMISSION_ON_CREATE -> sequence.start()
                 REQUEST_PERMISSION_BY_FAB -> {
-                    saveImageOnDevice()
                     Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_serviceaddlist)
                 }
             }
