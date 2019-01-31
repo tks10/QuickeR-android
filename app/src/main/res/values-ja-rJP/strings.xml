@@ -18,4 +18,8 @@
     <string name="title_register">登録</string>
     <string name="qr_code">QRコード</string>
     <string name="open_source_license">オープンソースライセンス</string>
+    <string name="tutorial_qr_image">ここをタップしてQRコードを設定しましょう．</string>
+    <string name="tutorial_service_icon">ここをタップしてサービスのアイコンを設定しましょう．このアイコンはQR一覧画面で表示されます．</string>
+    <string name="tutorial_service_name">ここにサービスの名前を入力しましょう．</string>
+    <string name="tutorial_done">最後にここを押して完了です!</string>
 </resources>
