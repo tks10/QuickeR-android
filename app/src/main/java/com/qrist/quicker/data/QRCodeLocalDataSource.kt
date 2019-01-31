@@ -3,6 +3,7 @@ package com.qrist.quicker.data
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
+import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.externalStorageRootDirectory
 import com.qrist.quicker.utils.saveImage
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
@@ -82,6 +83,11 @@ class QRCodeLocalDataSource(
         editor.apply()
 
         return true
+    }
+
+    override fun hasDoneTutorial(component: TutorialComponent): Boolean {
+        return sharedPreferences.getBoolean(component.toString(), true)
+
     }
 
     companion object {
