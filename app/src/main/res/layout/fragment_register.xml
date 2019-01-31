@@ -96,6 +96,7 @@
                     android:layout_height="wrap_content"
                     android:enabled="@{!viewmodel.isDefaultService}"
                     android:text="@{viewmodel.serviceName}"
+                    android:singleLine="true"
                     android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
