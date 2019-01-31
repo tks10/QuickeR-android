@@ -98,6 +98,7 @@ class QRContainerFragment : Fragment() {
             }
         }
 
+
         view.tabLayout.setupWithViewPager(view.viewPager)
 
         return view
@@ -114,7 +115,7 @@ class QRContainerFragment : Fragment() {
         view?.viewPager?.adapter?.notifyDataSetChanged()
 
         val serviceCount = viewModel.qrCodes.size
-        for (i in 0 until serviceCount) {
+        (0 until serviceCount).forEach { i ->
             val qrCode = viewModel.qrCodes[i]
             val serviceIconUrl = when (qrCode) {
                 is QRCode.Default -> serviceIdToIconUrl(qrCode.serviceId)
