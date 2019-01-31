@@ -4,6 +4,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.databinding.BindingAdapter
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -46,4 +48,9 @@ fun convertUrlFromDrawableResId(context: Context, drawableResId: Int): String {
     sb.append("/");
     sb.append(context.resources.getResourceEntryName(drawableResId))
     return sb.toString()
+}
+
+fun getDrawableFromUri(uri: Uri): Drawable {
+    val inputStream = MyApplication.instance.contentResolver.openInputStream(uri)
+    return Drawable.createFromStream(inputStream, uri.toString())
 }

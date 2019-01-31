@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 android {
     compileSdkVersion 28
@@ -79,4 +80,7 @@ dependencies {
 
     // TapTargetView
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'
+
+    // OSS licenses
+    implementation 'com.google.android.gms:play-services-oss-licenses:16.0.2'
 }

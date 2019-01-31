@@ -7,6 +7,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="OssLicenseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:theme">@style/ToolbarTheme</item>
+    </style>
+
     <style name="MyToolbarStyle" parent="@style/Widget.AppCompat.Toolbar">
         <item name="android:theme">@style/ToolbarTheme</item>
     </style>
@@ -14,6 +18,9 @@
     <style name="ToolbarTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:textColorPrimary">@color/colorTextOnPrimary</item>
         <item name="android:textColorSecondary">@color/colorTextOnPrimary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">

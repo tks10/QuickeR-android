@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +18,7 @@ import android.widget.Toast
 import androidx.navigation.Navigation
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
@@ -120,12 +120,8 @@ class QRContainerFragment : Fragment() {
                 is QRCode.Default -> serviceIdToIconUrl(qrCode.serviceId)
                 is QRCode.User -> qrCode.serviceIconUrl
             }
-            val inputStream = when (qrCode) {
-                is QRCode.Default -> activity!!.contentResolver.openInputStream(Uri.parse(serviceIconUrl))
-                is QRCode.User -> activity!!.contentResolver.openInputStream(Uri.fromFile(File(serviceIconUrl)))
-            }
-            val drawable = Drawable.createFromStream(inputStream, serviceIconUrl)
-            val binding: CustomTabBinding = DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
+            val binding: CustomTabBinding =
+                DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
             binding.imageUrl = serviceIconUrl
             view?.tabLayout?.getTabAt(i)?.customView = binding.root
         }
@@ -135,10 +131,19 @@ class QRContainerFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                RESULT_PICK_QRCODE -> {
-                    val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, resultData)
-                    Log.d("QR result", result.contents)
+            if (requestCode == 49374) {
+                val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, resultData)
+                Log.d("QR result", result.contents)
+
+                val url = Uri.parse(result.contents)
+                val intent = Intent(Intent.ACTION_VIEW, url)
+
+                MaterialDialog(activity!!).show {
+                    title(R.string.title_open_url)
+                    message(text = url.toString())
+                    positiveButton(R.string.message_open_url) {
+                        this@QRContainerFragment.startActivity(intent)
+                    }
                 }
             }
         }
@@ -188,7 +193,6 @@ class QRContainerFragment : Fragment() {
     companion object {
         private const val REQUEST_PERMISSION_ON_CREATE: Int = 1000
         private const val REQUEST_PERMISSION_BY_FAB: Int = 1001
-        private const val RESULT_PICK_QRCODE: Int = 1002
     }
 }
 
