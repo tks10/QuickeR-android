@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
@@ -76,7 +77,7 @@ class RegisterFragment : Fragment() {
         binding.root.addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
-                activity!!.supportFragmentManager.popBackStack()
+                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack(R.id.qrContainerFragment, false)
             }
         }
 
