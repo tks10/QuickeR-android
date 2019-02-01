@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
+import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.serviceNameToServiceId
 import com.qrist.quicker.utils.storeDirectory
 import java.io.File
@@ -80,5 +81,13 @@ class RegisterViewModel(
                 repository.saveQRCode(serviceName.value!!, qrImage, it)
             }
         }
+    }
+
+    fun hasNotDoneTutorial(component: TutorialComponent): Boolean {
+        return !repository.hasDoneTutorial(component)
+    }
+
+    fun doneTutorial(component: TutorialComponent) {
+        repository.doneTutorial(component)
     }
 }
