@@ -82,7 +82,7 @@ class RegisteredServiceListFragment : Fragment() {
                         val qrCode = viewModel.qrCodes[position]
                         if (viewModel.deleteQRCode(qrCode.id)) {
                             this@RegisteredServiceListFragment.updateItems()
-                            Snackbar.make(view!!, "Deleted item", Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(view!!, R.string.service_deleted, Snackbar.LENGTH_LONG).show()
                         }
                     }
                     negativeButton(R.string.cancel) { dialog ->
