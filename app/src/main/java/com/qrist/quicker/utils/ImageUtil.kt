@@ -10,11 +10,27 @@ import android.util.Log
 import android.widget.ImageView
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.math.ceil
+import kotlin.math.max
 
-fun saveImage(bitmap: Bitmap, imageUrl: String): Boolean =
+const val IMAGE_QR_MAX = 640f
+const val IMAGE_ICON_MAX = 192f
+
+fun saveImage(bitmap: Bitmap, imageUrl: String, clipTo: Float): Boolean =
     try {
+        val maxSize = max(bitmap.width, bitmap.height)
+
+        val resizedBitmap = if (maxSize > clipTo) {
+            val resizeRate = maxSize.toFloat() / clipTo
+            val width = ceil(bitmap.width / resizeRate).toInt()
+            val height = ceil(bitmap.height / resizeRate).toInt()
+            Bitmap.createScaledBitmap(bitmap, width, height, true)
+        } else {
+            bitmap
+        }
+
         val outputStream = FileOutputStream(imageUrl)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
+        resizedBitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
         outputStream.flush()
         outputStream.close()
         true
