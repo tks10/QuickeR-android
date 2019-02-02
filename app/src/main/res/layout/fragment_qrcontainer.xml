@@ -28,14 +28,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <android.support.design.widget.TabLayout
+    <com.nshmura.recyclertablayout.RecyclerTabLayout
             android:id="@+id/tabLayout"
             style="@style/MyCustomTabLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="64dp"
             android:elevation="0dp"
-            app:tabMode="scrollable"
-            app:tabBackground="@drawable/tab_gradation_selector"
+            app:rtl_scrollEnabled="true"
+            app:rtl_tabIndicatorColor="@color/white_transparent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/viewPager"
