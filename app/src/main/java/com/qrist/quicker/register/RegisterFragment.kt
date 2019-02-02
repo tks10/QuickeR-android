@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +22,9 @@ import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.MyApplication
 import com.qrist.quicker.utils.QRCodeDetector
 import com.theartofdev.edmodo.cropper.CropImage
-import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
-import java.lang.Exception
+import java.util.*
 
 class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
@@ -97,6 +97,7 @@ class RegisterFragment : Fragment() {
     private fun setupTutorial() {
         var id = 0
         val targets = ArrayList<TapTarget>()
+        val components = LinkedList<TutorialComponent>()
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.QRImageView)) {
             targets.add(
@@ -105,12 +106,12 @@ class RegisterFragment : Fragment() {
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
-                    .cancelable(false)
+                    .cancelable(true)
                     .tintTarget(false)
                     .id(id++)
             )
 
-            viewModel.doneTutorial(TutorialComponent.QRImageView)
+            components.add(TutorialComponent.QRImageView)
         }
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceIconImageView) && !viewModel.isDefaultService.value!!) {
@@ -120,12 +121,12 @@ class RegisterFragment : Fragment() {
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
-                    .cancelable(false)
+                    .cancelable(true)
                     .tintTarget(false)
                     .id(id++)
             )
 
-            viewModel.doneTutorial(TutorialComponent.ServiceIconImageView)
+            components.add(TutorialComponent.ServiceIconImageView)
         }
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {
@@ -135,12 +136,12 @@ class RegisterFragment : Fragment() {
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
-                    .cancelable(false)
+                    .cancelable(true)
                     .tintTarget(false)
                     .id(id++)
             )
 
-            viewModel.doneTutorial(TutorialComponent.ServiceNameEditText)
+            components.add(TutorialComponent.ServiceNameEditText)
         }
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.DoneButton)) {
@@ -150,15 +151,30 @@ class RegisterFragment : Fragment() {
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
-                    .cancelable(false)
+                    .cancelable(true)
                     .tintTarget(false)
                     .id(id++)
             )
 
-            viewModel.doneTutorial(TutorialComponent.DoneButton)
+            components.add(TutorialComponent.DoneButton)
         }
 
-        sequence = TapTargetSequence(activity).targets(targets)
+        sequence = TapTargetSequence(activity).targets(targets).listener(object : TapTargetSequence.Listener {
+            override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+                Log.d("TTV", "Step, $targetClicked")
+                viewModel.doneTutorial(components.poll())
+            }
+
+            override fun onSequenceFinish() {}
+
+            override fun onSequenceCanceled(lastTarget: TapTarget?) {
+                Log.d("TTV", "Cancel")
+                viewModel.doneTutorial(components.poll())
+            }
+        })
+
+        sequence.continueOnCancel(false)
+        sequence.considerOuterCircleCanceled(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
