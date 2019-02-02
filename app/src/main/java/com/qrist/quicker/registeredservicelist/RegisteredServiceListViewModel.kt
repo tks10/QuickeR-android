@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.ServiceItem
+import java.lang.IllegalArgumentException
 
 
 class RegisteredServiceListViewModel(
@@ -15,6 +16,7 @@ class RegisteredServiceListViewModel(
 ) : AndroidViewModel(context) {
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
+    private val qrCodesIndex: ArrayList<Int> = ArrayList((0 until qrCodes.size).toList())
     private val isServiceEmptyLiveDate = MutableLiveData<Boolean>().apply { value = qrCodes.isEmpty() }
 
     val isServiceEmpty: LiveData<Boolean>
@@ -52,5 +54,19 @@ class RegisteredServiceListViewModel(
         }
 
         return false
+    }
+
+    fun updateIndex(from: Int, to: Int) {
+        if (!isInValidRange(from) || !isInValidRange(to)) throw IllegalArgumentException("Index is out of range.")
+
+        qrCodesIndex[from] = qrCodesIndex[to].also { qrCodesIndex[to] = qrCodesIndex[from] }
+    }
+
+    fun reflectIndexChange() {
+
+    }
+
+    private fun isInValidRange(position: Int): Boolean {
+        return 0 <= position && position < qrCodes.size
     }
 }

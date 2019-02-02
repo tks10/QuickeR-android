@@ -103,6 +103,7 @@ class RegisteredServiceListFragment : Fragment() {
                 val toPosition = target.adapterPosition
 
                 recyclerView.adapter?.notifyItemMoved(fromPosition, toPosition)
+                viewModel.updateIndex(fromPosition, toPosition)
                 Log.d("Registered Service List", "Moved to $toPosition from $fromPosition")
 
                 return true
