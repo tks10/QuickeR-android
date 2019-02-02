@@ -16,7 +16,7 @@ class RegisteredServiceListViewModel(
 ) : AndroidViewModel(context) {
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
-    private val qrCodesIndex: ArrayList<Int> = ArrayList((0 until qrCodes.size).toList())
+    private var qrCodesIndex: ArrayList<Int> = ArrayList((0 until qrCodes.size).toList())
     private val isServiceEmptyLiveDate = MutableLiveData<Boolean>().apply { value = qrCodes.isEmpty() }
 
     val isServiceEmpty: LiveData<Boolean>
@@ -43,7 +43,7 @@ class RegisteredServiceListViewModel(
 
     fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()
-
+        qrCodesIndex = ArrayList((0 until qrCodes.size).toList())
     }
 
     fun deleteQRCode(id: String): Boolean {
@@ -56,14 +56,24 @@ class RegisteredServiceListViewModel(
         return false
     }
 
-    fun updateIndex(from: Int, to: Int) {
+    fun moveIndex(from: Int, to: Int) {
         if (!isInValidRange(from) || !isInValidRange(to)) throw IllegalArgumentException("Index is out of range.")
+        if (from == to) return
 
-        qrCodesIndex[from] = qrCodesIndex[to].also { qrCodesIndex[to] = qrCodesIndex[from] }
+        if (to > from) {
+            for (i in from until to) {
+                qrCodesIndex[i] = qrCodesIndex[i+1].also { qrCodesIndex[i+1] = qrCodesIndex[i]}
+            }
+        } else {
+            for (i in from downTo to+1) {
+                qrCodesIndex[i] = qrCodesIndex[i-1].also { qrCodesIndex[i-1] = qrCodesIndex[i]}
+            }
+        }
     }
 
     fun reflectIndexChange() {
         repository.updateQRCodesOrder(qrCodesIndex)
+        for (i in 0 until qrCodes.size) qrCodesIndex[i] = i
     }
 
     private fun isInValidRange(position: Int): Boolean {
