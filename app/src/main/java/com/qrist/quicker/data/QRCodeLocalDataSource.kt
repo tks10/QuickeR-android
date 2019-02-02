@@ -4,6 +4,8 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.utils.IMAGE_ICON_MAX
+import com.qrist.quicker.utils.IMAGE_QR_MAX
 import com.qrist.quicker.utils.saveImage
 import com.qrist.quicker.utils.storeDirectory
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
@@ -53,7 +55,7 @@ class QRCodeLocalDataSource(
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
         
-        return saveImage(image, code.qrCodeUrl)
+        return saveImage(image, code.qrCodeUrl, IMAGE_QR_MAX)
     }
 
     override fun saveQRCode(serviceId: Int, qrImage: Bitmap): Boolean {
@@ -66,7 +68,7 @@ class QRCodeLocalDataSource(
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
 
-        return saveImage(qrImage, qrCode.qrCodeUrl)
+        return saveImage(qrImage, qrCode.qrCodeUrl, IMAGE_QR_MAX)
     }
 
     override fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean {
@@ -80,7 +82,8 @@ class QRCodeLocalDataSource(
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
 
-        return saveImage(qrImage, qrCode.qrCodeUrl) && saveImage(iconImage, qrCode.serviceIconUrl)
+        return saveImage(qrImage, qrCode.qrCodeUrl, IMAGE_QR_MAX)
+                && saveImage(iconImage, qrCode.serviceIconUrl, IMAGE_ICON_MAX)
     }
 
     override fun deleteQRCode(id: String): Boolean {
