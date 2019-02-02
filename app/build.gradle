@@ -83,4 +83,7 @@ dependencies {
 
     // OSS licenses
     implementation 'com.google.android.gms:play-services-oss-licenses:16.0.2'
+
+    // Recycler Tab Layout
+    implementation 'com.nshmura:recyclertablayout:1.5.0'
 }
