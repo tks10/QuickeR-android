@@ -8,7 +8,7 @@
             android:type="radial"
             android:endColor="@color/colorPrimary"
             android:startColor="#888888"
-            android:gradientRadius="20dp"
+            android:gradientRadius="24dp"
             android:centerY="0.55"
             android:centerX="0.55"
             />
