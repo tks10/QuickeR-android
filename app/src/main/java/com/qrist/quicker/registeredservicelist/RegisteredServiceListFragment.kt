@@ -106,7 +106,7 @@ class RegisteredServiceListFragment : Fragment() {
                 viewModel.updateIndex(fromPosition, toPosition)
                 Log.d("Registered Service List", "Moved to $toPosition from $fromPosition")
 
-                return true
+                return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
