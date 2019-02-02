@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,25 +29,11 @@ import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 import java.io.File
 
-class QRContainerFragment : Fragment(), ViewPager.OnPageChangeListener {
-    override fun onPageScrollStateChanged(p0: Int) {
-    }
-
-    override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
-    }
-
-    override fun onPageSelected(position: Int) {
-        val nearLeftEdge: Boolean = (position <= viewModel.qrCodes.size)
-        val nearRightEdge: Boolean = (position >= adapter.count - viewModel.qrCodes.size)
-        if (nearLeftEdge || nearRightEdge) {
-            view?.viewPager?.setCurrentItem(adapter.getCenterPosition(0), false)
-        }
-    }
+class QRContainerFragment : Fragment() {
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(storeDirectory)
     private lateinit var sequence: TapTargetSequence
-    private lateinit var adapter: QRViewFragmentPagerAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,9 +57,6 @@ class QRContainerFragment : Fragment(), ViewPager.OnPageChangeListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
         val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
-
-        view.viewPager.offscreenPageLimit = 5
-        view.viewPager.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
 
         toolbar.menu.clear()
         toolbar.inflateMenu(R.menu.menu)
@@ -114,21 +96,22 @@ class QRContainerFragment : Fragment(), ViewPager.OnPageChangeListener {
 
     override fun onStart() {
         super.onStart()
-        updateViewPager()
+        updateViewPager(view!!)
     }
 
-    private fun updateViewPager() {
+    private fun updateViewPager(view: View) {
         viewModel.fetchQRCodes()
 
-        adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
-        view?.viewPager?.adapter = adapter
-        view?.viewPager?.currentItem = adapter.getCenterPosition(0)
-        view?.viewPager?.addOnPageChangeListener(this)
+        val adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
+        view.viewPager.adapter = adapter
+        view.viewPager.offscreenPageLimit = 5
+        view.viewPager.currentItem = adapter.getCenterPosition(0)
 
-        view?.tabLayout?.setUpWithAdapter(ServiceIconAdapter(view?.viewPager!!, viewModel.qrCodes))
+        view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
+        view.tabLayout.setCurrentItem(adapter.getCenterPosition(0), false)
 
         val serviceCount = viewModel.qrCodes.size
-        view?.getStartedTextView?.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
+        view.getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -153,7 +136,7 @@ class QRContainerFragment : Fragment(), ViewPager.OnPageChangeListener {
 
     private fun saveImageOnDevice() {
         makeAppDirectory(directory)
-        updateViewPager()
+        updateViewPager(view!!)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
