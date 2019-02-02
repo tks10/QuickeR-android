@@ -1,5 +1,6 @@
 package com.qrist.quicker.qrlist
 
+import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
@@ -29,6 +30,8 @@ class QRViewFragmentPagerAdapter(
         getValueAt(position)?.let {
             QRViewFragment.newInstance(qrCodeId = it.id)
         }
+
+    override fun saveState(): Parcelable? = null
 
     companion object {
         private const val NUMBER_OF_LOOPS = 10000
