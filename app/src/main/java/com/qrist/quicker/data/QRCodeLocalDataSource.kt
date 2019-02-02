@@ -105,13 +105,13 @@ class QRCodeLocalDataSource(
 
     override fun updateQRCodesOrder(indexes: List<Int>): Boolean {
         val qrCodes = this.getQRCodes()
-        val updatedQRCodes = ArrayList<QRCode>(qrCodes.size)
+        val updatedQRCodes = ArrayList<QRCode>()
 
         for (i in 0 until indexes.size) {
-            updatedQRCodes[i] = qrCodes[indexes[i]]
+            updatedQRCodes.add(qrCodes[indexes[i]])
         }
 
-        return this.saveQRCodes(qrCodes)
+        return this.saveQRCodes(updatedQRCodes)
     }
 
     companion object {

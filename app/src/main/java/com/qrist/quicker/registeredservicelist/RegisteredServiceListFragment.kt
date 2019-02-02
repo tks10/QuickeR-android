@@ -109,10 +109,11 @@ class RegisteredServiceListFragment : Fragment() {
                 return true
             }
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                viewHolder.let {
-                    recyclerView.adapter?.notifyItemRemoved(viewHolder.adapterPosition)
-                }
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                viewModel.reflectIndexChange()
             }
         })
     }

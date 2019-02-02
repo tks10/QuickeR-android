@@ -63,7 +63,7 @@ class RegisteredServiceListViewModel(
     }
 
     fun reflectIndexChange() {
-
+        repository.updateQRCodesOrder(qrCodesIndex)
     }
 
     private fun isInValidRange(position: Int): Boolean {
