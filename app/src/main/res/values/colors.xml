@@ -15,4 +15,5 @@
     <color name="etc">#cccccc</color>
     <color name="imageBorderLine">#ff999999</color>
     <color name="white_transparent">#00ffffff</color>
+    <color name="white">#ffffff</color>
 </resources>
