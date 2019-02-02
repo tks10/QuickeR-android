@@ -4,11 +4,11 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,22 +22,33 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
-import com.qrist.quicker.databinding.CustomTabBinding
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
 import com.qrist.quicker.extentions.obtainViewModel
-import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.utils.serviceIdToIconUrl
 import com.qrist.quicker.utils.storeDirectory
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 import java.io.File
 
-class QRContainerFragment : Fragment() {
+class QRContainerFragment : Fragment(), ViewPager.OnPageChangeListener {
+    override fun onPageScrollStateChanged(p0: Int) {
+    }
+
+    override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+    }
+
+    override fun onPageSelected(position: Int) {
+        val nearLeftEdge: Boolean = (position <= viewModel.qrCodes.size)
+        val nearRightEdge: Boolean = (position >= adapter.count - viewModel.qrCodes.size)
+        if (nearLeftEdge || nearRightEdge) {
+            view?.viewPager?.setCurrentItem(adapter.getCenterPosition(0), false)
+        }
+    }
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(storeDirectory)
     private lateinit var sequence: TapTargetSequence
+    private lateinit var adapter: QRViewFragmentPagerAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,9 +109,6 @@ class QRContainerFragment : Fragment() {
             }
         }
 
-
-        view.tabLayout.setupWithViewPager(view.viewPager)
-
         return view
     }
 
@@ -111,22 +119,15 @@ class QRContainerFragment : Fragment() {
 
     private fun updateViewPager() {
         viewModel.fetchQRCodes()
-        view?.viewPager?.adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
-        view?.viewPager?.adapter?.notifyDataSetChanged()
+
+        adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
+        view?.viewPager?.adapter = adapter
+        view?.viewPager?.currentItem = adapter.getCenterPosition(0)
+        view?.viewPager?.addOnPageChangeListener(this)
+
+        view?.tabLayout?.setUpWithAdapter(ServiceIconAdapter(view?.viewPager!!, viewModel.qrCodes))
 
         val serviceCount = viewModel.qrCodes.size
-        (0 until serviceCount).forEach { i ->
-            val qrCode = viewModel.qrCodes[i]
-            val serviceIconUrl = when (qrCode) {
-                is QRCode.Default -> serviceIdToIconUrl(qrCode.serviceId)
-                is QRCode.User -> qrCode.serviceIconUrl
-            }
-            val binding: CustomTabBinding =
-                DataBindingUtil.inflate(layoutInflater, R.layout.custom_tab, view?.tabLayout, false)
-            binding.imageUrl = serviceIconUrl
-            view?.tabLayout?.getTabAt(i)?.customView = binding.root
-        }
-
         view?.getStartedTextView?.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
     }
 
