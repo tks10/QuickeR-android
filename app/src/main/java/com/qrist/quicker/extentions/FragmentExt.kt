@@ -20,6 +20,10 @@ import java.io.IOException
 fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>) =
     ViewModelProviders.of(this, ViewModelFactory.getInstance(activity?.application!!)).get(viewModelClass)
 
+// for QRViewFragment
+fun <T : ViewModel> Fragment.obtainViewModel(key: String, viewModelClass: Class<T>) =
+    ViewModelProviders.of(activity!!, ViewModelFactory.getInstance(activity?.application!!)).get(key, viewModelClass)
+
 @Throws(SecurityException::class)
 fun Fragment.makeAppDirectory(directory: File): Boolean =
     when (checkPermission()) {
