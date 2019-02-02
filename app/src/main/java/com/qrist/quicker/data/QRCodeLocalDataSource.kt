@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialComponent
-import com.qrist.quicker.utils.externalStorageRootDirectory
 import com.qrist.quicker.utils.saveImage
+import com.qrist.quicker.utils.storeDirectory
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -59,7 +59,7 @@ class QRCodeLocalDataSource(
     override fun saveQRCode(serviceId: Int, qrImage: Bitmap): Boolean {
         // if there are same id in the shared preference, overwrite the QRCodes
         val id = UUID.randomUUID().toString()
-        val qrCodeUrl = "$externalStorageRootDirectory/$id.png"
+        val qrCodeUrl = "$storeDirectory/$id.png"
         val qrCode = QRCode.Default(id, qrCodeUrl, serviceId)
         val qrCodes = getQRCodes().filter { it.id != qrCode.id } + listOf(qrCode)
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
@@ -72,8 +72,8 @@ class QRCodeLocalDataSource(
     override fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean {
         // if there are same id in the shared preference, overwrite the QRCodes
         val id = UUID.randomUUID().toString()
-        val qrCodeUrl = "$externalStorageRootDirectory/$id.png"
-        val serviceIconUrl = "$externalStorageRootDirectory/${id}_icon.png"
+        val qrCodeUrl = "$storeDirectory/$id.png"
+        val serviceIconUrl = "$storeDirectory/${id}_icon.png"
         val qrCode = QRCode.User(id, qrCodeUrl, serviceName, serviceIconUrl)
         val qrCodes = getQRCodes().filter { it.id != qrCode.id } + listOf(qrCode)
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
