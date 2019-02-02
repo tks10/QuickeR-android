@@ -38,6 +38,14 @@ class QRCodeLocalDataSource(
         }
     }
 
+    override fun saveQRCodes(codes: List<QRCode>): Boolean {
+        val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
+        editor.putString(PREF_NAME, qrCodeListAdapter.toJson(codes.toList()))
+        editor.apply()
+
+        return true
+    }
+
     override fun saveQRCode(code: QRCode, image: Bitmap): Boolean {
         // if there are same id in the shared preference, overwrite the QRCodes
         val qrCodes = getQRCodes().filter { it.id != code.id } + listOf(code)
@@ -93,6 +101,17 @@ class QRCodeLocalDataSource(
 
     override fun hasDoneTutorial(component: TutorialComponent): Boolean {
         return sharedPreferences.getBoolean(component.toString(), false)
+    }
+
+    override fun updateQRCodesOrder(indexes: List<Int>): Boolean {
+        val qrCodes = this.getQRCodes()
+        val updatedQRCodes = ArrayList<QRCode>()
+
+        for (i in 0 until indexes.size) {
+            updatedQRCodes.add(qrCodes[indexes[i]])
+        }
+
+        return this.saveQRCodes(updatedQRCodes)
     }
 
     companion object {

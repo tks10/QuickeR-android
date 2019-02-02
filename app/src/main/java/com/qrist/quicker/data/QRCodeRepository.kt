@@ -33,6 +33,10 @@ class QRCodeRepository(
         return local.hasDoneTutorial(component)
     }
 
+    fun updateQRCodesOrder(indexes: List<Int>) {
+        local.updateQRCodesOrder(indexes)
+    }
+
     companion object {
         private var INSTANCE: QRCodeRepository? = null
 

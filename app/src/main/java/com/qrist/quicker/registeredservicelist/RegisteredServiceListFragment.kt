@@ -8,12 +8,13 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
-import com.google.android.gms.oss.licenses.OssLicensesActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisteredservicelistBinding
@@ -53,6 +54,7 @@ class RegisteredServiceListFragment : Fragment() {
 
         val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
         binding.root.registeredServiceList.addItemDecoration(itemDecoration)
+        this.createItemTouchHelper(binding.root.registeredServiceList).attachToRecyclerView(binding.root.registeredServiceList)
 
         return binding.root
     }
@@ -90,5 +92,27 @@ class RegisteredServiceListFragment : Fragment() {
                 }
             })
         }
+    }
+
+    private fun createItemTouchHelper(recyclerView: RecyclerView): ItemTouchHelper {
+        return ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+
+                recyclerView.adapter?.notifyItemMoved(fromPosition, toPosition)
+                viewModel.moveIndex(fromPosition, toPosition)
+
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                viewModel.reflectIndexChange()
+            }
+        })
     }
 }
