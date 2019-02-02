@@ -34,13 +34,8 @@ class QRViewFragment : Fragment() {
     companion object {
         private const val BUNDLE_ARG_ID = "id"
 
-        private var instances: List<QRViewFragment> = listOf()
-
         fun newInstance(qrCodeId: String): QRViewFragment {
-            val fragment: QRViewFragment? = instances.findLast {
-                qrCodeId == it.codeId
-            }
-            return fragment ?: QRViewFragment().apply {
+            return QRViewFragment().apply {
                 arguments = Bundle().apply {
                     putString(BUNDLE_ARG_ID, qrCodeId)
                 }
