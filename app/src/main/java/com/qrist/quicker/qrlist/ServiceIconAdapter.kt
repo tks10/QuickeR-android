@@ -1,5 +1,6 @@
 package com.qrist.quicker.qrlist
 
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
@@ -20,6 +21,15 @@ class ServiceIconAdapter(
     private val qrCodes: List<QRCode>
 ) : RecyclerTabLayout.Adapter<ServiceIconAdapter.ViewHolder>(viewPager) {
 
+    private val serviceIconDrawables: List<Drawable> =
+        qrCodes.map { qrCode ->
+            val serviceIconUrl: Uri = when (qrCode) {
+                is QRCode.Default -> Uri.parse(serviceIdToIconUrl(qrCode.serviceId))
+                is QRCode.User -> Uri.fromFile(File(qrCode.serviceIconUrl))
+            }
+            getDrawableFromUri(serviceIconUrl)
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context).inflate(R.layout.custom_tab, parent, false)
         val onScreenLimit = min(qrCodes.size, MAX_ON_SCREEN_LIMIT).let {
@@ -37,20 +47,16 @@ class ServiceIconAdapter(
 
     override fun getItemCount(): Int = viewPager.adapter!!.count
 
-    private fun getValueAt(position: Int): QRCode? =
-        when (qrCodes.size) {
+    private fun getValueAt(position: Int): Drawable? =
+        when (serviceIconDrawables.size) {
             0 -> null
-            else -> qrCodes[position % qrCodes.size]
+            else -> serviceIconDrawables[position % serviceIconDrawables.size]
         }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val qrCode: QRCode? = getValueAt(position)
-        qrCode?.let {
-            val serviceIconUrl = when (qrCode) {
-                is QRCode.Default -> Uri.parse(serviceIdToIconUrl(qrCode.serviceId))
-                is QRCode.User -> Uri.fromFile(File(qrCode.serviceIconUrl))
-            }
-            holder.view.tab_icon.setImageDrawable(getDrawableFromUri(serviceIconUrl))
+        val icon: Drawable? = getValueAt(position)
+        icon?.let {
+            holder.view.tab_icon.setImageDrawable(icon)
         }
     }
 
