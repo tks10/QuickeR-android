@@ -13,7 +13,7 @@ val storeDirectory: String = "$externalStorageRootDirectory/${BuildConfig.APPLIC
 
 fun validateExistence(code: QRCode): Boolean {
     try {
-        val qrCodeUrl = Uri.parse(code.qrCodeUrl)
+        val qrCodeUrl = Uri.fromFile(File(code.qrCodeUrl))
         MyApplication.instance.contentResolver.openInputStream(qrCodeUrl)
     } catch (e: FileNotFoundException) {
         e.printStackTrace()

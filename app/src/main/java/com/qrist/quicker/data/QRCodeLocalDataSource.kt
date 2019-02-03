@@ -4,10 +4,7 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialComponent
-import com.qrist.quicker.utils.IMAGE_ICON_MAX
-import com.qrist.quicker.utils.IMAGE_QR_MAX
-import com.qrist.quicker.utils.saveImage
-import com.qrist.quicker.utils.storeDirectory
+import com.qrist.quicker.utils.*
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -28,9 +25,11 @@ class QRCodeLocalDataSource(
 
     override fun getQRCodes(): List<QRCode> {
         val json: String? = sharedPreferences.getString(PREF_NAME, "[]")
-        return qrCodeListAdapter.fromJson(
+        val codes = qrCodeListAdapter.fromJson(
             json ?: "[]"
         )!!
+
+        return this.deleteIfNotFound(codes)
     }
 
     override fun getQRCode(id: String): QRCode? {
@@ -94,6 +93,17 @@ class QRCodeLocalDataSource(
         editor.apply()
 
         return true
+    }
+
+    override fun deleteIfNotFound(codes: List<QRCode>): List<QRCode> {
+        val existingCodes = mutableListOf<QRCode>()
+
+        codes.forEach {
+            if (validateExistence(it)) existingCodes.add(it)
+            else this.deleteQRCode(it.id)
+        }
+
+        return existingCodes
     }
 
     override fun doneTutorial(component: TutorialComponent) {
