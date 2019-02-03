@@ -4,10 +4,11 @@ import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
+import android.util.Log
 import com.qrist.quicker.models.QRCode
 
 class QRViewFragmentPagerAdapter(
-    private val qrCodes: List<QRCode>,
+    private var qrCodes: List<QRCode>,
     fm: FragmentManager
 ) : FragmentStatePagerAdapter(fm) {
 
@@ -35,5 +36,16 @@ class QRViewFragmentPagerAdapter(
 
     companion object {
         private const val NUMBER_OF_LOOPS = 10000
+
+        private var INSTANCE: QRViewFragmentPagerAdapter? = null
+
+        fun getInstance(qrCodes: List<QRCode>, fm: FragmentManager) =
+            INSTANCE?.apply {
+                // if qrCodes is changed, the reference is gonna be changed because of LiveData.
+                if (this.qrCodes != qrCodes) this.qrCodes = qrCodes
+                Log.d("PagerAdapter", "$this")
+            } ?: QRViewFragmentPagerAdapter(qrCodes, fm).apply {
+                INSTANCE = this
+            }
     }
 }

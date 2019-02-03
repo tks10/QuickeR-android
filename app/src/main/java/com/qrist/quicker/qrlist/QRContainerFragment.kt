@@ -102,7 +102,7 @@ class QRContainerFragment : Fragment() {
     private fun updateViewPager(view: View) {
         viewModel.fetchQRCodes()
 
-        val adapter = QRViewFragmentPagerAdapter(viewModel.qrCodes, childFragmentManager)
+        val adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         view.viewPager.adapter = adapter
         view.viewPager.offscreenPageLimit = 5
         view.viewPager.currentItem = adapter.getCenterPosition(0)
