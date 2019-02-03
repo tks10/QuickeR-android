@@ -129,6 +129,7 @@ class QRContainerFragment : Fragment() {
                     positiveButton(R.string.message_open_url) {
                         this@QRContainerFragment.startActivity(intent)
                     }
+                    negativeButton(R.string.cancel)
                 }
             }
         }
