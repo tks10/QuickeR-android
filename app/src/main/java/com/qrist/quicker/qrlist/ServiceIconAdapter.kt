@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +57,6 @@ class ServiceIconAdapter(
         val icon: Drawable? = getValueAt(position)
         icon?.let {
             holder.view.tab_icon.setImageDrawable(icon)
-            Log.d("ServiceIconAdapter", "$position is set!")
         }
     }
 
