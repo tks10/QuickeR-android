@@ -41,6 +41,7 @@ class QRViewFragmentPagerAdapter(
 
         fun getInstance(qrCodes: List<QRCode>, fm: FragmentManager) =
             INSTANCE?.apply {
+                // if qrCodes is changed, the reference is gonna be changed because of LiveData.
                 if (this.qrCodes != qrCodes) this.qrCodes = qrCodes
                 Log.d("PagerAdapter", "$this")
             } ?: QRViewFragmentPagerAdapter(qrCodes, fm).apply {
