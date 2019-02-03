@@ -23,13 +23,17 @@ class QRCodeLocalDataSource(
         )
         .build().adapter(Types.newParameterizedType(List::class.java, QRCode::class.java))
 
-    override fun getQRCodes(): List<QRCode> {
+    override fun getQRCodes(notFoundValidation: Boolean): List<QRCode> {
         val json: String? = sharedPreferences.getString(PREF_NAME, "[]")
         val codes = qrCodeListAdapter.fromJson(
             json ?: "[]"
         )!!
 
-        return this.deleteIfNotFound(codes)
+        return if (notFoundValidation) {
+            this.deleteIfNotFound(codes)
+        } else {
+            codes
+        }
     }
 
     override fun getQRCode(id: String): QRCode? {
@@ -86,8 +90,7 @@ class QRCodeLocalDataSource(
     }
 
     override fun deleteQRCode(id: String): Boolean {
-        val qrCode = this.getQRCode(id) ?: return false
-        val qrCodes = getQRCodes().filter { it.id != qrCode.id }
+        val qrCodes = getQRCodes().filter { it.id != id }
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
