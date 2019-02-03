@@ -20,9 +20,4 @@ class QRContainerViewModel(
     fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()
     }
-
-    fun saveQRCodes() {
-        val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.qr_code)
-        qrCodes.map { repository.saveQRCode(it, bitmap) }
-    }
 }
