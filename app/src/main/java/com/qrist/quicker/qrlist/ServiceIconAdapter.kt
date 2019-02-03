@@ -47,10 +47,10 @@ class ServiceIconAdapter(
         val qrCode: QRCode? = getValueAt(position)
         qrCode?.let {
             val serviceIconUrl = when (qrCode) {
-                is QRCode.Default -> serviceIdToIconUrl(qrCode.serviceId)
-                is QRCode.User -> Uri.fromFile(File(qrCode.serviceIconUrl)).toString()
+                is QRCode.Default -> Uri.parse(serviceIdToIconUrl(qrCode.serviceId))
+                is QRCode.User -> Uri.fromFile(File(qrCode.serviceIconUrl))
             }
-            holder.view.tab_icon.setImageDrawable(getDrawableFromUri(Uri.parse(serviceIconUrl)))
+            holder.view.tab_icon.setImageDrawable(getDrawableFromUri(serviceIconUrl))
         }
     }
 
