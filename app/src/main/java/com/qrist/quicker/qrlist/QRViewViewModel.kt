@@ -49,7 +49,7 @@ class QRViewViewModel(
                 is QRCode.User -> -1
                 is QRCode.Default -> qrCode.serviceId
             }
-        }
+        } ?: -1
     }
 
     fun getBackgroundColor(serviceId: Int): ColorDrawable {
