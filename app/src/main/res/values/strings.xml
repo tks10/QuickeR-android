@@ -12,9 +12,12 @@
     <string name="message_service_empty">No registered services</string>
     <string name="title_open_url">Are you sure you want to open following URL?</string>
     <string name="message_open_url">Open</string>
+    <string name="message_close">close</string>
+    <string name="message_copy">copy</string>
     <string name="title_service_list">Services</string>
     <string name="title_add_list">Add Service</string>
     <string name="title_register">Register</string>
+    <string name="title_result_non_url">Scanning result</string>
     <string name="qr_code">QR code</string>
     <string name="open_source_license">Open Source License</string>
     <string name="tutorial_qr_image">Tap here to set the QR Code.\nSelect the image containing your QR code saved in advance by taking a screen shot.</string>

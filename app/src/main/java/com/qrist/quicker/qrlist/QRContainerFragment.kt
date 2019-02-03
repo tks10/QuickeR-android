@@ -2,6 +2,9 @@ package com.qrist.quicker.qrlist
 
 import android.Manifest
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -13,6 +16,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.navigation.Navigation
 import com.getkeepsafe.taptargetview.TapTarget
@@ -120,15 +124,35 @@ class QRContainerFragment : Fragment() {
                 val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, resultData)
                 Log.d("QR result", result.contents)
 
-                val url = Uri.parse(result.contents)
-                val intent = Intent(Intent.ACTION_VIEW, url)
+                scannedQRCode(result.contents)
+            }
+        }
+    }
+
+    private fun scannedQRCode(resultText: String) {
+        when (URLUtil.isValidUrl(resultText)) {
+            true -> {
+                val uri = Uri.parse(resultText)
+                val intent = Intent(Intent.ACTION_VIEW, uri)
 
                 MaterialDialog(activity!!).show {
                     title(R.string.title_open_url)
-                    message(text = url.toString())
+                    message(text = uri.toString())
                     positiveButton(R.string.message_open_url) {
                         this@QRContainerFragment.startActivity(intent)
                     }
+                    negativeButton(R.string.cancel)
+                }
+            }
+            false -> {
+                MaterialDialog(activity!!).show {
+                    title(R.string.title_result_non_url)
+                    message(text = resultText)
+                    positiveButton(R.string.message_copy) {
+                        val clipboardManager: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        clipboardManager.primaryClip = ClipData.newPlainText("", resultText)
+                    }
+                    negativeButton(R.string.message_close)
                 }
             }
         }
