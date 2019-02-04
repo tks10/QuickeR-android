@@ -54,7 +54,7 @@ class RegisteredServiceListFragment : Fragment() {
 
         val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
         binding.root.registeredServiceList.addItemDecoration(itemDecoration)
-        this.createItemTouchHelper(binding.root.registeredServiceList).attachToRecyclerView(binding.root.registeredServiceList)
+        this.createItemTouchHelper().attachToRecyclerView(binding.root.registeredServiceList)
 
         return binding.root
     }
@@ -65,8 +65,8 @@ class RegisteredServiceListFragment : Fragment() {
         view?.registeredServiceList?.adapter?.notifyDataSetChanged()
     }
 
-    private fun createAdapter(): RegisteredServiceListAdapter {
-        return RegisteredServiceListAdapter(activity!!, viewModel.getServiceItems()).apply {
+    private fun createAdapter(): RegisteredServiceListAdapter =
+        RegisteredServiceListAdapter(activity!!, viewModel.getServiceItems()).apply {
             setOnItemClickListener(View.OnClickListener {
                 val position = (it.parent as ConstraintLayout).id
                 val qrCode = viewModel.qrCodes[position]
@@ -79,7 +79,7 @@ class RegisteredServiceListFragment : Fragment() {
                     title(R.string.title_delete)
                     message(R.string.message_delete)
                     icon(drawable = getDrawableFromUri(uri))
-                    positiveButton(R.string.agree_delete) { dialog ->
+                    positiveButton(R.string.agree_delete) {
                         // Do something
                         val qrCode = viewModel.qrCodes[position]
                         if (viewModel.deleteQRCode(qrCode.id)) {
@@ -87,15 +87,14 @@ class RegisteredServiceListFragment : Fragment() {
                             Snackbar.make(view!!, R.string.service_deleted, Snackbar.LENGTH_LONG).show()
                         }
                     }
-                    negativeButton(R.string.cancel) { dialog ->
+                    negativeButton(R.string.cancel) {
                     }
                 }
             })
         }
-    }
 
-    private fun createItemTouchHelper(recyclerView: RecyclerView): ItemTouchHelper {
-        return ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+    private fun createItemTouchHelper(): ItemTouchHelper =
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
 
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 val fromPosition = viewHolder.adapterPosition
@@ -114,5 +113,4 @@ class RegisteredServiceListFragment : Fragment() {
                 viewModel.reflectIndexChange()
             }
         })
-    }
 }

@@ -54,8 +54,7 @@ class ServiceIconAdapter(
         }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val icon: Drawable? = getValueAt(position)
-        icon?.let {
+        getValueAt(position)?.let { icon ->
             holder.view.tab_icon.setImageDrawable(icon)
         }
     }
