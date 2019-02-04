@@ -108,8 +108,9 @@ class QRContainerFragment : Fragment() {
 
         val adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         view.viewPager.adapter = adapter
-        view.viewPager.offscreenPageLimit = 5
+        view.viewPager.offscreenPageLimit = 0
         view.viewPager.currentItem = adapter.getCenterPosition(0)
+        adapter.notifyDataSetChanged()
 
         view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
         view.tabLayout.setCurrentItem(adapter.getCenterPosition(0), false)
