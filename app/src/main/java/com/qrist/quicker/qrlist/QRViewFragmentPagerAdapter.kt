@@ -12,12 +12,13 @@ class QRViewFragmentPagerAdapter(
     fm: FragmentManager
 ) : FragmentStatePagerAdapter(fm) {
 
-    override fun getCount(): Int = (qrCodes.size * NUMBER_OF_LOOPS).let {
-        when (qrCodes.size) {
-            1 -> 1
-            else -> it
+    override fun getCount(): Int =
+        (qrCodes.size * NUMBER_OF_LOOPS).let {
+            when (qrCodes.size) {
+                1 -> 1
+                else -> it
+            }
         }
-    }
 
     fun getCenterPosition(position: Int) = qrCodes.size * NUMBER_OF_LOOPS / 2 + position
 
@@ -42,10 +43,10 @@ class QRViewFragmentPagerAdapter(
         fun getInstance(qrCodes: List<QRCode>, fm: FragmentManager) =
             INSTANCE?.apply {
                 // if qrCodes is changed, the reference is gonna be changed because of LiveData.
-                if (this.qrCodes != qrCodes) this.qrCodes = qrCodes
-                Log.d("PagerAdapter", "$this")
-            } ?: QRViewFragmentPagerAdapter(qrCodes, fm).apply {
-                INSTANCE = this
+                if (this.qrCodes !== qrCodes) this.qrCodes = qrCodes
+                Log.d("PagerAdapter", "$this is updated, qrCodes is ${this.qrCodes}")
+            } ?: QRViewFragmentPagerAdapter(qrCodes, fm).also {
+                INSTANCE = it
             }
     }
 }
