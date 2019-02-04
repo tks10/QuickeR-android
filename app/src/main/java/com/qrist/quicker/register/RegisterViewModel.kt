@@ -66,6 +66,7 @@ class RegisterViewModel(
         val isServiceNameValid = serviceName.value.toString().isNotBlank()
         val isServiceIconUrlValid = serviceIconUrl.value.toString().isNotBlank()
         val isQRCodeImageUrlValid = qrCodeImageUrl.value.toString().isNotBlank()
+        Log.e("values", "${serviceName.value}, ${serviceIconUrl.value}, ${qrCodeImageUrl.value}")
         isValidAsServiceLiveData.value = isServiceNameValid && isServiceIconUrlValid && isQRCodeImageUrlValid
     }
 
