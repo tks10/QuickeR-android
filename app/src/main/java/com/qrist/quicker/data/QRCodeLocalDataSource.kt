@@ -2,6 +2,7 @@ package com.qrist.quicker.data
 
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.util.Log
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.*
@@ -84,6 +85,8 @@ class QRCodeLocalDataSource(
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
+
+        Log.d("RegisterViewModel", "Registered $id, $serviceName")
 
         return saveImage(qrImage, qrCode.qrCodeUrl, IMAGE_QR_MAX)
                 && saveImage(iconImage, qrCode.serviceIconUrl, IMAGE_ICON_MAX)
