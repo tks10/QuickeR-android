@@ -1,10 +1,10 @@
 package com.qrist.quicker.qrlist
 
 import android.annotation.SuppressLint
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
-import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import com.qrist.quicker.R
@@ -15,9 +15,9 @@ import com.qrist.quicker.utils.serviceIdToColorDrawable
 
 @SuppressLint("StaticFieldLeak")
 class QRViewViewModel(
-    private val context: Context,
+    private val context: Application,
     private val repository: QRCodeRepository
-) : ViewModel() {
+) : AndroidViewModel(context) {
     private val qrCodeImageLiveData: MutableLiveData<String> = MutableLiveData()
     private val iconImageLiveData: MutableLiveData<String> = MutableLiveData()
     private val serviceIdLiveData: MutableLiveData<Int> = MutableLiveData()
