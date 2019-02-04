@@ -8,7 +8,7 @@ class QRCodeRepository(
     private val local: QRCodeDataSource
 ) {
     fun getQRCodes(): List<QRCode> =
-        local.getQRCodes()
+        local.getQRCodes(notFoundValidation = true)
 
     fun getQRCode(id: String): QRCode? =
         local.getQRCode(id)

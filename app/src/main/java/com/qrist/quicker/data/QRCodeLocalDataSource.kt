@@ -2,12 +2,10 @@ package com.qrist.quicker.data
 
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.util.Log
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialComponent
-import com.qrist.quicker.utils.IMAGE_ICON_MAX
-import com.qrist.quicker.utils.IMAGE_QR_MAX
-import com.qrist.quicker.utils.saveImage
-import com.qrist.quicker.utils.storeDirectory
+import com.qrist.quicker.utils.*
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -26,11 +24,17 @@ class QRCodeLocalDataSource(
         )
         .build().adapter(Types.newParameterizedType(List::class.java, QRCode::class.java))
 
-    override fun getQRCodes(): List<QRCode> {
+    override fun getQRCodes(notFoundValidation: Boolean): List<QRCode> {
         val json: String? = sharedPreferences.getString(PREF_NAME, "[]")
-        return qrCodeListAdapter.fromJson(
+        val codes = qrCodeListAdapter.fromJson(
             json ?: "[]"
         )!!
+
+        return if (notFoundValidation) {
+            this.deleteIfNotFound(codes)
+        } else {
+            codes
+        }
     }
 
     override fun getQRCode(id: String): QRCode? {
@@ -82,18 +86,30 @@ class QRCodeLocalDataSource(
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
 
+        Log.d("RegisterViewModel", "Registered $id, $serviceName")
+
         return saveImage(qrImage, qrCode.qrCodeUrl, IMAGE_QR_MAX)
                 && saveImage(iconImage, qrCode.serviceIconUrl, IMAGE_ICON_MAX)
     }
 
     override fun deleteQRCode(id: String): Boolean {
-        val qrCode = this.getQRCode(id) ?: return false
-        val qrCodes = getQRCodes().filter { it.id != qrCode.id }
+        val qrCodes = getQRCodes().filter { it.id != id }
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
         editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
 
         return true
+    }
+
+    override fun deleteIfNotFound(codes: List<QRCode>): List<QRCode> {
+        val existingCodes = mutableListOf<QRCode>()
+
+        codes.forEach {
+            if (validateExistence(it)) existingCodes.add(it)
+            else this.deleteQRCode(it.id)
+        }
+
+        return existingCodes
     }
 
     override fun doneTutorial(component: TutorialComponent) {

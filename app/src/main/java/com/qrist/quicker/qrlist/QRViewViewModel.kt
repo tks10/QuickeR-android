@@ -32,7 +32,7 @@ class QRViewViewModel(
     fun fetchImageUrl(codeId: String) {
         val qrCode = repository.getQRCode(codeId)
         qrCodeImageLiveData.value = qrCode?.qrCodeUrl ?: run {
-            Log.e("qr code", "qr code image is null")
+            Log.e("qr code", "qr code image is null $codeId")
             convertUrlFromDrawableResId(context, R.drawable.ic_error_24dp)
         }
         iconImageLiveData.value = qrCode?.let {
@@ -41,7 +41,7 @@ class QRViewViewModel(
                 is QRCode.Default -> qrCode.serviceIconUrl
             }
         } ?: run {
-            Log.e("service", "service image is null")
+            Log.e("service", "service image is null: $codeId")
             convertUrlFromDrawableResId(context, R.drawable.ic_error_24dp)
         }
         serviceIdLiveData.value = qrCode?.let {
@@ -49,7 +49,7 @@ class QRViewViewModel(
                 is QRCode.User -> -1
                 is QRCode.Default -> qrCode.serviceId
             }
-        }
+        } ?: -1
     }
 
     fun getBackgroundColor(serviceId: Int): ColorDrawable {
