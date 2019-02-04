@@ -9,7 +9,7 @@ import com.qrist.quicker.models.QRCode
 
 class QRViewFragmentPagerAdapter(
     private var qrCodes: List<QRCode>,
-    fm: FragmentManager
+    private val fm: FragmentManager
 ) : FragmentStatePagerAdapter(fm) {
 
     override fun getCount(): Int =
@@ -40,13 +40,15 @@ class QRViewFragmentPagerAdapter(
 
         private var INSTANCE: QRViewFragmentPagerAdapter? = null
 
-        fun getInstance(qrCodes: List<QRCode>, fm: FragmentManager) =
-            INSTANCE?.apply {
+        fun getInstance(qrCodes: List<QRCode>, fm: FragmentManager): QRViewFragmentPagerAdapter {
+            if (INSTANCE?.fm !== fm) INSTANCE = null
+            return INSTANCE?.apply {
                 // if qrCodes is changed, the reference is gonna be changed because of LiveData.
                 if (this.qrCodes !== qrCodes) this.qrCodes = qrCodes
                 Log.d("PagerAdapter", "$this is updated, qrCodes is ${this.qrCodes}")
             } ?: QRViewFragmentPagerAdapter(qrCodes, fm).also {
                 INSTANCE = it
             }
+        }
     }
 }
