@@ -24,6 +24,7 @@ import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
+import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
@@ -113,7 +114,7 @@ class QRContainerFragment : Fragment() {
         adapter.notifyDataSetChanged()
 
         view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
-        view.tabLayout.setCurrentItem(adapter.getCenterPosition(0), false)
+        (view.tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)
 
         val serviceCount = viewModel.qrCodes.size
         view.getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
