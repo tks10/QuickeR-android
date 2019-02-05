@@ -27,19 +27,30 @@ class QRViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("create fragment", "$codeId $viewModel")
+        Log.e("create fragment", "$this $codeId $viewModel")
         viewModel.fetchImageUrl(codeId)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.e("detach fragment", "$this $codeId $viewModel")
     }
 
     companion object {
         private const val BUNDLE_ARG_ID = "id"
 
-        fun newInstance(qrCodeId: String): QRViewFragment {
-            return QRViewFragment().apply {
+        private var INSTANCES: List<QRViewFragment> = listOf()
+
+        fun newInstance(qrCodeId: String): QRViewFragment =
+            //INSTANCES.findLast {
+            //    it.codeId == qrCodeId
+            //} ?:
+            QRViewFragment().apply {
                 arguments = Bundle().apply {
                     putString(BUNDLE_ARG_ID, qrCodeId)
                 }
+            }.also {
+                INSTANCES = INSTANCES + it
             }
-        }
     }
 }
