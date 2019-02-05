@@ -3,14 +3,22 @@ package com.qrist.quicker.qrlist
 import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
 import android.util.Log
 import com.qrist.quicker.models.QRCode
+import com.qrist.quicker.qrlist.widgets.QRViewFragmentStatePagerAdapter
 
 class QRViewFragmentPagerAdapter(
     private var qrCodes: List<QRCode>,
     private val fm: FragmentManager
-) : FragmentStatePagerAdapter(fm) {
+) : QRViewFragmentStatePagerAdapter(fm) {
+
+    fun getCenterPosition(position: Int): Int = qrCodes.size * NUMBER_OF_LOOPS / 2 + position
+
+    private fun getValueAt(position: Int): QRCode? =
+        when (qrCodes.size) {
+            0 -> null
+            else -> qrCodes[position % qrCodes.size]
+        }
 
     override fun getCount(): Int =
         (qrCodes.size * NUMBER_OF_LOOPS).let {
@@ -20,17 +28,14 @@ class QRViewFragmentPagerAdapter(
             }
         }
 
-    fun getCenterPosition(position: Int) = qrCodes.size * NUMBER_OF_LOOPS / 2 + position
-
-    private fun getValueAt(position: Int): QRCode? =
-        when (qrCodes.size) {
-            0 -> null
-            else -> qrCodes[position % qrCodes.size]
-        }
-
     override fun getItem(position: Int): Fragment? =
         getValueAt(position)?.let {
             QRViewFragment.newInstance(qrCodeId = it.id)
+        }
+
+    override fun getItemId(position: Int): String? =
+        getValueAt(position)?.let {
+            it.id
         }
 
     override fun saveState(): Parcelable? = null
@@ -44,7 +49,9 @@ class QRViewFragmentPagerAdapter(
             if (INSTANCE?.fm !== fm) INSTANCE = null
             return INSTANCE?.apply {
                 // if qrCodes is changed, the reference is gonna be changed because of LiveData.
-                if (this.qrCodes !== qrCodes) this.qrCodes = qrCodes
+                if (this.qrCodes !== qrCodes) {
+                    this.qrCodes = qrCodes
+                }
                 Log.d("PagerAdapter", "$this is updated, qrCodes is ${this.qrCodes}")
             } ?: QRViewFragmentPagerAdapter(qrCodes, fm).also {
                 INSTANCE = it
