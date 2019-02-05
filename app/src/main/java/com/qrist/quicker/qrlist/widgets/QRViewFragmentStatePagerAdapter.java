@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -52,19 +53,32 @@ public abstract class QRViewFragmentStatePagerAdapter extends PagerAdapter {
 			fragment.setMenuVisibility(false);
 			fragment.setUserVisibleHint(false);
 		}
+        Log.d("fragment init item", fragment.toString());
 
 		return fragment;
 	}
 
 	public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-		if (this.mCurTransaction == null) {
-			this.mCurTransaction = this.mFragmentManager.beginTransaction();
-		}
+		//if (this.mCurTransaction == null) {
+		//	this.mCurTransaction = this.mFragmentManager.beginTransaction();
+		//}
 
-		this.mCurTransaction.detach((Fragment)object);
+		//if (this.mCurrentPrimaryItem != object)
+		//    this.mCurTransaction.detach((Fragment)object);
+        //Log.d("delete fragment", object.toString());
 	}
 
-	public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+	public void deleteItems(String id) {
+	    if (this.mCurTransaction == null) {
+	        this.mCurTransaction = this.mFragmentManager.beginTransaction();
+        }
+
+        Fragment fragment = this.mFragmentManager.findFragmentByTag(id);
+	    if (fragment != null) this.mCurTransaction.detach(fragment);
+	    Log.e("delete fragment", "$id");
+    }
+
+    public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
 		Fragment fragment = (Fragment)object;
 		if (fragment != this.mCurrentPrimaryItem) {
 			if (this.mCurrentPrimaryItem != null) {
@@ -75,6 +89,7 @@ public abstract class QRViewFragmentStatePagerAdapter extends PagerAdapter {
 			fragment.setMenuVisibility(true);
 			fragment.setUserVisibleHint(true);
 			this.mCurrentPrimaryItem = fragment;
+            Log.d("fragment primary item", fragment.toString());
 		}
 
 	}
@@ -83,6 +98,7 @@ public abstract class QRViewFragmentStatePagerAdapter extends PagerAdapter {
 		if (this.mCurTransaction != null) {
 			this.mCurTransaction.commitNowAllowingStateLoss();
 			this.mCurTransaction = null;
+			Log.d("fragment pager adapter", "update finished!");
 		}
 
 	}

@@ -38,6 +38,7 @@ class QRContainerFragment : Fragment() {
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(storeDirectory)
+    private lateinit var adapter: QRViewFragmentPagerAdapter
     private lateinit var sequence: TapTargetSequence
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,19 +100,23 @@ class QRContainerFragment : Fragment() {
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         updateViewPager(view!!)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        adapter.detachItems()
     }
 
     private fun updateViewPager(view: View) {
         viewModel.fetchQRCodes()
 
-        val adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
+        adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         view.viewPager.adapter = adapter
         view.viewPager.offscreenPageLimit = 0
         view.viewPager.currentItem = adapter.getCenterPosition(0)
-        adapter.notifyDataSetChanged()
 
         view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
         (view.tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)

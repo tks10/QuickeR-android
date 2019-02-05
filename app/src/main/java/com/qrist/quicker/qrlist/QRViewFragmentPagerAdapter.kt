@@ -38,6 +38,12 @@ class QRViewFragmentPagerAdapter(
             it.id
         }
 
+    fun detachItems() {
+        qrCodes.forEach {
+            deleteItems(it.id)
+        }
+    }
+
     override fun saveState(): Parcelable? = null
 
     companion object {
