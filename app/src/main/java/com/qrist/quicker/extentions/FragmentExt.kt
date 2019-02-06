@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import com.qrist.quicker.utils.ViewModelFactory
 import com.theartofdev.edmodo.cropper.CropImage
 import java.io.File
@@ -22,7 +23,7 @@ fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>) =
 
 // for QRViewFragment
 fun <T : ViewModel> Fragment.obtainViewModel(key: String, viewModelClass: Class<T>) =
-    ViewModelProviders.of(activity!!, ViewModelFactory.getInstance(activity?.application!!)).get(key, viewModelClass)
+    ViewModelProviders.of(parentFragment!!, ViewModelFactory.getInstance(activity?.application!!)).get(key, viewModelClass)
 
 @Throws(SecurityException::class)
 fun Fragment.makeAppDirectory(directory: File): Boolean =

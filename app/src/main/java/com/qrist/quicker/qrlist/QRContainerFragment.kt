@@ -24,6 +24,7 @@ import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
+import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.checkPermission
 import com.qrist.quicker.extentions.makeAppDirectory
@@ -37,6 +38,7 @@ class QRContainerFragment : Fragment() {
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private val directory = File(storeDirectory)
+    private lateinit var adapter: QRViewFragmentPagerAdapter
     private lateinit var sequence: TapTargetSequence
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -98,22 +100,26 @@ class QRContainerFragment : Fragment() {
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         updateViewPager(view!!)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        adapter.detachItems()
     }
 
     private fun updateViewPager(view: View) {
         viewModel.fetchQRCodes()
 
-        val adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
+        adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         view.viewPager.adapter = adapter
         view.viewPager.offscreenPageLimit = 0
         view.viewPager.currentItem = adapter.getCenterPosition(0)
-        adapter.notifyDataSetChanged()
 
         view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
-        view.tabLayout.setCurrentItem(adapter.getCenterPosition(0), false)
+        (view.tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)
 
         val serviceCount = viewModel.qrCodes.size
         view.getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
