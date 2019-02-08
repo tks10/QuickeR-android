@@ -41,6 +41,7 @@
                 app:exitAnim="@anim/stay_out"
                 app:popEnterAnim="@anim/stay_in"
                 app:popExitAnim="@anim/slide_to_right"
+                app:popUpTo="@id/qrContainerFragment"
                 app:destination="@id/registerFragment" />
 
     </fragment>
