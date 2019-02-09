@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
@@ -110,6 +111,22 @@ class QRContainerFragment : Fragment() {
         adapter.detachItems()
     }
 
+    inner class MyOnPageChangeListener(val size: Int) : ViewPager.OnPageChangeListener {
+
+        override fun onPageScrollStateChanged(p0: Int) {
+        }
+
+        override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+        }
+
+        override fun onPageSelected(position: Int) {
+            if (position == size - 1)
+                view?.viewPager?.setCurrentItem(adapter.getCenterPosition(adapter.getActualPosition(-1)), true)
+            else
+                view?.viewPager?.setCurrentItem(adapter.getCenterPosition(adapter.getActualPosition(position)), true)
+        }
+    }
+
     private fun updateViewPager(view: View) {
         viewModel.fetchQRCodes()
 
@@ -117,6 +134,9 @@ class QRContainerFragment : Fragment() {
         view.viewPager.adapter = adapter
         view.viewPager.offscreenPageLimit = 0
         view.viewPager.currentItem = adapter.getCenterPosition(0)
+
+
+        view.viewPager.addOnPageChangeListener(MyOnPageChangeListener(viewModel.qrCodes.size))
 
         view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
         (view.tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)

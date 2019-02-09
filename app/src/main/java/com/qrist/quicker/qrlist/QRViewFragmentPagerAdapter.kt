@@ -41,6 +41,7 @@ class QRViewFragmentPagerAdapter(
                     returnVal
                 }
                 else -> {
+                    detachItems()
                     currentTransaction!!.attach(fragment)
                     fragment
                 }
@@ -99,7 +100,13 @@ class QRViewFragmentPagerAdapter(
         }
     }
 
-    fun getCenterPosition(position: Int): Int = qrCodes.size * NUMBER_OF_LOOPS / 2 + position
+    fun getCenterPosition(position: Int): Int = count / 2 + position
+
+    fun getActualPosition(position: Int): Int =
+        when (qrCodes.size) {
+            0 -> 0
+            else -> position % qrCodes.size
+        }
 
     private fun getValueAt(position: Int): QRCode? =
         when (qrCodes.size) {
@@ -112,7 +119,7 @@ class QRViewFragmentPagerAdapter(
             QRViewFragment.newInstance(qrCodeId = it.id)
         }
 
-    private fun getItemId(position: Int): String? =
+    fun getItemId(position: Int): String? =
         getValueAt(position)?.id
 
 
