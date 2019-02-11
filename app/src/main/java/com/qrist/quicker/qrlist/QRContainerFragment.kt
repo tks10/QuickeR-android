@@ -108,6 +108,7 @@ class QRContainerFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        Log.e("container fragment", "pause")
         adapter.detachItems()
     }
 
