@@ -79,7 +79,7 @@ class RegisterFragment : Fragment() {
         binding.root.addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
-                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack()
+                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack(R.id.qrContainerFragment, false)
             }
         }
 
