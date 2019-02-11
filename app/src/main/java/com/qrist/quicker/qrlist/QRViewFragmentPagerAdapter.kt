@@ -25,24 +25,23 @@ class QRViewFragmentPagerAdapter(
         if (container.id == -1) {
             throw IllegalStateException("ViewPager with adapter $this requires a view id")
         }
-        Log.d("fragment", "start update!")
     }
 
     @SuppressLint("CommitTransaction")
     override fun instantiateItem(container: ViewGroup, position: Int): Any =
-        fm.findFragmentByTag(getItemId(position)).let { fragment ->
+        fm.findFragmentByTag("$position").let { fragment ->
             currentTransaction ?: fm.beginTransaction().also {
                 currentTransaction = it
             }
             when (fragment) {
                 null -> {
                     val returnVal = getItem(position)!!
-                    currentTransaction!!.add(container.id, returnVal, getItemId(position))
+                    currentTransaction?.add(container.id, returnVal, "$position")
                     returnVal
                 }
                 else -> {
                     detachItems()
-                    currentTransaction!!.attach(fragment)
+                    currentTransaction?.attach(fragment)
                     fragment
                 }
             }.apply {
@@ -54,8 +53,14 @@ class QRViewFragmentPagerAdapter(
             }
         }
 
+    @SuppressLint("CommitTransaction")
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        Log.d("delete fragment", `object`.toString())
+        fm.findFragmentByTag("$position")?.let { fragment ->
+            currentTransaction ?: fm.beginTransaction().also {
+                currentTransaction = it
+            }.remove(fragment)
+            Log.d("delete fragment", fragment.toString())
+        }
     }
 
     override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
@@ -72,7 +77,6 @@ class QRViewFragmentPagerAdapter(
         currentTransaction?.commitNowAllowingStateLoss().also {
             currentTransaction = null
         }
-        Log.d("fragment pager adapter", "update finished!")
     }
 
     // finish lifecycle
