@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.models.QRCode
@@ -30,7 +31,7 @@ class ServiceIconAdapter(
             getDrawableFromUri(serviceIconUrl)
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context).inflate(R.layout.custom_tab, parent, false)
         val onScreenLimit = min(qrCodes.size, MAX_ON_SCREEN_LIMIT).let {
             when (it) {
@@ -55,17 +56,31 @@ class ServiceIconAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         getValueAt(position)?.let { icon ->
-            holder.view.tab_icon.setImageDrawable(icon)
+            holder.imageView?.setImageDrawable(icon)
         }
     }
 
-    class ViewHolder(
-        val view: View,
+    private fun actualPosition(position: Int): Int =
+        qrCodes.size.let { size ->
+            when (size) {
+                0 -> 0
+                else -> {
+                    val max = size - 1
+                    if (position % size == max) -1 else position % size
+                }
+            }
+        }
+
+    inner class ViewHolder(
+        view: View,
         viewPager: ViewPager
     ) : RecyclerView.ViewHolder(view) {
+
+        val imageView: ImageView? = view.tab_icon
+
         init {
             itemView.setOnClickListener{
-                val pos: Int = adapterPosition
+                val pos: Int = (viewPager.adapter as QRViewFragmentPagerAdapter).getCenterPosition(this@ServiceIconAdapter.actualPosition(position))
                 if (pos != NO_POSITION) {
                     viewPager.setCurrentItem(pos, true)
                 }

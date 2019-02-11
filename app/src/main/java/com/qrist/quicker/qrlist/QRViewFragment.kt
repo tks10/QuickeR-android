@@ -12,9 +12,16 @@ import com.qrist.quicker.databinding.FragmentQrviewBinding
 import com.qrist.quicker.extentions.obtainViewModel
 
 class QRViewFragment : Fragment() {
-    private val codeId by lazy { arguments!!.getString(BUNDLE_ARG_ID) }
-    private val viewModel: QRViewViewModel
-            by lazy { obtainViewModel(codeId, QRViewViewModel::class.java) }
+    private var codeId: String? = null
+    private var viewModel: QRViewViewModel? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        codeId = arguments!!.getString(BUNDLE_ARG_ID)
+        viewModel = codeId?.let {
+            obtainViewModel(it, QRViewViewModel::class.java)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -28,29 +35,26 @@ class QRViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e("create fragment", "$this $codeId $viewModel")
-        viewModel.fetchImageUrl(codeId)
+        codeId?.let {
+            viewModel?.fetchImageUrl(it)
+        }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        Log.e("detach fragment", "$this $codeId $viewModel")
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e("destroy fragment", "$this $codeId $viewModel")
+        viewModel = null
+        codeId = null
     }
 
     companion object {
         private const val BUNDLE_ARG_ID = "id"
 
-        private var INSTANCES: List<QRViewFragment> = listOf()
-
         fun newInstance(qrCodeId: String): QRViewFragment =
-            //INSTANCES.findLast {
-            //    it.codeId == qrCodeId
-            //} ?:
             QRViewFragment().apply {
                 arguments = Bundle().apply {
                     putString(BUNDLE_ARG_ID, qrCodeId)
                 }
-            }.also {
-                INSTANCES = INSTANCES + it
             }
     }
 }
