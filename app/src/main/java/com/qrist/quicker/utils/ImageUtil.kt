@@ -4,10 +4,12 @@ import android.content.ContentResolver
 import android.content.Context
 import android.databinding.BindingAdapter
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
+import java.io.FileDescriptor
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.ceil
@@ -71,4 +73,12 @@ fun convertUrlFromDrawableResId(context: Context, drawableResId: Int): String {
 fun getDrawableFromUri(uri: Uri): Drawable {
     val inputStream = MyApplication.instance.contentResolver.openInputStream(uri)
     return Drawable.createFromStream(inputStream, uri.toString())
+}
+
+fun getBitmapFromUri(uri: Uri): Bitmap {
+    val pfDescriptor = MyApplication.instance.contentResolver.openFileDescriptor(uri, "r")!!
+    val fileDescriptor: FileDescriptor = pfDescriptor.fileDescriptor
+    val bmp: Bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
+
+    return bmp
 }
