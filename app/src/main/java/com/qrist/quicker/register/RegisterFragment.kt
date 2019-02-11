@@ -20,12 +20,12 @@ import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
 import com.qrist.quicker.extentions.*
 import com.qrist.quicker.models.TutorialComponent
-import com.qrist.quicker.utils.MyApplication
-import com.qrist.quicker.utils.QRCodeDetector
-import com.qrist.quicker.utils.getBitmapFromUri
+import com.qrist.quicker.utils.*
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
+import java.io.File
+import java.io.FileNotFoundException
 import java.util.*
 
 class RegisterFragment : Fragment() {
@@ -118,7 +118,11 @@ class RegisterFragment : Fragment() {
             )
 
             if (qrCodeImageUrl.isNotBlank()) {
-                qrImageBitmap = getBitmapFromUri(Uri.parse(qrCodeImageUrl))
+                qrImageBitmap = try {
+                    getBitmapFromUri(Uri.parse(qrCodeImageUrl))
+                } catch (e: FileNotFoundException) {
+                    getBitmapFromUri(Uri.fromFile(File(qrCodeImageUrl)))
+                }
                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
                 this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
             }
@@ -227,10 +231,12 @@ class RegisterFragment : Fragment() {
                             val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
                             trimmedBitmap?.let {
                                 // If Detected
+                                val tmpUri = generateTemporaryUri()
+                                saveImage(it, tmpUri, IMAGE_QR_MAX)
                                 qrImageBitmap = it
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
                                 this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
-                                viewModel.updateQRCodeImageUrl(uri.toString())
+                                viewModel.updateQRCodeImageUrl(tmpUri)
                             } ?: run {
                                 kindOfCrop = CROP_QR
                                 CropImage

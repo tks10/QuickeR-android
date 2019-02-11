@@ -6,6 +6,7 @@ import com.qrist.quicker.BuildConfig
 import com.qrist.quicker.models.QRCode
 import java.io.File
 import java.io.FileNotFoundException
+import java.util.*
 
 private val externalStorageRootDirectory: String = Environment.getExternalStorageDirectory().absolutePath
 
@@ -33,4 +34,8 @@ fun validateExistence(code: QRCode): Boolean {
     }
 
     return true
+}
+
+fun generateTemporaryUri(): String {
+    return "$storeDirectory${UUID.randomUUID()}"
 }
