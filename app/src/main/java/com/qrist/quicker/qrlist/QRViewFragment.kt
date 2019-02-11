@@ -13,8 +13,12 @@ import com.qrist.quicker.extentions.obtainViewModel
 
 class QRViewFragment : Fragment() {
     private val codeId by lazy { arguments!!.getString(BUNDLE_ARG_ID) }
-    private val viewModel: QRViewViewModel
-            by lazy { obtainViewModel(codeId, QRViewViewModel::class.java) }
+    private var viewModel: QRViewViewModel? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = obtainViewModel(codeId, QRViewViewModel::class.java)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -28,12 +32,13 @@ class QRViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e("create fragment", "$this $codeId $viewModel")
-        viewModel.fetchImageUrl(codeId)
+        viewModel?.fetchImageUrl(codeId)
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        Log.e("detach fragment", "$this $codeId $viewModel")
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("destroy fragment", "$this $codeId $viewModel")
+        viewModel = null
     }
 
     companion object {
