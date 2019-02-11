@@ -13,7 +13,7 @@ import com.qrist.quicker.models.QRCode
 
 class QRViewFragmentPagerAdapter(
     private var qrCodes: List<QRCode>,
-    private val fm: FragmentManager
+    internal val fragmentManager: FragmentManager
 ) : PagerAdapter() {
 
     private var currentTransaction: FragmentTransaction? = null
@@ -29,8 +29,8 @@ class QRViewFragmentPagerAdapter(
 
     @SuppressLint("CommitTransaction")
     override fun instantiateItem(container: ViewGroup, position: Int): Any =
-        fm.findFragmentByTag("$position").let { fragment ->
-            currentTransaction ?: fm.beginTransaction().also {
+        fragmentManager.findFragmentByTag("$position").let { fragment ->
+            currentTransaction ?: fragmentManager.beginTransaction().also {
                 currentTransaction = it
             }
             when (fragment) {
@@ -55,10 +55,12 @@ class QRViewFragmentPagerAdapter(
 
     @SuppressLint("CommitTransaction")
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        fm.findFragmentByTag("$position")?.let { fragment ->
-            currentTransaction ?: fm.beginTransaction().also {
+        fragmentManager.findFragmentByTag("$position")?.let { fragment ->
+            currentTransaction ?: fragmentManager.beginTransaction().also {
                 currentTransaction = it
-            }.remove(fragment)
+            }.remove(fragment).commitNow().also {
+                currentTransaction = null
+            }
             Log.d("delete fragment", fragment.toString())
         }
     }
@@ -95,22 +97,18 @@ class QRViewFragmentPagerAdapter(
 
     @SuppressLint("CommitTransaction")
     fun detachItems() {
-        qrCodes.forEach { code ->
-            fm.findFragmentByTag(code.id)?.also {fragment ->
-                currentTransaction ?: fm.beginTransaction().also { transaction ->
+        fragmentManager.fragments.forEach { fragment ->
+            fragment?.let {
+                currentTransaction ?: fragmentManager.beginTransaction().also { transaction ->
                     currentTransaction = transaction
-                }.detach(fragment)
+                }.remove(fragment).commitNow().also {
+                    currentTransaction = null
+                }
             }
         }
     }
 
     fun getCenterPosition(position: Int): Int = count / 2 + position
-
-    fun getActualPosition(position: Int): Int =
-        when (qrCodes.size) {
-            0 -> 0
-            else -> position % qrCodes.size
-        }
 
     private fun getValueAt(position: Int): QRCode? =
         when (qrCodes.size) {
@@ -123,10 +121,6 @@ class QRViewFragmentPagerAdapter(
             QRViewFragment.newInstance(qrCodeId = it.id)
         }
 
-    fun getItemId(position: Int): String? =
-        getValueAt(position)?.id
-
-
     override fun saveState(): Parcelable? = null
 
     override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
@@ -138,7 +132,7 @@ class QRViewFragmentPagerAdapter(
         private var INSTANCE: QRViewFragmentPagerAdapter? = null
 
         fun getInstance(qrCodes: List<QRCode>, fm: FragmentManager): QRViewFragmentPagerAdapter {
-            if (INSTANCE?.fm !== fm) INSTANCE = null
+            if (INSTANCE?.fragmentManager !== fm) INSTANCE = null
             return INSTANCE?.apply {
                 // if qrCodes is changed, the reference is gonna be changed because of LiveData.
                 if (this.qrCodes !== qrCodes) {
