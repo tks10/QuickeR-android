@@ -12,7 +12,6 @@ import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.serviceNameToServiceId
 import com.qrist.quicker.utils.storeDirectory
 import java.io.File
-import java.util.*
 
 
 class RegisterViewModel(
@@ -24,6 +23,7 @@ class RegisterViewModel(
     private val qrCodeImageUrlLiveData: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
+    private val isIconAddButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = true }
 
     private val directory = File(storeDirectory)
 
@@ -37,6 +37,8 @@ class RegisterViewModel(
         get() = isDefaultServiceLiveData
     val isValidAsService: LiveData<Boolean>
         get() = isValidAsServiceLiveData
+    val isIconAddButtonVisible: LiveData<Boolean>
+        get() = isIconAddButtonVisibleLiveData
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
 
@@ -62,12 +64,21 @@ class RegisterViewModel(
         onChangeParameters()
     }
 
+    fun restoreValues(qrCodeImageUrl: String, serviceName: String, serviceIconUrl: String, isDefaultService: Boolean) {
+        qrCodeImageUrlLiveData.value = qrCodeImageUrl
+        serviceNameLiveData.value = serviceName
+        serviceIconUrlLiveData.value = serviceIconUrl
+        isDefaultServiceLiveData.value = isDefaultService
+        onChangeParameters()
+    }
+
     private fun onChangeParameters() {
         val isServiceNameValid = serviceName.value.toString().isNotBlank()
         val isServiceIconUrlValid = serviceIconUrl.value.toString().isNotBlank()
         val isQRCodeImageUrlValid = qrCodeImageUrl.value.toString().isNotBlank()
         Log.e("values", "${serviceName.value}, ${serviceIconUrl.value}, ${qrCodeImageUrl.value}")
         isValidAsServiceLiveData.value = isServiceNameValid && isServiceIconUrlValid && isQRCodeImageUrlValid
+        isIconAddButtonVisibleLiveData.value = !isDefaultService.value!! && !isServiceIconUrlValid
     }
 
     fun saveQRCode(qrImage: Bitmap, serviceIconImage: Bitmap?) {

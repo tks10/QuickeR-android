@@ -72,7 +72,7 @@
                 android:background="@color/white_transparent"
                 android:layout_marginStart="2dp"
                 android:clickable="@{!viewmodel.isDefaultService}"
-                android:visibility="@{viewmodel.isDefaultService ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewmodel.isIconAddButtonVisible ? View.VISIBLE : View.INVISIBLE}"
                 tools:ignore="ContentDescription"
                 app:srcCompat="@drawable/add_photo"
                 app:layout_constraintStart_toStartOf="parent"
