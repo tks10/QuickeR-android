@@ -95,6 +95,8 @@ class QRViewFragmentPagerAdapter(
             }
         }
 
+    override fun getPageTitle(position: Int): CharSequence? = "  $position  "
+
     @SuppressLint("CommitTransaction")
     fun detachItems() {
         fragmentManager.fragments.forEach { fragment ->

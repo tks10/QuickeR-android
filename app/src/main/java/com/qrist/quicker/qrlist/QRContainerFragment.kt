@@ -120,7 +120,7 @@ class QRContainerFragment : Fragment() {
         view.viewPager.offscreenPageLimit = 0
         view.viewPager.currentItem = adapter.getCenterPosition(0)
 
-        view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
+        view.tabLayout.setUpWithAdapter(RecyclerTabLayout.DefaultAdapter(view.viewPager))
         (view.tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)
 
         val serviceCount = viewModel.qrCodes.size
