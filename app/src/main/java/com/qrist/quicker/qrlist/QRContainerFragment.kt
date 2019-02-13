@@ -1,34 +1,27 @@
 package com.qrist.quicker.qrlist
 
-import android.Manifest
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.URLUtil
-import android.widget.Toast
 import androidx.navigation.Navigation
+import com.afollestad.materialdialogs.MaterialDialog
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
-import com.qrist.quicker.extentions.checkPermission
-import com.qrist.quicker.extentions.makeAppDirectory
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.utils.storeDirectory
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
@@ -45,20 +38,17 @@ class QRContainerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
-            sequence = TapTargetSequence(activity)
-                .targets(
-                    TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
-                        .outerCircleColor(R.color.colorAccent)
-                        .titleTextColor(R.color.colorTextOnSecondary)
-                        .drawShadow(true)
-                        .outerCircleAlpha(1.0f)
-                        .cancelable(false)
-                        .tintTarget(false)
-                        .id(1)
-                )
-            requestExternalStoragePermission(byFab = false)
-        }
+        sequence = TapTargetSequence(activity)
+            .targets(
+                TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
+                    .outerCircleColor(R.color.colorAccent)
+                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .drawShadow(true)
+                    .outerCircleAlpha(1.0f)
+                    .cancelable(false)
+                    .tintTarget(false)
+                    .id(1)
+            )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -91,11 +81,7 @@ class QRContainerFragment : Fragment() {
         }
 
         view.floatingActionButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
-                requestExternalStoragePermission(byFab = true)
-            } else {
-                Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
-            }
+            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
         }
 
         return view
@@ -104,6 +90,7 @@ class QRContainerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         updateViewPager(view!!)
+        sequence.start()
     }
 
     override fun onPause() {
@@ -158,59 +145,14 @@ class QRContainerFragment : Fragment() {
                     title(R.string.title_result_non_url)
                     message(text = resultText)
                     positiveButton(R.string.message_copy) {
-                        val clipboardManager: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clipboardManager: ClipboardManager =
+                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         clipboardManager.primaryClip = ClipData.newPlainText("", resultText)
                     }
                     negativeButton(R.string.message_close)
                 }
             }
         }
-    }
-
-    private fun saveImageOnDevice() {
-        makeAppDirectory(directory)
-        updateViewPager(view!!)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_PERMISSION_ON_CREATE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            saveImageOnDevice()
-        }
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            saveImageOnDevice()
-            when (requestCode) {
-                REQUEST_PERMISSION_ON_CREATE -> sequence.start()
-                REQUEST_PERMISSION_BY_FAB -> {
-                    Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_serviceaddlist)
-                }
-            }
-        }
-
-    }
-
-    private fun requestExternalStoragePermission(byFab: Boolean) {
-        if (shouldShowRequestPermissionRationale(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-        ) {
-            val toast = Toast.makeText(activity, R.string.accept_me, Toast.LENGTH_SHORT)
-            toast.show()
-            requestPermissions(
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                if (byFab) REQUEST_PERMISSION_BY_FAB else REQUEST_PERMISSION_ON_CREATE
-            )
-        } else {
-            requestPermissions(
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                if (byFab) REQUEST_PERMISSION_BY_FAB else REQUEST_PERMISSION_ON_CREATE
-            )
-        }
-    }
-
-    companion object {
-        private const val REQUEST_PERMISSION_ON_CREATE: Int = 1000
-        private const val REQUEST_PERMISSION_BY_FAB: Int = 1001
     }
 }
 
