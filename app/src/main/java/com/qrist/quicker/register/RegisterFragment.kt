@@ -61,6 +61,10 @@ class RegisterFragment : Fragment() {
             }
         }
 
+        if (Build.VERSION.SDK_INT < 23) {
+            if (!directory.exists()) makeAppDirectory(directory)
+        }
+
         binding.root.addQRButton.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
