@@ -62,7 +62,7 @@ class RegisterFragment : Fragment() {
         }
 
         if (Build.VERSION.SDK_INT < 23) {
-            if (!directory.exists()) makeAppDirectory(directory)
+            makeAppDirectory(directory)
         }
 
         binding.root.addQRButton.setOnClickListener {
