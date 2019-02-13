@@ -23,6 +23,7 @@ import com.journeyapps.barcodescanner.CaptureActivity
 import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.obtainViewModel
+import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.storeDirectory
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
@@ -31,25 +32,8 @@ import java.io.File
 class QRContainerFragment : Fragment() {
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
-    private val directory = File(storeDirectory)
     private lateinit var adapter: QRViewFragmentPagerAdapter
     private lateinit var sequence: TapTargetSequence
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        sequence = TapTargetSequence(activity)
-            .targets(
-                TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
-                    .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
-                    .drawShadow(true)
-                    .outerCircleAlpha(1.0f)
-                    .cancelable(false)
-                    .tintTarget(false)
-                    .id(1)
-            )
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
@@ -90,7 +74,21 @@ class QRContainerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         updateViewPager(view!!)
-        sequence.start()
+        if (viewModel.hasNotDoneTutorial(TutorialComponent.AddServiceButton)) {
+            sequence = TapTargetSequence(activity)
+                .targets(
+                    TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
+                        .outerCircleColor(R.color.colorAccent)
+                        .titleTextColor(R.color.colorTextOnSecondary)
+                        .drawShadow(true)
+                        .outerCircleAlpha(1.0f)
+                        .cancelable(false)
+                        .tintTarget(false)
+                        .id(1)
+                )
+            sequence.start()
+            viewModel.doneTutorial(TutorialComponent.AddServiceButton)
+        }
     }
 
     override fun onPause() {

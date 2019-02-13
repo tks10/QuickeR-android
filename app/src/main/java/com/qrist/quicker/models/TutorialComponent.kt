@@ -4,5 +4,6 @@ enum class TutorialComponent{
     QRImageView,
     ServiceIconImageView,
     ServiceNameEditText,
-    DoneButton
+    DoneButton,
+    AddServiceButton
 }
