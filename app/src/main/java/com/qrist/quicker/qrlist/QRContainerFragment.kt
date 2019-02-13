@@ -24,10 +24,8 @@ import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialComponent
-import com.qrist.quicker.utils.storeDirectory
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
-import java.io.File
 
 class QRContainerFragment : Fragment() {
 
@@ -74,6 +72,16 @@ class QRContainerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         updateViewPager(view!!)
+        tutorial()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("container fragment", "pause")
+        adapter.detachItems()
+    }
+
+    private fun tutorial() {
         if (viewModel.hasNotDoneTutorial(TutorialComponent.AddServiceButton)) {
             sequence = TapTargetSequence(activity)
                 .targets(
@@ -89,12 +97,6 @@ class QRContainerFragment : Fragment() {
             sequence.start()
             viewModel.doneTutorial(TutorialComponent.AddServiceButton)
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.e("container fragment", "pause")
-        adapter.detachItems()
     }
 
     private fun updateViewPager(view: View) {

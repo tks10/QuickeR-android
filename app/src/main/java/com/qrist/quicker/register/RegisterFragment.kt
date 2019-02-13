@@ -46,10 +46,6 @@ class RegisterFragment : Fragment() {
 
     private lateinit var sequence: TapTargetSequence
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentRegisterBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
@@ -100,7 +96,8 @@ class RegisterFragment : Fragment() {
         binding.root.addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
-                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack(R.id.qrContainerFragment, false)
+                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                    .popBackStack(R.id.qrContainerFragment, false)
             }
         }
 
@@ -218,7 +215,10 @@ class RegisterFragment : Fragment() {
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {
             targets.add(
-                TapTarget.forView(view!!.serviceNameTextInputLayout, context!!.resources.getString(R.string.tutorial_service_name))
+                TapTarget.forView(
+                    view!!.serviceNameTextInputLayout,
+                    context!!.resources.getString(R.string.tutorial_service_name)
+                )
                     .outerCircleColor(R.color.colorAccent)
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
@@ -336,7 +336,8 @@ class RegisterFragment : Fragment() {
                                 serviceIconImageBitmap = bmp
                             }
                         }
-                        else -> {}
+                        else -> {
+                        }
                     }
                 }
             }
