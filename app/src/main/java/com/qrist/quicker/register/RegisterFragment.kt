@@ -1,10 +1,13 @@
 package com.qrist.quicker.register
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar
@@ -12,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.Navigation
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
@@ -33,6 +37,7 @@ class RegisterFragment : Fragment() {
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
     private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
+    private val directory = File(storeDirectory)
     private var qrImageBitmap: Bitmap? = null
     private var serviceIconImageBitmap: Bitmap? = null
     private val CROP_QR = 0
@@ -40,10 +45,6 @@ class RegisterFragment : Fragment() {
     private var kindOfCrop = -1
 
     private lateinit var sequence: TapTargetSequence
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentRegisterBinding =
@@ -60,26 +61,47 @@ class RegisterFragment : Fragment() {
             }
         }
 
+        if (Build.VERSION.SDK_INT < 23) {
+            makeAppDirectory(directory)
+        }
+
         binding.root.addQRButton.setOnClickListener {
-            onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+                requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
+            } else {
+                onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+            }
         }
 
         binding.root.qrImageView.setOnClickListener {
-            onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+                requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
+            } else {
+                onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+            }
         }
 
         binding.root.addIconButton.setOnClickListener {
-            onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
+            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+                requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
+            } else {
+                onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
+            }
         }
 
         binding.root.serviceIconImageView.setOnClickListener {
-            onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
+            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+                requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
+            } else {
+                onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
+            }
         }
 
         binding.root.addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
-                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack(R.id.qrContainerFragment, false)
+                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                    .popBackStack(R.id.qrContainerFragment, false)
             }
         }
 
@@ -139,6 +161,27 @@ class RegisterFragment : Fragment() {
         sequence.start()
     }
 
+    private fun requestExternalStoragePermission(requestCode: Int) {
+        if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Toast.makeText(activity, R.string.accept_me, Toast.LENGTH_LONG).show()
+        }
+        requestPermissions(
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            requestCode
+        )
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            makeAppDirectory(directory)
+            when (requestCode) {
+                REQUEST_PERMISSION_ON_QR -> onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+                REQUEST_PERMISSION_ON_ICON -> onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
+            }
+        }
+    }
+
     private fun setupTutorial() {
         var id = 0
         val targets = ArrayList<TapTarget>()
@@ -176,7 +219,10 @@ class RegisterFragment : Fragment() {
 
         if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {
             targets.add(
-                TapTarget.forView(view!!.serviceNameTextInputLayout, context!!.resources.getString(R.string.tutorial_service_name))
+                TapTarget.forView(
+                    view!!.serviceNameTextInputLayout,
+                    context!!.resources.getString(R.string.tutorial_service_name)
+                )
                     .outerCircleColor(R.color.colorAccent)
                     .titleTextColor(R.color.colorTextOnSecondary)
                     .drawShadow(true)
@@ -294,7 +340,8 @@ class RegisterFragment : Fragment() {
                                 serviceIconImageBitmap = bmp
                             }
                         }
-                        else -> {}
+                        else -> {
+                        }
                     }
                 }
             }
@@ -307,5 +354,8 @@ class RegisterFragment : Fragment() {
         const val SERVICE_ICON_URL = "serviceIconUrl"
         const val IS_DEFAULT_SERVICE = "isDefaultService"
         const val KIND_OF_CROP = "kindOfCrop"
+
+        private const val REQUEST_PERMISSION_ON_QR: Int = 1000
+        private const val REQUEST_PERMISSION_ON_ICON: Int = 1001
     }
 }
