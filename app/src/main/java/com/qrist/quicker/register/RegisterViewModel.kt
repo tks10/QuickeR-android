@@ -7,11 +7,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.util.Log
 import com.qrist.quicker.data.QRCodeRepository
-import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.serviceNameToServiceId
-import com.qrist.quicker.utils.storeDirectory
-import java.io.File
 
 
 class RegisterViewModel(
@@ -23,9 +20,8 @@ class RegisterViewModel(
     private val qrCodeImageUrlLiveData: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
-    private val isIconAddButtonVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = true }
-
-    private val directory = File(storeDirectory)
+    private val isIconAddButtonVisibleLiveData: MutableLiveData<Boolean> =
+        MutableLiveData<Boolean>().apply { value = true }
 
     val serviceIconUrl: LiveData<String>
         get() = serviceIconUrlLiveData
@@ -39,8 +35,6 @@ class RegisterViewModel(
         get() = isValidAsServiceLiveData
     val isIconAddButtonVisible: LiveData<Boolean>
         get() = isIconAddButtonVisibleLiveData
-
-    var qrCodes: List<QRCode> = repository.getQRCodes()
 
     fun initServiceInformation(serviceName: String, serviceIconUrl: String) {
         serviceNameLiveData.value = serviceName
