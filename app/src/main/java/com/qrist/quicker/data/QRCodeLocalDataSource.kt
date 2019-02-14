@@ -118,7 +118,7 @@ class QRCodeLocalDataSource(
         editor.apply()
     }
 
-    override fun hasDoneTutorial(component: TutorialComponent): Boolean {
+    override fun hasBeenDoneTutorial(component: TutorialComponent): Boolean {
         return sharedPreferences.getBoolean(component.toString(), false)
     }
 

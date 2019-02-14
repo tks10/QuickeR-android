@@ -14,6 +14,6 @@ interface QRCodeDataSource {
     fun deleteQRCode(id: String): Boolean
     fun deleteIfNotFound(codes: List<QRCode>): List<QRCode>
     fun doneTutorial(component: TutorialComponent)
-    fun hasDoneTutorial(component: TutorialComponent): Boolean
+    fun hasBeenDoneTutorial(component: TutorialComponent): Boolean
     fun updateQRCodesOrder(indexes: List<Int>): Boolean
 }
