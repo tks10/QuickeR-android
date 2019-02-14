@@ -34,6 +34,9 @@
             android:name="com.qrist.quicker.serviceaddlist.ServiceAddListFragment"
             android:label="@string/title_add_list"
             tools:layout="@layout/fragment_serviceaddlist">
+        <argument
+                android:name="qrImageUrl"
+                app:argType="string"/>
 
         <action
                 android:id="@+id/action_serviceaddlist_to_register"

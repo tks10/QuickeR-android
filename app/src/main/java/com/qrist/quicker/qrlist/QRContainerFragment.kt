@@ -71,6 +71,16 @@ class QRContainerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        // Check whether or not where intent is from.
+        val intentExtras = activity?.intent?.extras
+        intentExtras?.get(INTENT_BUNDLE_KEY)?.let {
+            Log.d("Intent", "Intent from other service:, value: $it")
+            activity!!.intent = null
+            val action = QRContainerFragmentDirections.actionQrContainerToServiceaddlist(it.toString())
+            Navigation.findNavController(view!!).navigate(action)
+        }
+
         updateViewPager(view!!)
         tutorial()
     }
@@ -153,6 +163,10 @@ class QRContainerFragment : Fragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val INTENT_BUNDLE_KEY = "android.intent.extra.STREAM"
     }
 }
 
