@@ -30,7 +30,7 @@ A simple QRCode management app for Android
 * doneTutorial(component: TutorialComponent): Unit
     - Notify DB that the tutorial has been done.
     
-* hasDoneTutorial(component: TutorialComponent): Boolean
+* hasBeenDoneTutorial(component: TutorialComponent): Boolean
     - Check the tutorial has done.
     - If the tutorial has done, it returns true.
     
