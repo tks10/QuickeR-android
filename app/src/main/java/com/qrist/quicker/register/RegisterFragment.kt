@@ -35,6 +35,7 @@ import java.util.*
 class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
+    private val qrImageUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).qrImageUrl }
     private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
     private val directory = File(storeDirectory)
@@ -59,6 +60,18 @@ class RegisterFragment : Fragment() {
                     this@RegisterFragment.serviceIconUrl
                 )
             }
+        }
+
+        // Set QR Code Image if it is attached by other application.
+        if (qrImageUrl.isNotBlank()) {
+            qrImageBitmap = try {
+                getBitmapFromUri(Uri.parse(qrImageUrl))
+            } catch (e: FileNotFoundException) {
+                getBitmapFromUri(Uri.fromFile(File(qrImageUrl)))
+            }
+            binding.root.qrImageView?.setImageBitmap(qrImageBitmap)
+            binding.root.addQRButton?.visibility = View.INVISIBLE
+            viewModel.updateQRCodeImageUrl(qrImageUrl)
         }
 
         if (Build.VERSION.SDK_INT < 23) {

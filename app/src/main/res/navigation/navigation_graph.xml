@@ -60,6 +60,9 @@
             android:label="@string/title_register"
             tools:layout="@layout/fragment_register">
         <argument
+                android:name="qrImageUrl"
+                app:argType="string"/>
+        <argument
                 android:name="serviceName"
                 app:argType="string"/>
         <argument
