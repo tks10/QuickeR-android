@@ -90,7 +90,7 @@ class RegisterViewModel(
     }
 
     fun hasNotDoneTutorial(component: TutorialComponent): Boolean {
-        return !repository.hasDoneTutorial(component)
+        return !repository.hasBeenDoneTutorial(component)
     }
 
     fun doneTutorial(component: TutorialComponent) {

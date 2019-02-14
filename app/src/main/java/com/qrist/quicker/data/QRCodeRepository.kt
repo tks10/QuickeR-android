@@ -29,8 +29,8 @@ class QRCodeRepository(
         local.doneTutorial(component)
     }
 
-    fun hasDoneTutorial(component: TutorialComponent): Boolean {
-        return local.hasDoneTutorial(component)
+    fun hasBeenDoneTutorial(component: TutorialComponent): Boolean {
+        return local.hasBeenDoneTutorial(component)
     }
 
     fun updateQRCodesOrder(indexes: List<Int>) {
