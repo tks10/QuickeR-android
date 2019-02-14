@@ -27,7 +27,7 @@ A simple QRCode management app for Android
     - Delete QR code by id from SharedPreferences.
     - This method dose not delete image files from the Storage. CAUTION!
     
-* doneTurorial(component: TutorialComponent): Unit
+* doneTutorial(component: TutorialComponent): Unit
     - Notify DB that the tutorial has been done.
     
 * hasDoneTutorial(component: TutorialComponent): Boolean
