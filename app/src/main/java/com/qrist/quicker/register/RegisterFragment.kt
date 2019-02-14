@@ -62,18 +62,6 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        // Set QR Code Image if it is attached by other application.
-        if (qrImageUrl.isNotBlank()) {
-            qrImageBitmap = try {
-                getBitmapFromUri(Uri.parse(qrImageUrl))
-            } catch (e: FileNotFoundException) {
-                getBitmapFromUri(Uri.fromFile(File(qrImageUrl)))
-            }
-            binding.root.qrImageView?.setImageBitmap(qrImageBitmap)
-            binding.root.addQRButton?.visibility = View.INVISIBLE
-            viewModel.updateQRCodeImageUrl(qrImageUrl)
-        }
-
         if (Build.VERSION.SDK_INT < 23) {
             makeAppDirectory(directory)
         }
@@ -170,6 +158,19 @@ class RegisterFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+
+        // Set QR Code Image if it is attached by other application.
+        if (qrImageUrl.isNotBlank() && viewModel.qrCodeImageUrl.value == "") {
+            val uri = try {
+                Uri.parse(qrImageUrl)
+            } catch (e: FileNotFoundException) {
+                Uri.fromFile(File(qrImageUrl))
+            }
+            val bmp = getBitmapFromUri(uri)
+            viewModel.updateQRCodeImageUrl(qrImageUrl)
+            detectAndSet(bmp, uri)
+        }
+
         setupTutorial()
         sequence.start()
     }
@@ -281,51 +282,55 @@ class RegisterFragment : Fragment() {
         sequence.considerOuterCircleCanceled(false)
     }
 
+    private fun detectAndSet(bmp: Bitmap, uri: Uri) {
+        val onDetect = { barcodes: List<FirebaseVisionBarcode> ->
+            val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
+            trimmedBitmap?.let {
+                // If Detected
+                val tmpUri = generateTemporaryUri()
+                saveImage(it, tmpUri, IMAGE_QR_MAX)
+                qrImageBitmap = it
+                this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
+                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                viewModel.updateQRCodeImageUrl(tmpUri)
+            } ?: run {
+                kindOfCrop = CROP_QR
+                CropImage
+                    .activity(uri)
+                    .start(MyApplication.instance, this)
+            }
+        }
+        val onFailure = { func: Exception ->
+            func.printStackTrace()
+            kindOfCrop = CROP_QR
+            CropImage
+                .activity(uri)
+                .start(MyApplication.instance, this)
+        }
+        val onSuccessNegativeImage = { barcodes: List<FirebaseVisionBarcode> ->
+            run { onDetect(barcodes) }
+        }
+        val onSuccessOriginalImage = { barcodes: List<FirebaseVisionBarcode> ->
+            if (barcodes.isEmpty()) {
+                // "The Second Try" using negative bitmap.
+                // `onSuccessNegativeImage` is called when the detection succeeded.
+                QRCodeDetector.detectOnNegativeImage(bmp, onSuccessNegativeImage, onFailure)
+            } else {
+                run { onDetect(barcodes) }
+            }
+        }
+
+        // "The First Try" using original bitmap.
+        // `onSuccessOriginalImage` is called when the detection succeeded.
+        QRCodeDetector.detect(bmp, onSuccessOriginalImage, onFailure)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 IntentActionType.RESULT_PICK_QRCODE -> {
                     onPickImageFile(resultData) { bmp, uri ->
-                        val onDetect = { barcodes: List<FirebaseVisionBarcode> ->
-                            val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
-                            trimmedBitmap?.let {
-                                // If Detected
-                                val tmpUri = generateTemporaryUri()
-                                saveImage(it, tmpUri, IMAGE_QR_MAX)
-                                qrImageBitmap = it
-                                this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
-                                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
-                                viewModel.updateQRCodeImageUrl(tmpUri)
-                            } ?: run {
-                                kindOfCrop = CROP_QR
-                                CropImage
-                                    .activity(uri)
-                                    .start(MyApplication.instance, this)
-                            }
-                        }
-                        val onFailure = { func: Exception ->
-                            func.printStackTrace()
-                            kindOfCrop = CROP_QR
-                            CropImage
-                                .activity(uri)
-                                .start(MyApplication.instance, this)
-                        }
-                        val onSuccessNegativeImage = { barcodes: List<FirebaseVisionBarcode> ->
-                            run { onDetect(barcodes) }
-                        }
-                        val onSuccessOriginalImage = { barcodes: List<FirebaseVisionBarcode> ->
-                            if (barcodes.isEmpty()) {
-                                // "The Second Try" using negative bitmap.
-                                // `onSuccessNegativeImage` is called when the detection succeeded.
-                                QRCodeDetector.detectOnNegativeImage(bmp, onSuccessNegativeImage, onFailure)
-                            } else {
-                                run { onDetect(barcodes) }
-                            }
-                        }
-
-                        // "The First Try" using original bitmap.
-                        // `onSuccessOriginalImage` is called when the detection succeeded.
-                        QRCodeDetector.detect(bmp, onSuccessOriginalImage, onFailure)
+                        detectAndSet(bmp, uri)
                     }
                 }
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {
