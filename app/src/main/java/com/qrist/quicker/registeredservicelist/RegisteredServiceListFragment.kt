@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
@@ -23,23 +22,17 @@ import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.utils.getDrawableFromUri
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_registeredservicelist.*
-import kotlinx.android.synthetic.main.fragment_registeredservicelist.view.*
 import java.io.File
 
 class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
             by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        val binding: FragmentRegisteredservicelistBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_registeredservicelist, container, false)
-
-        binding.setLifecycleOwner(this)
-        binding.viewmodel = viewModel
-
-        return binding.root
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        DataBindingUtil.inflate<FragmentRegisteredservicelistBinding>(inflater, R.layout.fragment_registeredservicelist, container, false).apply {
+            setLifecycleOwner(this@RegisteredServiceListFragment)
+            viewmodel = viewModel
+        }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,7 +40,6 @@ class RegisteredServiceListFragment : Fragment() {
         val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
         registeredServiceList.addItemDecoration(itemDecoration)
         this.createItemTouchHelper().attachToRecyclerView(registeredServiceList)
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -70,8 +62,8 @@ class RegisteredServiceListFragment : Fragment() {
 
     private fun updateItems() {
         viewModel.fetchQRCodes()
-        view?.registeredServiceList?.adapter = createAdapter()
-        view?.registeredServiceList?.adapter?.notifyDataSetChanged()
+        registeredServiceList.adapter = createAdapter()
+        registeredServiceList.adapter?.notifyDataSetChanged()
     }
 
     private fun createAdapter(): RegisteredServiceListAdapter =
