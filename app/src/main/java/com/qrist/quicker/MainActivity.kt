@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         val intentExtras = intent?.extras
 
-        // Check whether or not where intent is from.
+        // Check whether or not intent is from sharing.
         intentExtras?.get(INTENT_BUNDLE_KEY)?.let {
             Log.d("Intent", "Intent from other service:, value: $it")
             val action = QRContainerFragmentDirections.actionQrContainerToServiceaddlist(it.toString())
