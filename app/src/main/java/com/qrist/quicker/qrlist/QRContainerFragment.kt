@@ -8,7 +8,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +23,8 @@ import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialComponent
+
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 
@@ -33,40 +34,44 @@ class QRContainerFragment : Fragment() {
     private lateinit var adapter: QRViewFragmentPagerAdapter
     private lateinit var sequence: TapTargetSequence
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_qrcontainer, container, false)
-        val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_qrcontainer, container, false)
 
-        toolbar.menu.clear()
-        toolbar.inflateMenu(R.menu.menu)
-        toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_capture -> {
-                    val intentIntegrator = IntentIntegrator.forSupportFragment(this).apply {
-                        setPrompt("Scan a QR code")
-                        captureActivity = CaptureActivityPortrait::class.java
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        floatingActionButton.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        activity?.apply {
+            tool_bar.menu.clear()
+            tool_bar.inflateMenu(R.menu.menu)
+            tool_bar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.menu_capture -> {
+                        val intentIntegrator = IntentIntegrator.forSupportFragment(this@QRContainerFragment).apply {
+                            setPrompt("Scan a QR code")
+                            captureActivity = CaptureActivityPortrait::class.java
+                        }
+                        intentIntegrator.initiateScan()
+
+                        Log.d("Menu", "Capture was tapped.")
+                        true
                     }
-                    intentIntegrator.initiateScan()
-
-                    Log.d("Menu", "Capture was tapped.")
-                    true
-                }
-                R.id.menu_settings -> {
-                    Log.d("Menu", "Settings was tapped.")
-                    Navigation.findNavController(view).navigate(R.id.action_qr_container_to_registeredservicelist)
-                    true
-                }
-                else -> {
-                    false
+                    R.id.menu_settings -> {
+                        Log.d("Menu", "Settings was tapped.")
+                        Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_registeredservicelist)
+                        true
+                    }
+                    else -> {
+                        false
+                    }
                 }
             }
         }
-
-        view.floatingActionButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
-        }
-
-        return view
     }
 
     override fun onResume() {
