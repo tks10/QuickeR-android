@@ -26,7 +26,6 @@ import com.qrist.quicker.models.TutorialComponent
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
-import kotlinx.android.synthetic.main.fragment_qrcontainer.view.*
 
 class QRContainerFragment : Fragment() {
 
@@ -76,7 +75,7 @@ class QRContainerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        updateViewPager(view!!)
+        updateViewPager()
         tutorial()
     }
 
@@ -104,19 +103,19 @@ class QRContainerFragment : Fragment() {
         }
     }
 
-    private fun updateViewPager(view: View) {
+    private fun updateViewPager() {
         viewModel.fetchQRCodes()
 
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
-        view.viewPager.adapter = adapter
-        view.viewPager.offscreenPageLimit = 0
-        view.viewPager.currentItem = adapter.getCenterPosition(0)
+        viewPager.adapter = adapter
+        viewPager.offscreenPageLimit = 0
+        viewPager.currentItem = adapter.getCenterPosition(0)
 
-        view.tabLayout.setUpWithAdapter(ServiceIconAdapter(view.viewPager, viewModel.qrCodes))
-        (view.tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)
+        tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
+        (tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)
 
         val serviceCount = viewModel.qrCodes.size
-        view.getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
+        getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
