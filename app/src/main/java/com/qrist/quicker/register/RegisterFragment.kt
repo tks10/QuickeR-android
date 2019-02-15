@@ -45,11 +45,9 @@ class RegisterFragment : Fragment() {
 
     private lateinit var sequence: TapTargetSequence
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding: FragmentRegisterBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
-        binding.setLifecycleOwner(this)
-        binding.viewmodel = viewModel.apply {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.apply { // in generally, viewmodel is gonna be initialized in onCreate()
             if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
                 initServiceInformation(
                     this@RegisterFragment.serviceName,
@@ -57,16 +55,21 @@ class RegisterFragment : Fragment() {
                 )
             }
         }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        DataBindingUtil.inflate<FragmentRegisterBinding>(inflater, R.layout.fragment_register, container, false).apply {
+            setLifecycleOwner(this@RegisterFragment)
+            viewmodel = viewModel
+        }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         if (Build.VERSION.SDK_INT < 23) {
             makeAppDirectory(directory)
         }
 
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         addQRButton.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
