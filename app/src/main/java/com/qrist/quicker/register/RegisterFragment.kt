@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +25,7 @@ import com.qrist.quicker.extentions.*
 import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.*
 import com.theartofdev.edmodo.cropper.CropImage
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 import java.io.File
@@ -40,8 +40,7 @@ class RegisterFragment : Fragment() {
     private val directory = File(storeDirectory)
     private var qrImageBitmap: Bitmap? = null
     private var serviceIconImageBitmap: Bitmap? = null
-    private val CROP_QR = 0
-    private val CROP_ICON = 1
+
     private var kindOfCrop = -1
 
     private lateinit var sequence: TapTargetSequence
@@ -49,8 +48,6 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentRegisterBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
-        val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
-        toolbar.menu.clear()
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel.apply {
             if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
@@ -65,7 +62,12 @@ class RegisterFragment : Fragment() {
             makeAppDirectory(directory)
         }
 
-        binding.root.addQRButton.setOnClickListener {
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        addQRButton.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
             } else {
@@ -73,7 +75,7 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        binding.root.qrImageView.setOnClickListener {
+        qrImageView.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
             } else {
@@ -81,7 +83,7 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        binding.root.addIconButton.setOnClickListener {
+        addIconButton.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
             } else {
@@ -89,7 +91,7 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        binding.root.serviceIconImageView.setOnClickListener {
+        serviceIconImageView.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
             } else {
@@ -97,7 +99,7 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        binding.root.addButton.setOnClickListener {
+        addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
                 Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
@@ -105,11 +107,16 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        binding.root.serviceNameEditText.afterTextChanged {
+        serviceNameEditText.afterTextChanged {
             viewModel.updateServiceName(it)
         }
+    }
 
-        return binding.root
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        activity?.apply {
+            tool_bar.menu.clear()
+        }
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -355,6 +362,8 @@ class RegisterFragment : Fragment() {
         const val IS_DEFAULT_SERVICE = "isDefaultService"
         const val KIND_OF_CROP = "kindOfCrop"
 
+        private const val CROP_QR = 0
+        private const val CROP_ICON = 1
         private const val REQUEST_PERMISSION_ON_QR: Int = 1000
         private const val REQUEST_PERMISSION_ON_ICON: Int = 1001
     }
