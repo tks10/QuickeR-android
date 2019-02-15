@@ -112,8 +112,12 @@ class QRContainerFragment : Fragment() {
         override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
         }
 
-        override fun onPageSelected(p0: Int) {
-            viewPager.setCurrentItem(p0, false)
+        override fun onPageSelected(position: Int) {
+            val nearLeftEdge: Boolean = (position <= viewModel.qrCodes.size)
+            val nearRightEdge: Boolean = (position >= adapter.getCount() - viewModel.qrCodes.size)
+            if (nearLeftEdge || nearRightEdge) {
+                viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
+            }
         }
     }
 
@@ -121,13 +125,12 @@ class QRContainerFragment : Fragment() {
         viewModel.fetchQRCodes()
 
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
-        viewPager.addOnPageChangeListener(MyOnPageChaneListener())
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
+        viewPager.currentItem = adapter.getCenterPosition(0)
+        viewPager.addOnPageChangeListener(MyOnPageChaneListener())
 
         tabLayout.setUpWithAdapter(RecyclerTabLayout.DefaultAdapter(viewPager))
-        viewPager.currentItem = adapter.getCenterPosition(0)
-        (tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)
 
         val serviceCount = viewModel.qrCodes.size
         getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
