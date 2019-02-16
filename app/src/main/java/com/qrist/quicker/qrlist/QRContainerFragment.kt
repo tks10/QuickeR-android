@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.util.Log
@@ -127,10 +128,13 @@ class QRContainerFragment : Fragment() {
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
-        viewPager.currentItem = adapter.getCenterPosition(0)
         viewPager.addOnPageChangeListener(MyOnPageChaneListener())
+        viewPager.currentItem = adapter.getCenterPosition(-2)
+        Handler().postDelayed( {
+            viewPager.currentItem = adapter.getCenterPosition(0)
+        }, 50)
 
-        tabLayout.setUpWithAdapter(RecyclerTabLayout.DefaultAdapter(viewPager))
+        tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
 
         val serviceCount = viewModel.qrCodes.size
         getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
