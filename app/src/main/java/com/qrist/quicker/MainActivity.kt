@@ -21,11 +21,16 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         findViewById<Toolbar>(R.id.tool_bar)
             .setupWithNavController(navController, appBarConfiguration)
+
+        handleIntent(this.intent)
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        handleIntent(intent)
+    }
 
+    private fun handleIntent(intent: Intent?) {
         val intentExtras = intent?.extras
 
         // Check whether or not intent is from sharing.
