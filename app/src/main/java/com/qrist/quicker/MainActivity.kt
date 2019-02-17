@@ -27,15 +27,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        handleAndConsumeIntentOnSend(intent = intent)
+        handleAndConsumeIntentOnSend(receivedIntent = intent)
     }
 
-    private fun handleAndConsumeIntentOnSend(intent: Intent? = null) {
+    private fun handleAndConsumeIntentOnSend(receivedIntent: Intent? = null) {
         // Get extras if intent is given by the argument, otherwise get from activity.intent
-        val intentExtras = intent?.extras ?: this.intent?.extras
+        val intent = receivedIntent ?: this.intent
+        val extras = intent?.extras
 
         // Check whether or not intent is from sharing.
-        intentExtras?.get(INTENT_BUNDLE_KEY)?.let {
+        extras?.get(INTENT_BUNDLE_KEY)?.let {
             Log.d("Intent", "Intent from other service:, value: $it")
 
             // Clear Intent
