@@ -22,22 +22,27 @@ class MainActivity : AppCompatActivity() {
         findViewById<Toolbar>(R.id.tool_bar)
             .setupWithNavController(navController, appBarConfiguration)
 
-        handleIntent(this.intent)
+        handleAndConsumeIntentOnSend()
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        handleIntent(intent)
+        handleAndConsumeIntentOnSend(intent = intent)
     }
 
-    private fun handleIntent(intent: Intent?) {
-        val intentExtras = intent?.extras
+    private fun handleAndConsumeIntentOnSend(intent: Intent? = null) {
+        // Get extras if intent is given by the argument, otherwise get from activity.intent
+        val intentExtras = intent?.extras ?: this.intent?.extras
 
         // Check whether or not intent is from sharing.
         intentExtras?.get(INTENT_BUNDLE_KEY)?.let {
             Log.d("Intent", "Intent from other service:, value: $it")
-            val action = QRContainerFragmentDirections.actionQrContainerToServiceaddlist(it.toString())
 
+            // Clear Intent
+            this@MainActivity.intent = null
+
+            val action =
+                QRContainerFragmentDirections.actionQrContainerToServiceaddlist(it.toString())
             Navigation.findNavController(this, R.id.nav_host_fragment).popBackStack(R.id.qrContainerFragment, false)
             Navigation.findNavController(this, R.id.nav_host_fragment).navigate(action)
         }
