@@ -21,7 +21,6 @@ import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
-import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialComponent
@@ -115,7 +114,7 @@ class QRContainerFragment : Fragment() {
 
         override fun onPageSelected(position: Int) {
             val nearLeftEdge: Boolean = (position <= viewModel.qrCodes.size)
-            val nearRightEdge: Boolean = (position >= adapter.getCount() - viewModel.qrCodes.size)
+            val nearRightEdge: Boolean = (position >= adapter.count - viewModel.qrCodes.size)
             if (nearLeftEdge || nearRightEdge) {
                 viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
             }

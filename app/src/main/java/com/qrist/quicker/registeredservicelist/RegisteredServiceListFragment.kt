@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
@@ -21,48 +20,50 @@ import com.qrist.quicker.databinding.FragmentRegisteredservicelistBinding
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.utils.getDrawableFromUri
-import kotlinx.android.synthetic.main.fragment_registeredservicelist.view.*
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_registeredservicelist.*
 import java.io.File
 
 class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
             by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        val binding: FragmentRegisteredservicelistBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_registeredservicelist, container, false)
-        val toolbar: Toolbar = activity!!.findViewById(R.id.tool_bar)
-        toolbar.menu.clear()
-        toolbar.inflateMenu(R.menu.settings_menu)
-        toolbar.setOnMenuItemClickListener {item ->
-            when (item.itemId) {
-                R.id.menu_oss_license -> {
-                    startActivity(Intent(context!!, OssLicensesMenuActivity::class.java))
-                    OssLicensesMenuActivity.setActivityTitle(context!!.resources.getString(R.string.open_source_license))
-                    true
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        DataBindingUtil.inflate<FragmentRegisteredservicelistBinding>(inflater, R.layout.fragment_registeredservicelist, container, false).apply {
+            setLifecycleOwner(this@RegisteredServiceListFragment)
+            viewmodel = viewModel
+        }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        registeredServiceList.adapter = this.createAdapter()
+        val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
+        registeredServiceList.addItemDecoration(itemDecoration)
+        this.createItemTouchHelper().attachToRecyclerView(registeredServiceList)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        activity?.apply {
+            tool_bar.menu.clear()
+            tool_bar.inflateMenu(R.menu.settings_menu)
+            tool_bar.setOnMenuItemClickListener {item ->
+                when (item.itemId) {
+                    R.id.menu_oss_license -> {
+                        startActivity(Intent(context!!, OssLicensesMenuActivity::class.java))
+                        OssLicensesMenuActivity.setActivityTitle(context!!.resources.getString(R.string.open_source_license))
+                        true
+                    }
+                    else -> false
                 }
-                else -> false
             }
         }
-
-        binding.setLifecycleOwner(this)
-        binding.viewmodel = viewModel
-
-        binding.root.registeredServiceList.adapter = this.createAdapter()
-
-
-        val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
-        binding.root.registeredServiceList.addItemDecoration(itemDecoration)
-        this.createItemTouchHelper().attachToRecyclerView(binding.root.registeredServiceList)
-
-        return binding.root
     }
 
     private fun updateItems() {
         viewModel.fetchQRCodes()
-        view?.registeredServiceList?.adapter = createAdapter()
-        view?.registeredServiceList?.adapter?.notifyDataSetChanged()
+        registeredServiceList.adapter = createAdapter()
+        registeredServiceList.adapter?.notifyDataSetChanged()
     }
 
     private fun createAdapter(): RegisteredServiceListAdapter =
