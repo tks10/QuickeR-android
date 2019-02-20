@@ -135,7 +135,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         viewPager.currentItem = adapter.getCenterPosition(-2)
 
         this.launch {
-            delay(5)
+            delay(WAIT_TIME_ON_LAUNCH)
             viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
         }
 
@@ -184,6 +184,10 @@ class QRContainerFragment : Fragment(), CoroutineScope {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val WAIT_TIME_ON_LAUNCH: Long = 5
     }
 }
 
