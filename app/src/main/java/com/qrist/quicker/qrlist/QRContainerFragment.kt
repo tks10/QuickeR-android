@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.util.Log
@@ -27,8 +26,13 @@ import com.qrist.quicker.models.TutorialComponent
 
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
-class QRContainerFragment : Fragment() {
+class QRContainerFragment : Fragment(), CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private lateinit var adapter: QRViewFragmentPagerAdapter
@@ -84,7 +88,6 @@ class QRContainerFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         Log.e("container fragment", "pause")
-        adapter.detachItems()
     }
 
     private fun tutorial() {
@@ -125,13 +128,16 @@ class QRContainerFragment : Fragment() {
         viewModel.fetchQRCodes()
 
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
+        adapter.detachItems()
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
         viewPager.addOnPageChangeListener(MyOnPageChaneListener())
         viewPager.currentItem = adapter.getCenterPosition(-2)
-        Handler().postDelayed( {
-            viewPager.currentItem = adapter.getCenterPosition(0)
-        }, 50)
+
+        this.launch {
+            delay(5)
+            viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
+        }
 
         tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
 
