@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,15 +20,19 @@ import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
-import com.nshmura.recyclertablayout.RecyclerTabLayout
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialComponent
 
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
-class QRContainerFragment : Fragment() {
+class QRContainerFragment : Fragment(), CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
 
     private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
     private lateinit var adapter: QRViewFragmentPagerAdapter
@@ -38,6 +43,7 @@ class QRContainerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         floatingActionButton.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
         }
@@ -82,7 +88,6 @@ class QRContainerFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         Log.e("container fragment", "pause")
-        adapter.detachItems()
     }
 
     private fun tutorial() {
@@ -103,16 +108,38 @@ class QRContainerFragment : Fragment() {
         }
     }
 
+    inner class MyOnPageChaneListener : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(p0: Int) {
+        }
+
+        override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+        }
+
+        override fun onPageSelected(position: Int) {
+            val nearLeftEdge: Boolean = (position <= viewModel.qrCodes.size)
+            val nearRightEdge: Boolean = (position >= adapter.count - viewModel.qrCodes.size)
+            if (nearLeftEdge || nearRightEdge) {
+                viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
+            }
+        }
+    }
+
     private fun updateViewPager() {
         viewModel.fetchQRCodes()
 
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
+        adapter.detachItems()
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
-        viewPager.currentItem = adapter.getCenterPosition(0)
+        viewPager.addOnPageChangeListener(MyOnPageChaneListener())
+        viewPager.currentItem = adapter.getCenterPosition(-2)
+
+        this.launch {
+            delay(WAIT_TIME_ON_LAUNCH)
+            viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
+        }
 
         tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
-        (tabLayout.adapter as RecyclerTabLayout.Adapter).currentIndicatorPosition = adapter.getCenterPosition(0)
 
         val serviceCount = viewModel.qrCodes.size
         getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
@@ -157,6 +184,10 @@ class QRContainerFragment : Fragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val WAIT_TIME_ON_LAUNCH: Long = 5
     }
 }
 
