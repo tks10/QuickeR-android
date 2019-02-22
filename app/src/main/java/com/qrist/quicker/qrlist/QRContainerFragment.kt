@@ -108,7 +108,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         }
     }
 
-    inner class MyOnPageChaneListener : ViewPager.OnPageChangeListener {
+    inner class MyOnPageChangeListener : ViewPager.OnPageChangeListener {
         override fun onPageScrollStateChanged(state: Int) {
         }
 
@@ -137,7 +137,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         adapter.detachItems()
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
-        viewPager.addOnPageChangeListener(MyOnPageChaneListener())
+        viewPager.addOnPageChangeListener(MyOnPageChangeListener())
         viewPager.currentItem = adapter.getCenterPosition(currentAdapterPosition - 2)
 
         this.launch {
