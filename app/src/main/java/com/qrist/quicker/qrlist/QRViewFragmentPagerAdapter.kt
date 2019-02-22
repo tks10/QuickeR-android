@@ -112,6 +112,8 @@ class QRViewFragmentPagerAdapter(
 
     fun getCenterPosition(position: Int): Int = count / 2 + position
 
+    fun getAdapterPosition(centerPosition: Int) = centerPosition - count / 2
+
     private fun getValueAt(position: Int): QRCode? =
         when (qrCodes.size) {
             0 -> null
