@@ -57,13 +57,14 @@ class QRContainerFragment : Fragment(), CoroutineScope {
             tool_bar.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.menu_capture -> {
-                        val intentIntegrator = IntentIntegrator.forSupportFragment(this@QRContainerFragment).apply {
-                            setPrompt("Scan a QR code")
-                            captureActivity = CaptureActivityPortrait::class.java
-                        }
-                        intentIntegrator.initiateScan()
+                        //val intentIntegrator = IntentIntegrator.forSupportFragment(this@QRContainerFragment).apply {
+                        //    setPrompt("Scan a QR code")
+                        //    captureActivity = CaptureActivityPortrait::class.java
+                        //}
+                        //intentIntegrator.initiateScan()
 
                         Log.d("Menu", "Capture was tapped.")
+                        Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_camera)
                         true
                     }
                     R.id.menu_settings -> {

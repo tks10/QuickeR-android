@@ -27,6 +27,14 @@
                 app:popExitAnim="@anim/slide_to_bottom"
                 app:destination="@id/registeredServiceListFragment"/>
 
+        <action
+                android:id="@+id/action_qr_container_to_camera"
+                app:enterAnim="@anim/slide_from_bottom"
+                app:exitAnim="@anim/stay_out"
+                app:popEnterAnim="@anim/stay_in"
+                app:popExitAnim="@anim/slide_to_bottom"
+                app:destination="@id/cameraFragment"/>
+
     </fragment>
 
     <fragment
@@ -63,5 +71,11 @@
                 android:name="serviceIconUrl"
                 app:argType="string"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.qrist.quicker.camera.CameraFragment"
+        android:label="Camera"
+        tools:layout="@layout/fragment_camera" />
 
 </navigation>
