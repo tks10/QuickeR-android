@@ -70,6 +70,7 @@ dependencies {
 
     // FireBase
     implementation 'com.google.firebase:firebase-ml-vision:18.0.2'
+    implementation 'com.google.firebase:firebase-core:16.0.7'
 
     // Crop
     api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
