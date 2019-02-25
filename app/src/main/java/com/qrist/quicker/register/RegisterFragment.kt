@@ -183,6 +183,8 @@ class RegisterFragment : Fragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isEmpty()) return
+
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             makeAppDirectory(directory)
             when (requestCode) {
