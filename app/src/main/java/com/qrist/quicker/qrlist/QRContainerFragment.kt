@@ -108,18 +108,21 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         }
     }
 
-    inner class MyOnPageChaneListener : ViewPager.OnPageChangeListener {
-        override fun onPageScrollStateChanged(p0: Int) {
+    inner class MyOnPageChangeListener : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {
         }
 
-        override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            viewModel.currentAdapterPosition = adapter.getAdapterPosition(position)
         }
 
         override fun onPageSelected(position: Int) {
             val nearLeftEdge: Boolean = (position <= viewModel.qrCodes.size)
             val nearRightEdge: Boolean = (position >= adapter.count - viewModel.qrCodes.size)
+            val currentAdapterPosition = viewModel.currentAdapterPosition
+
             if (nearLeftEdge || nearRightEdge) {
-                viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
+                viewPager.setCurrentItem(adapter.getCenterPosition(currentAdapterPosition), false)
             }
         }
     }
@@ -127,16 +130,19 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     private fun updateViewPager() {
         viewModel.fetchQRCodes()
 
+        // Fix current adapter position to prevent it is changed by MyOnPageChangeListener#onPageScrolled
+        val currentAdapterPosition = viewModel.currentAdapterPosition
+
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         adapter.detachItems()
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
-        viewPager.addOnPageChangeListener(MyOnPageChaneListener())
-        viewPager.currentItem = adapter.getCenterPosition(-2)
+        viewPager.addOnPageChangeListener(MyOnPageChangeListener())
+        viewPager.currentItem = adapter.getCenterPosition(currentAdapterPosition - 2)
 
         this.launch {
             delay(WAIT_TIME_ON_LAUNCH)
-            viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
+            viewPager.setCurrentItem(adapter.getCenterPosition(currentAdapterPosition), false)
         }
 
         tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))

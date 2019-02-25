@@ -12,6 +12,7 @@ class QRContainerViewModel(
 ) : AndroidViewModel(context) {
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
+    var currentAdapterPosition: Int = 0
 
     fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()
