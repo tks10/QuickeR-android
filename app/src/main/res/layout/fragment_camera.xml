@@ -4,9 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextureView
-                android:id="@+id/textureView"
+        <com.qrist.quicker.camera.widget.CameraScenePreview
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
 </android.support.constraint.ConstraintLayout>
