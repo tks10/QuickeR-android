@@ -135,6 +135,8 @@ class QRContainerFragment : Fragment(), CoroutineScope {
 
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         adapter.detachItems()
+        viewPager.visibility = View.INVISIBLE
+        tabLayout.visibility = View.INVISIBLE
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
         viewPager.addOnPageChangeListener(MyOnPageChangeListener())
@@ -143,6 +145,8 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         this.launch {
             delay(WAIT_TIME_ON_LAUNCH)
             viewPager.setCurrentItem(adapter.getCenterPosition(currentAdapterPosition), false)
+            viewPager.visibility = View.VISIBLE
+            tabLayout.visibility = View.VISIBLE
         }
 
         tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
