@@ -12,7 +12,7 @@ android {
         applicationId "com.qrist.quicker"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 12
+        versionCode 10
         versionName "1.1.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "APPLICATION_STORE_DIRECTORY", "\"android/data/$applicationId/\""
