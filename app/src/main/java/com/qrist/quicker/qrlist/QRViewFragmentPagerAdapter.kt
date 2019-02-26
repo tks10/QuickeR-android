@@ -58,7 +58,7 @@ class QRViewFragmentPagerAdapter(
         fragmentManager.findFragmentByTag("$position")?.let { fragment ->
             currentTransaction ?: fragmentManager.beginTransaction().also {
                 currentTransaction = it
-            }.remove(fragment).commitNow().also {
+            }.remove(fragment).commitNowAllowingStateLoss().also {
                 currentTransaction = null
             }
             Log.d("delete fragment", fragment.toString())
@@ -103,7 +103,7 @@ class QRViewFragmentPagerAdapter(
             fragment?.let {
                 currentTransaction ?: fragmentManager.beginTransaction().also { transaction ->
                     currentTransaction = transaction
-                }.remove(fragment).commitNow().also {
+                }.remove(fragment).commitNowAllowingStateLoss().also {
                     currentTransaction = null
                 }
             }
