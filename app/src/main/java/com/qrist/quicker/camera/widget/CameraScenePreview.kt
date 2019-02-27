@@ -17,24 +17,25 @@ import android.support.annotation.RequiresApi
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
 import android.widget.Toast
+import java.lang.IllegalStateException
 import java.util.*
 import kotlin.NoSuchElementException
 
-class CameraScenePreview : ConstraintLayout {
+class CameraScenePreview : TextureView {
 
     private val previewSize: Size = Size(300, 300)
     private lateinit var previewRequestBuilder: CaptureRequest.Builder
     private lateinit var imageReader: ImageReader
     private lateinit var captureSession: CameraCaptureSession
     private lateinit var previewRequest: CaptureRequest
+    private var ratioWidth = 0
+    private var ratioHeight = 0
     private val backgroundThread by lazy {
         HandlerThread("CameraBackground").also {
             it.start()
         }
-    }
-    private val textureView by lazy {
-        TextureView(context)
     }
 
     constructor(context: Context) : super(context)
@@ -44,13 +45,36 @@ class CameraScenePreview : ConstraintLayout {
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     init {
-        textureView.surfaceTextureListener = CameraSurfaceTextureListener()
-        addView(textureView)
+        surfaceTextureListener = CameraSurfaceTextureListener()
+        setAspectRaio(1, 1)
     }
 
     override fun onFinishTemporaryDetach() {
         super.onFinishTemporaryDetach()
         backgroundThread.quitSafely()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val width = View.MeasureSpec.getSize(widthMeasureSpec)
+        val height = View.MeasureSpec.getSize(heightMeasureSpec)
+        if (ratioWidth == 0 || ratioHeight == 0) {
+            setMeasuredDimension(width, height)
+        } else {
+            if (width < ((height * ratioWidth) / ratioHeight)) {
+                setMeasuredDimension(width, (width * ratioHeight) / ratioWidth)
+            } else {
+                setMeasuredDimension((height * ratioWidth) / ratioHeight, height)
+            }
+        }
+    }
+
+    private fun setAspectRaio(width: Int, height: Int) {
+       if (width < 0 || height < 0) {
+           throw IllegalStateException("size cannot be negative")
+       }
+        ratioWidth = width
+        ratioHeight = height
     }
 
     @SuppressLint("MissingPermission")
@@ -75,8 +99,7 @@ class CameraScenePreview : ConstraintLayout {
 
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
-            val texture = textureView.surfaceTexture
-            texture.setDefaultBufferSize(previewSize.width, previewSize.height)
+            val texture = surfaceTexture
             val surface = Surface(texture)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
