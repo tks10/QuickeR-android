@@ -28,7 +28,7 @@ import kotlin.NoSuchElementException
 
 class CameraScenePreview : TextureView {
 
-    private val previewSize: Size = Size(300, 300)
+    private lateinit var previewSize: Size
     private lateinit var previewRequestBuilder: CaptureRequest.Builder
     private lateinit var imageReader: ImageReader
     private lateinit var captureSession: CameraCaptureSession
@@ -63,7 +63,7 @@ class CameraScenePreview : TextureView {
         if (ratioWidth == 0 || ratioHeight == 0) {
             setMeasuredDimension(width, height)
         } else {
-            if (width < ((height * ratioWidth) / ratioHeight)) {
+            if (width > ((height * ratioWidth) / ratioHeight)) {
                 setMeasuredDimension(width, (width * ratioHeight) / ratioWidth)
             } else {
                 setMeasuredDimension((height * ratioWidth) / ratioHeight, height)
@@ -77,6 +77,7 @@ class CameraScenePreview : TextureView {
        }
         ratioWidth = width
         ratioHeight = height
+        requestLayout()
     }
 
     @SuppressLint("MissingPermission")
@@ -93,9 +94,9 @@ class CameraScenePreview : TextureView {
             val map = characteristics.get(SCALER_STREAM_CONFIGURATION_MAP) ?:
             throw RuntimeException("Cannot get available preview/video sizes")
             val videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
-            val previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
+            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
                 width, height, videoSize)
-            this.setAspectRatio(previewSize.height, previewSize.width)
+            setAspectRatio(previewSize.height, previewSize.width)
             manager.openCamera(cameraId, stateCallback, null)
             Log.d("camera list", "${manager.cameraIdList}")
         } catch (e: NoSuchElementException) {
@@ -108,6 +109,7 @@ class CameraScenePreview : TextureView {
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
             val texture = surfaceTexture
+            texture.setDefaultBufferSize(previewSize.width, previewSize.height)
             val surface = Surface(texture)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
