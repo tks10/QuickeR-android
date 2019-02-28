@@ -35,26 +35,11 @@ class CameraScenePreview : TextureView {
     private lateinit var previewRequest: CaptureRequest
     private var ratioWidth = 0
     private var ratioHeight = 0
-    private val backgroundThread by lazy {
-        HandlerThread("CameraBackground").also {
-            it.start()
-        }
-    }
+    private var backgroundThread = HandlerThread("CameraBackground")
 
     constructor(context: Context) : super(context)
-
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
-    init {
-        surfaceTextureListener = CameraSurfaceTextureListener()
-    }
-
-    override fun onFinishTemporaryDetach() {
-        super.onFinishTemporaryDetach()
-        backgroundThread.quitSafely()
-    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -125,6 +110,7 @@ class CameraScenePreview : TextureView {
                             previewRequestBuilder.set(
                                 CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
+                            backgroundThread.start()
                             previewRequest = previewRequestBuilder.build()
                             captureSession.setRepeatingRequest(previewRequest,
                                 null, Handler(backgroundThread.looper)
@@ -217,6 +203,16 @@ class CameraScenePreview : TextureView {
      */
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
+
+    fun startCameraPreview() {
+        surfaceTextureListener = CameraSurfaceTextureListener()
+    }
+
+    fun stopCameraPreview() {
+        captureSession.close()
+        imageReader.close()
+        backgroundThread.quitSafely()
+    }
 }
 
 class CompareSizesByArea : Comparator<Size> {
