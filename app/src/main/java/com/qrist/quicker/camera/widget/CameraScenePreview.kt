@@ -33,9 +33,28 @@ class CameraScenePreview : TextureView {
     private lateinit var imageReader: ImageReader
     private lateinit var captureSession: CameraCaptureSession
     private lateinit var previewRequest: CaptureRequest
+    private var cameraDevice: CameraDevice? = null
     private var ratioWidth = 0
     private var ratioHeight = 0
-    private var backgroundThread = HandlerThread("CameraBackground")
+    private var backgroundThread: HandlerThread? = null
+    private var backgroundHandler: Handler? = null
+
+    private fun startBackgroundThread() {
+        backgroundThread = HandlerThread("CameraBackground")
+        backgroundThread?.start()
+        backgroundHandler = Handler(backgroundThread?.looper)
+    }
+
+    private fun stopBackgroundThread() {
+        backgroundThread?.quitSafely()
+        try {
+            backgroundThread?.join()
+            backgroundThread = null
+            backgroundHandler = null
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+        }
+    }
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -71,13 +90,13 @@ class CameraScenePreview : TextureView {
 
         try {
             val cameraId: String = manager.cameraIdList.first { cameraId ->
-                val characteristics = manager.getCameraCharacteristics(cameraId)
-                characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
+                manager.getCameraCharacteristics(cameraId)
+                    .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
             }
 
             val characteristics = manager.getCameraCharacteristics(cameraId)
             val map = characteristics.get(SCALER_STREAM_CONFIGURATION_MAP) ?:
-            throw RuntimeException("Cannot get available preview/video sizes")
+                throw RuntimeException("Cannot get available preview/video sizes")
             val videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
             previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
                 width, height, videoSize)
@@ -110,11 +129,10 @@ class CameraScenePreview : TextureView {
                             previewRequestBuilder.set(
                                 CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
-                            backgroundThread.start()
+                            startBackgroundThread()
                             previewRequest = previewRequestBuilder.build()
                             captureSession.setRepeatingRequest(previewRequest,
-                                null, Handler(backgroundThread.looper)
-                            )
+                                null, backgroundHandler)
                         } catch (e: CameraAccessException) {
                             Log.e("erfs", e.toString())
                         }
@@ -125,6 +143,7 @@ class CameraScenePreview : TextureView {
                         //Tools.makeToast(baseContext, "Failed")
                     }
                 }, null)
+            cameraDevice = camera
         } catch (e: CameraAccessException) {
             Log.e("erf", e.toString())
         }
@@ -205,13 +224,22 @@ class CameraScenePreview : TextureView {
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
 
     fun startCameraPreview() {
-        surfaceTextureListener = CameraSurfaceTextureListener()
+        if (this.isAvailable) {
+            imageReader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 2)
+            openCamera()
+        } else {
+            surfaceTextureListener = CameraSurfaceTextureListener()
+        }
     }
 
     fun stopCameraPreview() {
         captureSession.close()
         imageReader.close()
-        backgroundThread.quitSafely()
+        stopBackgroundThread()
+    }
+
+    companion object {
+        private const val TAG = "camerasceenpreview"
     }
 }
 
