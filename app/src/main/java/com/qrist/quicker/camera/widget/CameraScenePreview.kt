@@ -113,7 +113,6 @@ class CameraScenePreview : TextureView {
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
             val texture = surfaceTexture
-            texture.setDefaultBufferSize(previewSize.width, previewSize.height)
             val surface = Surface(texture)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
