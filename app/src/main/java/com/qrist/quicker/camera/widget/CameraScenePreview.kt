@@ -2,9 +2,7 @@ package com.qrist.quicker.camera.widget
 
 import android.content.Context
 import android.util.AttributeSet
-
 import java.lang.Long.signum
-
 import android.annotation.SuppressLint
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
@@ -12,11 +10,9 @@ import android.hardware.camera2.*
 import android.hardware.camera2.CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
 import android.media.ImageReader
 import android.media.MediaRecorder
-import android.os.Build
 import android.util.Size
 import android.os.Handler
 import android.os.HandlerThread
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
@@ -39,20 +35,29 @@ class CameraScenePreview : TextureView {
     private var backgroundThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
 
-    private fun startBackgroundThread() {
-        backgroundThread = HandlerThread("CameraBackground")
-        backgroundThread?.start()
-        backgroundHandler = Handler(backgroundThread?.looper)
-    }
+    private val onImageAvailableListener =
+        ImageReader.OnImageAvailableListener {
+            Log.d(TAG, "get a image")
+            val image = it.acquireLatestImage()
+            image?.close()
+        }
 
-    private fun stopBackgroundThread() {
-        backgroundThread?.quitSafely()
-        try {
-            backgroundThread?.join()
-            backgroundThread = null
-            backgroundHandler = null
-        } catch (e: Exception) {
-            Log.e(TAG, e.toString())
+    private val captureCallback =
+        object : CameraCaptureSession.CaptureCallback() {
+        }
+
+    private val stateCallback = object : CameraDevice.StateCallback() {
+        override fun onOpened(camera: CameraDevice) {
+            createCameraPreviewSession(camera)
+            cameraDevice = camera
+        }
+
+        override fun onDisconnected(camera: CameraDevice) {
+            camera.close()
+        }
+
+        override fun onError(camera: CameraDevice, error: Int) {
+            onDisconnected(camera)
         }
     }
 
@@ -72,6 +77,37 @@ class CameraScenePreview : TextureView {
             } else {
                 setMeasuredDimension((height * ratioWidth) / ratioHeight, height)
             }
+        }
+    }
+
+    fun startCameraPreview() {
+        if (this.isAvailable) {
+            openCamera()
+        } else {
+            surfaceTextureListener = CameraSurfaceTextureListener()
+        }
+    }
+
+    fun stopCameraPreview() {
+        captureSession.close()
+        imageReader.close()
+        stopBackgroundThread()
+    }
+
+    private fun startBackgroundThread() {
+        backgroundThread = HandlerThread("CameraBackground")
+        backgroundThread?.start()
+        backgroundHandler = Handler(backgroundThread?.looper)
+    }
+
+    private fun stopBackgroundThread() {
+        backgroundThread?.quitSafely()
+        try {
+            backgroundThread?.join()
+            backgroundThread = null
+            backgroundHandler = null
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 
@@ -101,7 +137,7 @@ class CameraScenePreview : TextureView {
             previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
                 width, height, videoSize)
             setAspectRatio(previewSize.height, previewSize.width)
-            manager.openCamera(cameraId, stateCallback, null)
+            manager.openCamera(cameraId, stateCallback, backgroundHandler)
             Log.d("camera list", "${manager.cameraIdList}")
         } catch (e: NoSuchElementException) {
             Toast.makeText(context, "Camera not found", Toast.LENGTH_LONG).show()
@@ -112,13 +148,15 @@ class CameraScenePreview : TextureView {
 
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
-            val texture = surfaceTexture
-            val surface = Surface(texture)
+            val surface = Surface(surfaceTexture)
+            startBackgroundThread()
+            imageReader = ImageReader.newInstance(previewSize.width, previewSize.height, ImageFormat.JPEG, 1)
+            imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
+            previewRequestBuilder.addTarget(imageReader.surface)
             camera.createCaptureSession(
-                Arrays.asList(surface, imageReader.surface),
-                @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+                listOf(surface, imageReader.surface),
                 object : CameraCaptureSession.StateCallback() {
 
                     override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
@@ -128,55 +166,20 @@ class CameraScenePreview : TextureView {
                             previewRequestBuilder.set(
                                 CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
-                            startBackgroundThread()
                             previewRequest = previewRequestBuilder.build()
                             captureSession.setRepeatingRequest(previewRequest,
-                                null, backgroundHandler)
+                                captureCallback, backgroundHandler)
                         } catch (e: CameraAccessException) {
                             Log.e("erfs", e.toString())
                         }
-
                     }
 
                     override fun onConfigureFailed(session: CameraCaptureSession) {
                         //Tools.makeToast(baseContext, "Failed")
                     }
-                }, null)
-            cameraDevice = camera
+                }, backgroundHandler)
         } catch (e: CameraAccessException) {
             Log.e("erf", e.toString())
-        }
-
-    }
-
-    private val stateCallback = object : CameraDevice.StateCallback() {
-        override fun onOpened(camera: CameraDevice) {
-            createCameraPreviewSession(camera)
-        }
-
-        override fun onDisconnected(camera: CameraDevice) {
-            camera.close()
-        }
-
-        override fun onError(camera: CameraDevice, error: Int) {
-            onDisconnected(camera)
-        }
-    }
-
-    inner class CameraSurfaceTextureListener : TextureView.SurfaceTextureListener {
-        override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
-        }
-
-        override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
-        }
-
-        override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-            return true
-        }
-
-        override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-            imageReader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 2)
-            openCamera()
         }
     }
 
@@ -222,29 +225,30 @@ class CameraScenePreview : TextureView {
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
 
-    fun startCameraPreview() {
-        if (this.isAvailable) {
-            imageReader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 2)
+    inner class CameraSurfaceTextureListener : TextureView.SurfaceTextureListener {
+        override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
+        }
+
+        override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+        }
+
+        override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+            return true
+        }
+
+        override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
             openCamera()
-        } else {
-            surfaceTextureListener = CameraSurfaceTextureListener()
         }
     }
 
-    fun stopCameraPreview() {
-        captureSession.close()
-        imageReader.close()
-        stopBackgroundThread()
+    class CompareSizesByArea : Comparator<Size> {
+
+        // We cast here to ensure the multiplications won't overflow
+        override fun compare(lhs: Size, rhs: Size) =
+            signum(lhs.width.toLong() * lhs.height - rhs.width.toLong() * rhs.height)
     }
 
     companion object {
         private const val TAG = "camerasceenpreview"
     }
-}
-
-class CompareSizesByArea : Comparator<Size> {
-
-    // We cast here to ensure the multiplications won't overflow
-    override fun compare(lhs: Size, rhs: Size) =
-            signum(lhs.width.toLong() * lhs.height - rhs.width.toLong() * rhs.height)
 }
