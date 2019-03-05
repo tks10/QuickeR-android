@@ -1,12 +1,14 @@
 package com.qrist.quicker.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
+import android.widget.Toast
 import androidx.navigation.Navigation
 
 import com.qrist.quicker.R
@@ -19,6 +21,16 @@ class CameraFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_camera, container, false)
+
+    @SuppressLint("ShowToast")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        cameraPreview.qrCodeCallback = { value ->
+            activity?.runOnUiThread {
+                Toast.makeText(context, "$value", Toast.LENGTH_LONG)
+            }
+        }
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

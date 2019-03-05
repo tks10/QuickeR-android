@@ -4,8 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import java.lang.Long.signum
 import android.annotation.SuppressLint
-import android.graphics.ImageFormat
-import android.graphics.SurfaceTexture
+import android.graphics.*
 import android.hardware.camera2.*
 import android.hardware.camera2.CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
 import android.media.ImageReader
@@ -13,11 +12,15 @@ import android.media.MediaRecorder
 import android.util.Size
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Looper
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import android.widget.Toast
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
+import com.qrist.quicker.utils.QRCodeDetector
 import java.lang.IllegalStateException
 import java.util.*
 import kotlin.NoSuchElementException
@@ -25,21 +28,51 @@ import kotlin.NoSuchElementException
 class CameraScenePreview : TextureView {
 
     private lateinit var previewSize: Size
+    private lateinit var videoSize: Size
     private lateinit var previewRequestBuilder: CaptureRequest.Builder
     private lateinit var imageReader: ImageReader
     private lateinit var captureSession: CameraCaptureSession
     private lateinit var previewRequest: CaptureRequest
+    private lateinit var cameraManager: CameraManager
+    private lateinit var cameraId: String
     private var cameraDevice: CameraDevice? = null
     private var ratioWidth = 0
     private var ratioHeight = 0
+    private var counter = 0
     private var backgroundThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
+    var qrCodeCallback: (String?) -> Unit = {}
+
+    private val rotation: Int
+        get() = cameraManager
+            .getCameraCharacteristics(cameraId)
+            .get(CameraCharacteristics.SENSOR_ORIENTATION)?.also { sensorOrientation ->
+                when ((sensorOrientation + 270) % 360) {
+                    0 -> FirebaseVisionImageMetadata.ROTATION_0
+                    90 -> FirebaseVisionImageMetadata.ROTATION_90
+                    180 -> FirebaseVisionImageMetadata.ROTATION_180
+                    270 -> FirebaseVisionImageMetadata.ROTATION_270
+                    else -> FirebaseVisionImageMetadata.ROTATION_0
+                }
+            } ?: FirebaseVisionImageMetadata.ROTATION_0
 
     private val onImageAvailableListener =
-        ImageReader.OnImageAvailableListener {
-            Log.d(TAG, "get a image")
-            val image = it.acquireLatestImage()
-            image?.close()
+        ImageReader.OnImageAvailableListener { reader ->
+            val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
+            if (counter ++ == 30) {
+                val firebaseImage = FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+                QRCodeDetector.detect(firebaseImage, {
+                    Log.d(TAG, "barcodes: ${it.size}")
+                    it.forEach { barcode ->
+                        Log.d(TAG, "${barcode.rawValue}")
+                        qrCodeCallback(barcode.rawValue)
+                    }
+                }, { exception ->
+                    Log.d(TAG, "error occurs: ${exception.stackTrace}")
+                })
+                counter = 0
+            }
+            image.close()
         }
 
     private val captureCallback =
@@ -81,6 +114,7 @@ class CameraScenePreview : TextureView {
     }
 
     fun startCameraPreview() {
+        startBackgroundThread()
         if (this.isAvailable) {
             openCamera()
         } else {
@@ -122,23 +156,25 @@ class CameraScenePreview : TextureView {
 
     @SuppressLint("MissingPermission")
     private fun openCamera() {
-        val manager: CameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
 
         try {
-            val cameraId: String = manager.cameraIdList.first { cameraId ->
-                manager.getCameraCharacteristics(cameraId)
+            cameraId = cameraManager.cameraIdList.first { cameraId ->
+                cameraManager.getCameraCharacteristics(cameraId)
                     .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
             }
 
-            val characteristics = manager.getCameraCharacteristics(cameraId)
+            val characteristics = cameraManager.getCameraCharacteristics(cameraId)
             val map = characteristics.get(SCALER_STREAM_CONFIGURATION_MAP) ?:
                 throw RuntimeException("Cannot get available preview/video sizes")
-            val videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
-            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
-                width, height, videoSize)
+            videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
+            previewSize = choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java))
+            // I can't understand optimal size.
+            // chosen video size is smallest one and it gonna be very smooth.
+            //chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java), width, height, videoSize)
             setAspectRatio(previewSize.height, previewSize.width)
-            manager.openCamera(cameraId, stateCallback, backgroundHandler)
-            Log.d("camera list", "${manager.cameraIdList}")
+            cameraManager.openCamera(cameraId, stateCallback, backgroundHandler)
+            Log.d("camera list", "${cameraManager.cameraIdList}")
         } catch (e: NoSuchElementException) {
             Toast.makeText(context, "Camera not found", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
@@ -149,8 +185,8 @@ class CameraScenePreview : TextureView {
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
             val surface = Surface(surfaceTexture)
-            startBackgroundThread()
-            imageReader = ImageReader.newInstance(previewSize.width, previewSize.height, ImageFormat.JPEG, 1)
+            imageReader = ImageReader.newInstance(videoSize.width, videoSize.height, ImageFormat.YUV_420_888, 2)
+            Log.d(TAG, "previewSize: ${videoSize.width} x ${videoSize.height}")
             imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
@@ -222,8 +258,11 @@ class CameraScenePreview : TextureView {
      * @param choices The list of available sizes
      * @return The video size
      */
-    private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
+    private fun choosePreviewSize(choices: Array<Size>) = choices.firstOrNull {
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
+
+    private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
+        it.width <= 480 } ?: choices[choices.size - 1]
 
     inner class CameraSurfaceTextureListener : TextureView.SurfaceTextureListener {
         override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
