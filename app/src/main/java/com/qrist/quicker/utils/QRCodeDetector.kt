@@ -32,19 +32,28 @@ class QRCodeDetector {
             onFailure: (func: Exception) -> Unit
         ) {
             val firebaseVisionImage = FirebaseVisionImage.fromBitmap(bitmap)
+            detect(firebaseVisionImage, onSuccess, onFailure)
+        }
+
+        fun detect(
+            image: FirebaseVisionImage,
+            onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
+            onFailure: (func: Exception) -> Unit
+        ) {
 
             detector
-                .detectInImage(firebaseVisionImage)
+                .detectInImage(image)
                 .addOnSuccessListener(onSuccess)
-                .addOnFailureListener{
+                .addOnFailureListener(onFailure)
+                //{
                     // Try negative image if the detection failed.
-                    val negativeImage = bitmap.negative()
-                    val negativeFirebaseVisionImage = FirebaseVisionImage.fromBitmap(negativeImage)
-                    detector
-                        .detectInImage(negativeFirebaseVisionImage)
-                        .addOnSuccessListener(onSuccess)
-                        .addOnFailureListener(onFailure)
-                }
+                    //val negativeImage = bitmap.negative()
+                    //val negativeFirebaseVisionImage = FirebaseVisionImage.fromBitmap(negativeImage)
+                    //detector
+                    //    .detectInImage(negativeFirebaseVisionImage)
+                    //    .addOnSuccessListener(onSuccess)
+                    //    .addOnFailureListener(onFailure)
+                //}
         }
 
         fun detectOnNegativeImage(
