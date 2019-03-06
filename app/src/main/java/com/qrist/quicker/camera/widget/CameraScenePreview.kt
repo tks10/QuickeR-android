@@ -10,6 +10,7 @@ import android.hardware.camera2.CameraCharacteristics.SCALER_STREAM_CONFIGURATIO
 import android.media.Image
 import android.media.ImageReader
 import android.media.MediaRecorder
+import android.os.Environment
 import android.util.Size
 import android.os.Handler
 import android.os.HandlerThread
@@ -21,11 +22,13 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
+import com.qrist.quicker.BuildConfig
 import com.qrist.quicker.utils.QRCodeDetector
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import java.util.*
 import kotlin.NoSuchElementException
+import com.qrist.quicker.utils.saveImage
 
 class CameraScenePreview : TextureView {
 
@@ -92,20 +95,24 @@ class CameraScenePreview : TextureView {
 
     private fun yuvToBitmap(image: Image): Bitmap? {
         val y = image.planes[0].buffer
-        val u = image.planes[1].buffer
-        val v = image.planes[2].buffer
+        //val u = image.planes[1].buffer
+        //val v = image.planes[2].buffer
+        //val bitmap = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
         val byteArray = ByteArray(y.capacity())
-        val bitmap = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
-        for (j in 0 until image.height) {
-            for (i in 0 until image.width) {
-                val r = (y[i + j] + 1.402 * v[i + j]).toInt()
-                val g = (y[i + j] - 0.344 * u[i + j]).toInt()
-                val b = (y[i + j] + 1.772 * u[i + j]).toInt()
-                val color = Color.rgb(r, g, b)
-                bitmap.setPixel(i, j, color)
-                byteArray[i + j] = color.toByte()
-            }
-        }
+        y.get(byteArray)
+        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, BitmapFactory.Options().also {
+            it.inMutable = true
+        })
+        //for (j in 0 until image.height) {
+        //    for (i in 0 until image.width) {
+        //        //val r = (y[i * j] + 1.402 * v[(i + j)]).toInt()
+        //        //val g = (y[i * j] - 0.344 * u[(i + j)]).toInt()
+        //        //val b = (y[i * j] + 1.772 * u[(i + j)]).toInt()
+        //        //val color = Color.rgb(r, g, b)
+        //        bitmap.setPixel(i, j, y[i * j].toInt())
+        //    }
+        //}
+        saveImage(bitmap, "/sdcard/Android/data/com.qrist.quicker/test.png", 1080f)
         return bitmap
     }
 
@@ -157,9 +164,9 @@ class CameraScenePreview : TextureView {
     }
 
     fun stopCameraPreview() {
+        stopBackgroundThread()
         captureSession.close()
         imageReader.close()
-        stopBackgroundThread()
     }
 
     private fun startBackgroundThread() {
@@ -219,7 +226,7 @@ class CameraScenePreview : TextureView {
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
             val surface = Surface(surfaceTexture)
-            imageReader = ImageReader.newInstance(videoSize.width, videoSize.height, ImageFormat.YUV_420_888, 2)
+            imageReader = ImageReader.newInstance(videoSize.width, videoSize.height, ImageFormat.JPEG, 2)
             Log.d(TAG, "previewSize: ${videoSize.width} x ${videoSize.height}")
             imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
