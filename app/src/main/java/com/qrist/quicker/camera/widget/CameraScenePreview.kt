@@ -10,11 +10,9 @@ import android.hardware.camera2.CameraCharacteristics.SCALER_STREAM_CONFIGURATIO
 import android.media.Image
 import android.media.ImageReader
 import android.media.MediaRecorder
-import android.os.Environment
 import android.util.Size
 import android.os.Handler
 import android.os.HandlerThread
-import android.os.Looper
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
@@ -22,13 +20,10 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
-import com.qrist.quicker.BuildConfig
 import com.qrist.quicker.utils.QRCodeDetector
 import java.lang.IllegalStateException
-import java.nio.ByteBuffer
 import java.util.*
 import kotlin.NoSuchElementException
-import com.qrist.quicker.utils.saveImage
 
 class CameraScenePreview : TextureView {
 
@@ -65,7 +60,7 @@ class CameraScenePreview : TextureView {
         ImageReader.OnImageAvailableListener { reader ->
             val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
             counter++
-            if (counter == 10 || counter == 20) {
+            if (counter == 20) {
                 val firebaseImage = FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
                 QRCodeDetector.detect(firebaseImage, {
                     Log.d(TAG, "barcodes: ${it.size}")
@@ -76,44 +71,34 @@ class CameraScenePreview : TextureView {
                 }, { exception ->
                     Log.d(TAG, "error occurs: ${exception.stackTrace}")
                 })
-            } else if (counter == 30) {
-                yuvToBitmap(image)?.also { bitmap ->
-                    QRCodeDetector.detectOnNegativeImage(bitmap, {
-                        Log.d(TAG, "negative barcodes: ${it.size}")
-                        it.forEach { barcode ->
-                            Log.d(TAG, "${barcode.rawValue}")
-                            qrCodeCallback(barcode.rawValue)
-                        }
-                    }, { exception ->
-                        Log.d(TAG, "error occurs: ${exception.stackTrace}")
-                    })
-                }
+            } else if (counter == 40) {
+                val firebaseVisionImage = FirebaseVisionImage.fromByteArray(yuvToBitmap(image), FirebaseVisionImageMetadata.Builder().also {
+                    it.setWidth(image.width)
+                    it.setHeight(image.height)
+                    it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                    it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
+                }.build())
+                QRCodeDetector.detect(firebaseVisionImage, {
+                    Log.d(TAG, "negative barcodes: ${it.size}")
+                    it.forEach { barcode ->
+                        Log.d(TAG, "${barcode.rawValue}")
+                        qrCodeCallback(barcode.rawValue)
+                    }
+                }, { exception ->
+                    Log.d(TAG, "error occurs: ${exception.stackTrace}")
+                })
                 counter = 0
             }
             image.close()
         }
 
-    private fun yuvToBitmap(image: Image): Bitmap? {
+    private fun yuvToBitmap(image: Image): ByteArray {
         val y = image.planes[0].buffer
-        //val u = image.planes[1].buffer
-        //val v = image.planes[2].buffer
-        //val bitmap = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
-        val byteArray = ByteArray(y.capacity())
-        y.get(byteArray)
-        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, BitmapFactory.Options().also {
-            it.inMutable = true
-        })
-        //for (j in 0 until image.height) {
-        //    for (i in 0 until image.width) {
-        //        //val r = (y[i * j] + 1.402 * v[(i + j)]).toInt()
-        //        //val g = (y[i * j] - 0.344 * u[(i + j)]).toInt()
-        //        //val b = (y[i * j] + 1.772 * u[(i + j)]).toInt()
-        //        //val color = Color.rgb(r, g, b)
-        //        bitmap.setPixel(i, j, y[i * j].toInt())
-        //    }
-        //}
-        saveImage(bitmap, "/sdcard/Android/data/com.qrist.quicker/test.png", 1080f)
-        return bitmap
+        val buffer = ByteArray(y.capacity())
+        y.get(buffer)
+        return buffer.map {
+            (255 - it).toByte()
+        }.toByteArray()
     }
 
     private val captureCallback =
@@ -226,7 +211,7 @@ class CameraScenePreview : TextureView {
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
             val surface = Surface(surfaceTexture)
-            imageReader = ImageReader.newInstance(videoSize.width, videoSize.height, ImageFormat.JPEG, 2)
+            imageReader = ImageReader.newInstance(videoSize.width, videoSize.height, ImageFormat.YUV_420_888, 1)
             Log.d(TAG, "previewSize: ${videoSize.width} x ${videoSize.height}")
             imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
@@ -303,7 +288,7 @@ class CameraScenePreview : TextureView {
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
 
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
-        it.width <= 240 } ?: choices[choices.size - 1]
+        it.width in 145..480 && it.width % 10 == 0 } ?: choices[choices.size - 1]
 
     inner class CameraSurfaceTextureListener : TextureView.SurfaceTextureListener {
         override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
