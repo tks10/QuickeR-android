@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.graphics.*
 import android.hardware.camera2.*
 import android.hardware.camera2.CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
+import android.media.Image
 import android.media.ImageReader
 import android.media.MediaRecorder
 import android.util.Size
@@ -22,6 +23,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.qrist.quicker.utils.QRCodeDetector
 import java.lang.IllegalStateException
+import java.nio.ByteBuffer
 import java.util.*
 import kotlin.NoSuchElementException
 
@@ -59,7 +61,8 @@ class CameraScenePreview : TextureView {
     private val onImageAvailableListener =
         ImageReader.OnImageAvailableListener { reader ->
             val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
-            if (counter ++ == 30) {
+            counter++
+            if (counter == 10 || counter == 20) {
                 val firebaseImage = FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
                 QRCodeDetector.detect(firebaseImage, {
                     Log.d(TAG, "barcodes: ${it.size}")
@@ -70,10 +73,41 @@ class CameraScenePreview : TextureView {
                 }, { exception ->
                     Log.d(TAG, "error occurs: ${exception.stackTrace}")
                 })
+            } else if (counter == 30) {
+                yuvToBitmap(image)?.also { bitmap ->
+                    QRCodeDetector.detectOnNegativeImage(bitmap, {
+                        Log.d(TAG, "negative barcodes: ${it.size}")
+                        it.forEach { barcode ->
+                            Log.d(TAG, "${barcode.rawValue}")
+                            qrCodeCallback(barcode.rawValue)
+                        }
+                    }, { exception ->
+                        Log.d(TAG, "error occurs: ${exception.stackTrace}")
+                    })
+                }
                 counter = 0
             }
             image.close()
         }
+
+    private fun yuvToBitmap(image: Image): Bitmap? {
+        val y = image.planes[0].buffer
+        val u = image.planes[1].buffer
+        val v = image.planes[2].buffer
+        val byteArray = ByteArray(y.capacity())
+        val bitmap = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
+        for (j in 0 until image.height) {
+            for (i in 0 until image.width) {
+                val r = (y[i + j] + 1.402 * v[i + j]).toInt()
+                val g = (y[i + j] - 0.344 * u[i + j]).toInt()
+                val b = (y[i + j] + 1.772 * u[i + j]).toInt()
+                val color = Color.rgb(r, g, b)
+                bitmap.setPixel(i, j, color)
+                byteArray[i + j] = color.toByte()
+            }
+        }
+        return bitmap
+    }
 
     private val captureCallback =
         object : CameraCaptureSession.CaptureCallback() {
@@ -262,7 +296,7 @@ class CameraScenePreview : TextureView {
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
 
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
-        it.width <= 480 } ?: choices[choices.size - 1]
+        it.width <= 240 } ?: choices[choices.size - 1]
 
     inner class CameraSurfaceTextureListener : TextureView.SurfaceTextureListener {
         override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
