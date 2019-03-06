@@ -8,81 +8,64 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.qrist.quicker.extentions.isUnder
 import com.qrist.quicker.extentions.trim
 import java.lang.Exception
-import com.google.android.gms.vision.barcode.Barcode
-import com.google.android.gms.vision.barcode.BarcodeDetector
-import com.google.zxing.pdf417.detector.Detector.detect
-import android.util.SparseArray
-import com.google.android.gms.vision.Frame
 import com.qrist.quicker.extentions.negative
 
+object QRCodeDetector {
+    private val options = FirebaseVisionBarcodeDetectorOptions.Builder()
+        .setBarcodeFormats(
+            FirebaseVisionBarcode.FORMAT_QR_CODE
+        )
+        .build()
 
-class QRCodeDetector {
-    companion object {
-        private val options = FirebaseVisionBarcodeDetectorOptions.Builder()
-            .setBarcodeFormats(
-                FirebaseVisionBarcode.FORMAT_QR_CODE
-            )
-            .build()
+    private val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
-        private val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
+    fun detect(
+        bitmap: Bitmap,
+        onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
+        onFailure: (func: Exception) -> Unit
+    ) {
+        val firebaseVisionImage = FirebaseVisionImage.fromBitmap(bitmap)
+        detect(firebaseVisionImage, onSuccess, onFailure)
+    }
 
-        fun detect(
-            bitmap: Bitmap,
-            onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
-            onFailure: (func: Exception) -> Unit
-        ) {
-            val firebaseVisionImage = FirebaseVisionImage.fromBitmap(bitmap)
-            detect(firebaseVisionImage, onSuccess, onFailure)
-        }
+    fun detect(
+        image: FirebaseVisionImage,
+        onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
+        onFailure: (func: Exception) -> Unit
+    ) {
 
-        fun detect(
-            image: FirebaseVisionImage,
-            onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
-            onFailure: (func: Exception) -> Unit
-        ) {
+        detector
+            .detectInImage(image)
+            .addOnSuccessListener(onSuccess)
+            .addOnFailureListener(onFailure)
+    }
 
-            detector
-                .detectInImage(image)
-                .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(onFailure)
-                //{
-                    // Try negative image if the detection failed.
-                    //val negativeImage = bitmap.negative()
-                    //val negativeFirebaseVisionImage = FirebaseVisionImage.fromBitmap(negativeImage)
-                    //detector
-                    //    .detectInImage(negativeFirebaseVisionImage)
-                    //    .addOnSuccessListener(onSuccess)
-                    //    .addOnFailureListener(onFailure)
-                //}
-        }
+    fun detectOnNegativeImage(
+        bitmap: Bitmap,
+        onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
+        onFailure: (func: Exception) -> Unit
+    ) {
+        this.detect(bitmap.negative(), onSuccess, onFailure)
+    }
 
-        fun detectOnNegativeImage(
-            bitmap: Bitmap,
-            onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
-            onFailure: (func: Exception) -> Unit
-        ) {
-            this.detect(bitmap.negative(), onSuccess, onFailure)
-        }
+    fun trimQRCodeIfDetected(srcBitmap: Bitmap, barcodes: List<FirebaseVisionBarcode>): Bitmap? {
+        val processedBarcodes = dropSmallBarcode(barcodes)
+        if (processedBarcodes.size != 1) return null
 
-        fun trimQRCodeIfDetected(srcBitmap: Bitmap, barcodes: List<FirebaseVisionBarcode>): Bitmap? {
-            val processedBarcodes = dropSmallBarcode(barcodes)
-            if (processedBarcodes.size != 1) return null
+        val qrCodeRect = processedBarcodes[0].boundingBox ?: return null
 
-            val qrCodeRect = processedBarcodes[0].boundingBox ?: return null
+        return srcBitmap.trim(qrCodeRect)
+    }
 
-            return srcBitmap.trim(qrCodeRect)
-        }
+    private fun dropSmallBarcode(barcodes: List<FirebaseVisionBarcode>, minPixel: Int = 92): List<FirebaseVisionBarcode> {
+        val droppedBarcodes = mutableListOf<FirebaseVisionBarcode>()
 
-        private fun dropSmallBarcode(barcodes: List<FirebaseVisionBarcode>, minPixel: Int = 92): List<FirebaseVisionBarcode> {
-            val droppedBarcodes = mutableListOf<FirebaseVisionBarcode>()
-
-            barcodes.forEach {
-                it.boundingBox?.let { boudingBox ->
-                    if (!boudingBox.isUnder(minPixel)) droppedBarcodes.add(it)
-                }
+        barcodes.forEach {
+            it.boundingBox?.let { boudingBox ->
+                if (!boudingBox.isUnder(minPixel)) droppedBarcodes.add(it)
             }
-
-            return droppedBarcodes
         }
+
+        return droppedBarcodes
     }
 }
