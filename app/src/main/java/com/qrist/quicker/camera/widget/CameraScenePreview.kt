@@ -24,6 +24,7 @@ import com.qrist.quicker.utils.QRCodeDetector
 import java.lang.IllegalStateException
 import java.util.*
 import kotlin.NoSuchElementException
+import kotlin.experimental.inv
 
 class CameraScenePreview : TextureView {
 
@@ -60,44 +61,38 @@ class CameraScenePreview : TextureView {
         ImageReader.OnImageAvailableListener { reader ->
             val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
             counter++
-            if (counter == 20) {
-                val firebaseImage = FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
-                QRCodeDetector.detect(firebaseImage, {
-                    Log.d(TAG, "barcodes: ${it.size}")
-                    it.forEach { barcode ->
-                        Log.d(TAG, "${barcode.rawValue}")
-                        qrCodeCallback(barcode.rawValue)
-                    }
-                }, { exception ->
-                    Log.d(TAG, "error occurs: ${exception.stackTrace}")
-                })
-            } else if (counter == 40) {
-                val firebaseVisionImage = FirebaseVisionImage.fromByteArray(yuvToBitmap(image), FirebaseVisionImageMetadata.Builder().also {
-                    it.setWidth(image.width)
-                    it.setHeight(image.height)
-                    it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-                    it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
-                }.build())
-                QRCodeDetector.detect(firebaseVisionImage, {
-                    Log.d(TAG, "negative barcodes: ${it.size}")
-                    it.forEach { barcode ->
-                        Log.d(TAG, "${barcode.rawValue}")
-                        qrCodeCallback(barcode.rawValue)
-                    }
-                }, { exception ->
-                    Log.d(TAG, "error occurs: ${exception.stackTrace}")
-                })
-                counter = 0
+            val firebaseImage = when (counter) {
+                20 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+                40 -> {
+                    counter = 0
+                    FirebaseVisionImage.fromByteArray(getNegativeYUVByteArray(image),
+                        FirebaseVisionImageMetadata.Builder().also {
+                            it.setWidth(image.width)
+                            it.setHeight(image.height)
+                            it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                            it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
+                        }.build())
+                }
+                else -> return@OnImageAvailableListener
             }
+            QRCodeDetector.detect(firebaseImage, {
+                Log.d(TAG, "barcodes: ${it.size}")
+                it.forEach { barcode ->
+                    Log.d(TAG, "${barcode.rawValue}")
+                    qrCodeCallback(barcode.rawValue)
+                }
+            }, { exception ->
+                Log.d(TAG, "error occurs: ${exception.stackTrace}")
+            })
             image.close()
         }
 
-    private fun yuvToBitmap(image: Image): ByteArray {
+    private fun getNegativeYUVByteArray(image: Image): ByteArray {
         val y = image.planes[0].buffer
         val buffer = ByteArray(y.capacity())
         y.get(buffer)
         return buffer.map {
-            (255 - it).toByte()
+            it.inv()
         }.toByteArray()
     }
 
