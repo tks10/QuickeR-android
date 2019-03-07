@@ -142,7 +142,7 @@ class CameraScenePreview : TextureView {
         if (this.isAvailable) {
             openCamera()
         } else {
-            surfaceTextureListener = CameraSurfaceTextureListener()
+            surfaceTextureListener = cameraSurfaceTextureListener
         }
     }
 
@@ -191,11 +191,9 @@ class CameraScenePreview : TextureView {
             val characteristics = cameraManager.getCameraCharacteristics(cameraId)
             val map = characteristics.get(SCALER_STREAM_CONFIGURATION_MAP) ?:
                 throw RuntimeException("Cannot get available preview/video sizes")
-            videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
-            previewSize = choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java))
-            // I can't understand optimal size.
             // chosen video size is smallest one and it gonna be very smooth.
-            //chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java), width, height, videoSize)
+            videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
+            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java), width, height, choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java)))
             setAspectRatio(previewSize.height, previewSize.width)
             cameraManager.openCamera(cameraId, stateCallback, backgroundHandler)
             Log.d("camera list", "${cameraManager.cameraIdList}")
@@ -235,7 +233,7 @@ class CameraScenePreview : TextureView {
                     }
 
                     override fun onConfigureFailed(session: CameraCaptureSession) {
-                        //Tools.makeToast(baseContext, "Failed")
+                        Toast.makeText(context, "Failed opening camera", Toast.LENGTH_LONG).show()
                     }
                 }, backgroundHandler)
         } catch (e: CameraAccessException) {
@@ -288,7 +286,7 @@ class CameraScenePreview : TextureView {
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
         it.width in 145..480 && it.width % 10 == 0 } ?: choices[choices.size - 1]
 
-    inner class CameraSurfaceTextureListener : TextureView.SurfaceTextureListener {
+    val cameraSurfaceTextureListener = object : TextureView.SurfaceTextureListener {
         override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
         }
 
