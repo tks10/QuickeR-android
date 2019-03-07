@@ -73,7 +73,10 @@ class CameraScenePreview : TextureView {
                             it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
                         }.build())
                 }
-                else -> return@OnImageAvailableListener
+                else -> {
+                    image.close()
+                    return@OnImageAvailableListener
+                }
             }
             QRCodeDetector.detect(firebaseImage, {
                 Log.d(TAG, "barcodes: ${it.size}")
