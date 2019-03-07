@@ -44,51 +44,49 @@ class CameraScenePreview : TextureView {
     private var backgroundHandler: Handler? = null
     var qrCodeCallback: (String?) -> Unit = {}
 
-    private val rotation: Int
-        get() = cameraManager
-            .getCameraCharacteristics(cameraId)
-            .get(CameraCharacteristics.SENSOR_ORIENTATION)?.also { sensorOrientation ->
-                when ((sensorOrientation + 270) % 360) {
-                    0 -> FirebaseVisionImageMetadata.ROTATION_0
-                    90 -> FirebaseVisionImageMetadata.ROTATION_90
-                    180 -> FirebaseVisionImageMetadata.ROTATION_180
-                    270 -> FirebaseVisionImageMetadata.ROTATION_270
-                    else -> FirebaseVisionImageMetadata.ROTATION_0
-                }
-            } ?: FirebaseVisionImageMetadata.ROTATION_0
-
-    private val onImageAvailableListener =
-        ImageReader.OnImageAvailableListener { reader ->
-            val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
-            counter++
-            val firebaseImage = when (counter) {
-                20 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
-                40 -> {
-                    counter = 0
-                    FirebaseVisionImage.fromByteArray(getNegativeYUVByteArray(image),
-                        FirebaseVisionImageMetadata.Builder().also {
-                            it.setWidth(image.width)
-                            it.setHeight(image.height)
-                            it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-                            it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
-                        }.build())
-                }
-                else -> {
-                    image.close()
-                    return@OnImageAvailableListener
-                }
+    private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
+        val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
+        counter++
+        val firebaseImage = when (counter) {
+            20 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+            40 -> {
+                counter = 0
+                FirebaseVisionImage.fromByteArray(getNegativeYUVByteArray(image),
+                    FirebaseVisionImageMetadata.Builder().also {
+                        it.setWidth(image.width)
+                        it.setHeight(image.height)
+                        it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                        it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
+                    }.build())
             }
-            QRCodeDetector.detect(firebaseImage, {
-                Log.d(TAG, "barcodes: ${it.size}")
-                it.forEach { barcode ->
-                    Log.d(TAG, "${barcode.rawValue}")
-                    qrCodeCallback(barcode.rawValue)
-                }
-            }, { exception ->
-                Log.d(TAG, "error occurs: ${exception.stackTrace}")
-            })
-            image.close()
+            else -> {
+                image.close()
+                return@OnImageAvailableListener
+            }
         }
+        QRCodeDetector.detect(firebaseImage, {
+            Log.d(TAG, "barcodes: ${it.size}")
+            it.forEach { barcode ->
+                Log.d(TAG, "${barcode.rawValue}")
+                qrCodeCallback(barcode.rawValue)
+            }
+        }, { exception ->
+            Log.d(TAG, "error occurs: ${exception.stackTrace}")
+        })
+        image.close()
+    }
+
+    private val cameraSurfaceTextureListener = object : TextureView.SurfaceTextureListener {
+        override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {}
+
+        override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {}
+
+        override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean = true
+
+        override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+            openCamera()
+        }
+    }
 
     private fun getNegativeYUVByteArray(image: Image): ByteArray {
         val y = image.planes[0].buffer
@@ -99,9 +97,7 @@ class CameraScenePreview : TextureView {
         }.toByteArray()
     }
 
-    private val captureCallback =
-        object : CameraCaptureSession.CaptureCallback() {
-        }
+    private val captureCallback = object : CameraCaptureSession.CaptureCallback() {}
 
     private val stateCallback = object : CameraDevice.StateCallback() {
         override fun onOpened(camera: CameraDevice) {
@@ -181,7 +177,6 @@ class CameraScenePreview : TextureView {
     @SuppressLint("MissingPermission")
     private fun openCamera() {
         cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-
         try {
             cameraId = cameraManager.cameraIdList.first { cameraId ->
                 cameraManager.getCameraCharacteristics(cameraId)
@@ -191,24 +186,26 @@ class CameraScenePreview : TextureView {
             val characteristics = cameraManager.getCameraCharacteristics(cameraId)
             val map = characteristics.get(SCALER_STREAM_CONFIGURATION_MAP) ?:
                 throw RuntimeException("Cannot get available preview/video sizes")
-            // chosen video size is smallest one and it gonna be very smooth.
+            // chose small video size to move smoothly
             videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
-            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java), width, height, choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java)))
+            // chose big preview size to see fancy video
+            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
+                width, height, choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java)))
             setAspectRatio(previewSize.height, previewSize.width)
             cameraManager.openCamera(cameraId, stateCallback, backgroundHandler)
             Log.d("camera list", "${cameraManager.cameraIdList}")
         } catch (e: NoSuchElementException) {
             Toast.makeText(context, "Camera not found", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "${e.stackTrace}")
         }
     }
 
     private fun createCameraPreviewSession(camera: CameraDevice) {
         try {
             val surface = Surface(surfaceTexture)
-            imageReader = ImageReader.newInstance(videoSize.width, videoSize.height, ImageFormat.YUV_420_888, 1)
-            Log.d(TAG, "previewSize: ${videoSize.width} x ${videoSize.height}")
+            imageReader = ImageReader.newInstance(videoSize.width, videoSize.height,
+                ImageFormat.YUV_420_888, 1)
             imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
@@ -216,9 +213,7 @@ class CameraScenePreview : TextureView {
             camera.createCaptureSession(
                 listOf(surface, imageReader.surface),
                 object : CameraCaptureSession.StateCallback() {
-
                     override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
-
                         captureSession = cameraCaptureSession
                         try {
                             previewRequestBuilder.set(
@@ -286,23 +281,7 @@ class CameraScenePreview : TextureView {
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
         it.width in 145..480 && it.width % 10 == 0 } ?: choices[choices.size - 1]
 
-    val cameraSurfaceTextureListener = object : TextureView.SurfaceTextureListener {
-        override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
-        }
-
-        override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
-        }
-
-        override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-            return true
-        }
-
-        override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-            openCamera()
-        }
-    }
-
-    class CompareSizesByArea : Comparator<Size> {
+    private class CompareSizesByArea : Comparator<Size> {
 
         // We cast here to ensure the multiplications won't overflow
         override fun compare(lhs: Size, rhs: Size) =
