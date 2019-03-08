@@ -26,7 +26,12 @@ import java.util.*
 import kotlin.NoSuchElementException
 import kotlin.experimental.inv
 
-class CameraScenePreview : TextureView {
+class CameraScenePreview @JvmOverloads constructor(
+    @get:JvmName("_context")
+    val context: Context,
+    attrs: AttributeSet? = null,
+    defaultStyle: Int = 0
+) : TextureView(context, attrs, defaultStyle) {
 
     private lateinit var previewSize: Size
     private lateinit var videoSize: Size
@@ -114,10 +119,6 @@ class CameraScenePreview : TextureView {
         }
     }
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val width = View.MeasureSpec.getSize(widthMeasureSpec)
@@ -189,8 +190,9 @@ class CameraScenePreview : TextureView {
             // chose small video size to move smoothly
             videoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder::class.java))
             // chose big preview size to see fancy video
-            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
-                width, height, choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java)))
+            //previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture::class.java),
+            //    width, height, choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java)))
+            previewSize = choosePreviewSize(map.getOutputSizes(MediaRecorder::class.java))
             setAspectRatio(previewSize.height, previewSize.width)
             cameraManager.openCamera(cameraId, stateCallback, backgroundHandler)
             Log.d("camera list", "${cameraManager.cameraIdList}")
