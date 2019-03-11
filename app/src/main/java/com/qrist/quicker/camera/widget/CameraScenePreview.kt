@@ -47,7 +47,7 @@ class CameraScenePreview @JvmOverloads constructor(
     private var counter = 0
     private var backgroundThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
-    var qrCodeCallback: (String?) -> Unit = {}
+    var qrCodeCallback: (QRCodeValue) -> Unit = {}
 
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
         val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
@@ -73,7 +73,9 @@ class CameraScenePreview @JvmOverloads constructor(
             Log.d(TAG, "barcodes: ${it.size}")
             it.forEach { barcode ->
                 Log.d(TAG, "${barcode.rawValue}")
-                qrCodeCallback(barcode.rawValue)
+                barcode.rawValue?.also { value ->
+                    qrCodeCallback(QRCodeValue.create(value))
+                }
             }
         }, { exception ->
             Log.d(TAG, "error occurs: ${exception.stackTrace}")
