@@ -167,6 +167,7 @@ class RegisterFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
         setupTutorial()
         sequence.start()
     }

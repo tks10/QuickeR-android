@@ -19,6 +19,7 @@ import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisteredservicelistBinding
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.QRCode
+import com.qrist.quicker.utils.MyApplication
 import com.qrist.quicker.utils.getDrawableFromUri
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_registeredservicelist.*
@@ -58,6 +59,11 @@ class RegisteredServiceListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
     }
 
     private fun updateItems() {
