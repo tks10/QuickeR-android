@@ -23,6 +23,7 @@ import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.utils.MyApplication
 
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -77,6 +78,11 @@ class QRContainerFragment : Fragment(), CoroutineScope {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
     }
 
     override fun onResume() {
