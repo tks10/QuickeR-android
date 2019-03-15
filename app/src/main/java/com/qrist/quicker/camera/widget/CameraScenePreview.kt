@@ -47,15 +47,16 @@ class CameraScenePreview @JvmOverloads constructor(
     private var counter = 0
     private var backgroundThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
+    private var mlkitThread: HandlerThread? = null
+    private var mlkitHandler: Handler? = null
     var qrCodeCallback: (QRCodeValue) -> Unit = {}
 
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
         val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
-        counter++
+        counter = 1 - counter
         val firebaseImage = when (counter) {
-            20 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
-            40 -> {
-                counter = 0
+            0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+            1 -> {
                 FirebaseVisionImage.fromByteArray(getNegativeYUVByteArray(image),
                     FirebaseVisionImageMetadata.Builder().also {
                         it.setWidth(image.width)
@@ -72,7 +73,6 @@ class CameraScenePreview @JvmOverloads constructor(
         QRCodeDetector.detect(firebaseImage, {
             Log.d(TAG, "barcodes: ${it.size}")
             it.forEach { barcode ->
-                Log.d(TAG, "${barcode.rawValue}")
                 barcode.rawValue?.also { value ->
                     qrCodeCallback(QRCodeValue.create(value))
                 }
@@ -84,9 +84,11 @@ class CameraScenePreview @JvmOverloads constructor(
     }
 
     private val cameraSurfaceTextureListener = object : TextureView.SurfaceTextureListener {
-        override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {}
+        override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
+        }
 
-        override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {}
+        override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+        }
 
         override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean = true
 
@@ -155,14 +157,21 @@ class CameraScenePreview @JvmOverloads constructor(
         backgroundThread = HandlerThread("CameraBackground")
         backgroundThread?.start()
         backgroundHandler = Handler(backgroundThread?.looper)
+        mlkitThread = HandlerThread("MLKitBackground")
+        mlkitThread?.start()
+        mlkitHandler = Handler(mlkitThread?.looper)
     }
 
     private fun stopBackgroundThread() {
         backgroundThread?.quitSafely()
+        mlkitThread?.quitSafely()
         try {
             backgroundThread?.join()
             backgroundThread = null
             backgroundHandler = null
+            mlkitThread?.join()
+            mlkitThread = null
+            mlkitHandler = null
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
         }
@@ -210,7 +219,7 @@ class CameraScenePreview @JvmOverloads constructor(
             val surface = Surface(surfaceTexture)
             imageReader = ImageReader.newInstance(videoSize.width, videoSize.height,
                 ImageFormat.YUV_420_888, 1)
-            imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
+            imageReader.setOnImageAvailableListener(onImageAvailableListener, mlkitHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
             previewRequestBuilder.addTarget(imageReader.surface)
@@ -225,7 +234,7 @@ class CameraScenePreview @JvmOverloads constructor(
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
                             previewRequest = previewRequestBuilder.build()
                             captureSession.setRepeatingRequest(previewRequest,
-                                captureCallback, backgroundHandler)
+                                captureCallback, mlkitHandler)
                         } catch (e: CameraAccessException) {
                             Log.e("erfs", e.toString())
                         }
