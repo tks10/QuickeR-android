@@ -21,14 +21,11 @@ import android.widget.Toast
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.qrist.quicker.utils.QRCodeDetector
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.NoSuchElementException
-import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.inv
 
 class CameraScenePreview @JvmOverloads constructor(
@@ -36,10 +33,8 @@ class CameraScenePreview @JvmOverloads constructor(
     val context: Context,
     attrs: AttributeSet? = null,
     defaultStyle: Int = 0
-) : TextureView(context, attrs, defaultStyle), CoroutineScope {
+) : TextureView(context, attrs, defaultStyle) {
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default
     private lateinit var previewSize: Size
     private lateinit var videoSize: Size
     private lateinit var previewRequestBuilder: CaptureRequest.Builder
@@ -163,6 +158,9 @@ class CameraScenePreview @JvmOverloads constructor(
         stopBackgroundThread()
         captureSession.close()
         imageReader.close()
+        cameraDevice!!.close()
+        cameraDevice = null
+
     }
 
     private fun startBackgroundThread() {
