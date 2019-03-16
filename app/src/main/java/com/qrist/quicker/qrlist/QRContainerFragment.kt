@@ -174,31 +174,28 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     }
 
     private fun scannedQRCode(resultText: String) {
-        when (URLUtil.isValidUrl(resultText)) {
-            true -> {
-                val uri = Uri.parse(resultText)
-                val intent = Intent(Intent.ACTION_VIEW, uri)
+        if (URLUtil.isValidUrl(resultText)) {
+            val uri = Uri.parse(resultText)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
 
-                MaterialDialog(activity!!).show {
-                    title(R.string.title_open_url)
-                    message(text = uri.toString())
-                    positiveButton(R.string.message_open_url) {
-                        this@QRContainerFragment.startActivity(intent)
-                    }
-                    negativeButton(R.string.cancel)
+            MaterialDialog(activity!!).show {
+                title(R.string.title_open_url)
+                message(text = uri.toString())
+                positiveButton(R.string.message_open_url) {
+                    this@QRContainerFragment.startActivity(intent)
                 }
+                negativeButton(R.string.cancel)
             }
-            false -> {
-                MaterialDialog(activity!!).show {
-                    title(R.string.title_result_non_url)
-                    message(text = resultText)
-                    positiveButton(R.string.message_copy) {
-                        val clipboardManager: ClipboardManager =
-                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboardManager.primaryClip = ClipData.newPlainText("", resultText)
-                    }
-                    negativeButton(R.string.message_close)
+        } else {
+            MaterialDialog(activity!!).show {
+                title(R.string.title_result_non_url)
+                message(text = resultText)
+                positiveButton(R.string.message_copy) {
+                    val clipboardManager: ClipboardManager =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboardManager.primaryClip = ClipData.newPlainText("", resultText)
                 }
+                negativeButton(R.string.message_close)
             }
         }
     }
