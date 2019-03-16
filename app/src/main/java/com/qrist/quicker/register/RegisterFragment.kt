@@ -156,7 +156,7 @@ class RegisterFragment : Fragment() {
                     getBitmapFromUri(Uri.fromFile(File(qrCodeImageUrl)))
                 }
                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
-                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                this@RegisterFragment.view?.addQRButton?.isVisible = false
             }
             if (serviceIconUrl.isNotBlank() && !isDefaultService) {
                 serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
@@ -257,7 +257,7 @@ class RegisterFragment : Fragment() {
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)
                     .tintTarget(false)
-                    .id(id++)
+                    .id(++id)
             )
 
             components.add(TutorialComponent.DoneButton)
@@ -294,7 +294,7 @@ class RegisterFragment : Fragment() {
                                 saveImage(it, tmpUri, IMAGE_QR_MAX)
                                 qrImageBitmap = it
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
-                                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                                this@RegisterFragment.view?.addQRButton?.isVisible = false
                                 viewModel.updateQRCodeImageUrl(tmpUri)
                             } ?: run {
                                 kindOfCrop = CROP_QR
@@ -342,7 +342,7 @@ class RegisterFragment : Fragment() {
                             onCropImageFile(resultData) { bmp, uri ->
                                 qrImageBitmap = bmp
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
-                                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                                this@RegisterFragment.view?.addQRButton?.isVisible = false
                                 viewModel.updateQRCodeImageUrl(uri.toString())
                             }
                         }

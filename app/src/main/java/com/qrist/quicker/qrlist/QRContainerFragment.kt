@@ -21,6 +21,9 @@ import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
+import com.qrist.quicker.extentions.isGone
+import com.qrist.quicker.extentions.isInvisible
+import com.qrist.quicker.extentions.isVisible
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialComponent
 import com.qrist.quicker.utils.MyApplication
@@ -141,24 +144,23 @@ class QRContainerFragment : Fragment(), CoroutineScope {
 
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         adapter.detachItems()
-        viewPager.visibility = View.INVISIBLE
-        tabLayout.visibility = View.INVISIBLE
+        viewPager.isInvisible = true
+        tabLayout.isInvisible = true
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
         viewPager.addOnPageChangeListener(MyOnPageChangeListener())
         viewPager.currentItem = adapter.getCenterPosition(currentAdapterPosition - 2)
-
-        this.launch {
-            delay(WAIT_TIME_ON_LAUNCH)
-            viewPager.setCurrentItem(adapter.getCenterPosition(currentAdapterPosition), false)
-            viewPager.visibility = View.VISIBLE
-            tabLayout.visibility = View.VISIBLE
-        }
-
         tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
 
         val serviceCount = viewModel.qrCodes.size
-        getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
+        getStartedTextView.isGone = serviceCount != 0
+
+        launch {
+            delay(WAIT_TIME_ON_LAUNCH)
+            viewPager.setCurrentItem(adapter.getCenterPosition(currentAdapterPosition), false)
+            viewPager.isVisible = true
+            tabLayout.isVisible = true
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
