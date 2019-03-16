@@ -152,8 +152,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         viewPager.currentItem = adapter.getCenterPosition(currentAdapterPosition - 2)
         tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
 
-        val serviceCount = viewModel.qrCodes.size
-        getStartedTextView.isGone = serviceCount != 0
+        getStartedTextView.isGone = !viewModel.qrCodes.isEmpty()
 
         launch {
             delay(WAIT_TIME_ON_LAUNCH)
