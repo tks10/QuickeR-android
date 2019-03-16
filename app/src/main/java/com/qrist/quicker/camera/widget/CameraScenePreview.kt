@@ -21,9 +21,14 @@ import android.widget.Toast
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.qrist.quicker.utils.QRCodeDetector
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.lang.IllegalStateException
 import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.NoSuchElementException
+import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.inv
 
 class CameraScenePreview @JvmOverloads constructor(
@@ -31,8 +36,10 @@ class CameraScenePreview @JvmOverloads constructor(
     val context: Context,
     attrs: AttributeSet? = null,
     defaultStyle: Int = 0
-) : TextureView(context, attrs, defaultStyle) {
+) : TextureView(context, attrs, defaultStyle), CoroutineScope {
 
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
     private lateinit var previewSize: Size
     private lateinit var videoSize: Size
     private lateinit var previewRequestBuilder: CaptureRequest.Builder
@@ -41,46 +48,51 @@ class CameraScenePreview @JvmOverloads constructor(
     private lateinit var previewRequest: CaptureRequest
     private lateinit var cameraManager: CameraManager
     private lateinit var cameraId: String
+    private var threadPool: ExecutorService? = null
     private var cameraDevice: CameraDevice? = null
     private var ratioWidth = 0
     private var ratioHeight = 0
     private var counter = 0
     private var backgroundThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
-    private var mlkitThread: HandlerThread? = null
-    private var mlkitHandler: Handler? = null
     var qrCodeCallback: (QRCodeValue) -> Unit = {}
 
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
-        val image = reader.acquireLatestImage() ?: return@OnImageAvailableListener
-        counter = 1 - counter
-        val firebaseImage = when (counter) {
-            0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
-            1 -> {
-                FirebaseVisionImage.fromByteArray(getNegativeYUVByteArray(image),
-                    FirebaseVisionImageMetadata.Builder().also {
-                        it.setWidth(image.width)
-                        it.setHeight(image.height)
-                        it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-                        it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
-                    }.build())
-            }
-            else -> {
-                image.close()
-                return@OnImageAvailableListener
-            }
-        }
-        QRCodeDetector.detect(firebaseImage, {
-            Log.d(TAG, "barcodes: ${it.size}")
-            it.forEach { barcode ->
-                barcode.rawValue?.also { value ->
-                    qrCodeCallback(QRCodeValue.create(value))
+        try {
+            threadPool?.execute {
+                val image = reader.acquireLatestImage() ?: return@execute
+                counter = 1 - counter
+                val firebaseImage = when (counter) {
+                    0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+                    1 -> {
+                        FirebaseVisionImage.fromByteArray(getNegativeYUVByteArray(image),
+                            FirebaseVisionImageMetadata.Builder().also {
+                                it.setWidth(image.width)
+                                it.setHeight(image.height)
+                                it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                                it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
+                            }.build())
+                    }
+                    else -> {
+                        image.close()
+                        return@execute
+                    }
                 }
+                QRCodeDetector.detect(firebaseImage, {
+                    it.forEach { barcode ->
+                        Log.d(TAG, "detect barcode: ${barcode.rawValue}")
+                        barcode.rawValue?.also { value ->
+                            qrCodeCallback(QRCodeValue.create(value))
+                        }
+                    }
+                }, { exception ->
+                    Log.d(TAG, "error occurs: ${exception.stackTrace}")
+                })
+                image.close()
             }
-        }, { exception ->
-            Log.d(TAG, "error occurs: ${exception.stackTrace}")
-        })
-        image.close()
+        } catch (exception: Exception) {
+            Log.d(TAG, "thread is terminated: ${exception.stackTrace}")
+        }
     }
 
     private val cameraSurfaceTextureListener = object : TextureView.SurfaceTextureListener {
@@ -154,24 +166,22 @@ class CameraScenePreview @JvmOverloads constructor(
     }
 
     private fun startBackgroundThread() {
+        threadPool = Executors.newFixedThreadPool(3)
         backgroundThread = HandlerThread("CameraBackground")
         backgroundThread?.start()
         backgroundHandler = Handler(backgroundThread?.looper)
-        mlkitThread = HandlerThread("MLKitBackground")
-        mlkitThread?.start()
-        mlkitHandler = Handler(mlkitThread?.looper)
     }
 
     private fun stopBackgroundThread() {
+        while (!threadPool!!.isTerminated) {
+            threadPool!!.shutdown()
+        }
+        threadPool = null
         backgroundThread?.quitSafely()
-        mlkitThread?.quitSafely()
         try {
             backgroundThread?.join()
             backgroundThread = null
             backgroundHandler = null
-            mlkitThread?.join()
-            mlkitThread = null
-            mlkitHandler = null
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
         }
@@ -218,8 +228,9 @@ class CameraScenePreview @JvmOverloads constructor(
         try {
             val surface = Surface(surfaceTexture)
             imageReader = ImageReader.newInstance(videoSize.width, videoSize.height,
-                ImageFormat.YUV_420_888, 1)
-            imageReader.setOnImageAvailableListener(onImageAvailableListener, mlkitHandler)
+                ImageFormat.YUV_420_888, 3)
+            Log.d(TAG, "video size is ${videoSize.width}x${videoSize.height}")
+            imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
             previewRequestBuilder.addTarget(imageReader.surface)
@@ -234,7 +245,7 @@ class CameraScenePreview @JvmOverloads constructor(
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
                             previewRequest = previewRequestBuilder.build()
                             captureSession.setRepeatingRequest(previewRequest,
-                                captureCallback, mlkitHandler)
+                                captureCallback, backgroundHandler)
                         } catch (e: CameraAccessException) {
                             Log.e("erfs", e.toString())
                         }
@@ -292,7 +303,7 @@ class CameraScenePreview @JvmOverloads constructor(
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
 
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
-        it.width in 145..480 && it.width % 10 == 0 } ?: choices[choices.size - 1]
+        it.width in 125..720 && it.width == it.height * 4 / 3 } ?: choices[choices.size - 1]
 
     private class CompareSizesByArea : Comparator<Size> {
 
