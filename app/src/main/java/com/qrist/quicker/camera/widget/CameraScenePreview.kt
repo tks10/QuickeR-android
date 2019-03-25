@@ -160,7 +160,6 @@ class CameraScenePreview @JvmOverloads constructor(
         imageReader.close()
         cameraDevice!!.close()
         cameraDevice = null
-
     }
 
     private fun startBackgroundThread() {

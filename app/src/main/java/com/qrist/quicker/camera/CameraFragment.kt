@@ -42,6 +42,9 @@ class CameraFragment : Fragment() {
             negativeButton(R.string.cancel) {
                 isDialogSeen = false
             }
+            setOnCancelListener {
+                isDialogSeen = false
+            }
         }
         isDialogSeen = true
     }
@@ -59,7 +62,9 @@ class CameraFragment : Fragment() {
             negativeButton(R.string.cancel) {
                 isDialogSeen = false
             }
-            negativeButton(R.string.message_close)
+            setOnCancelListener {
+                isDialogSeen = false
+            }
         }
         isDialogSeen = true
     }
