@@ -25,7 +25,7 @@ import com.qrist.quicker.extentions.isGone
 import com.qrist.quicker.extentions.isInvisible
 import com.qrist.quicker.extentions.isVisible
 import com.qrist.quicker.extentions.obtainViewModel
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.MyApplication
 
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
@@ -100,7 +100,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     }
 
     private fun tutorial() {
-        if (viewModel.hasNotDoneTutorial(TutorialComponent.AddServiceButton)) {
+        if (viewModel.hasNotDoneTutorial(TutorialType.AddServiceButton)) {
             sequence = TapTargetSequence(activity)
                 .targets(
                     TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
@@ -113,7 +113,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
                         .id(1)
                 )
             sequence.start()
-            viewModel.doneTutorial(TutorialComponent.AddServiceButton)
+            viewModel.doneTutorial(TutorialType.AddServiceButton)
         }
     }
 

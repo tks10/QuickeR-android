@@ -1,6 +1,6 @@
 package com.qrist.quicker.models
 
-enum class TutorialComponent{
+enum class TutorialType{
     QRImageView,
     ServiceIconImageView,
     ServiceNameEditText,
