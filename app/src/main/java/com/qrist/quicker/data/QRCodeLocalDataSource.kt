@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.util.Log
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.*
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.JsonAdapter
@@ -112,14 +112,14 @@ class QRCodeLocalDataSource(
         return existingCodes
     }
 
-    override fun doneTutorial(component: TutorialComponent) {
+    override fun doneTutorial(type: TutorialType) {
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putBoolean(component.toString(), true)
+        editor.putBoolean(type.toString(), true)
         editor.apply()
     }
 
-    override fun hasBeenDoneTutorial(component: TutorialComponent): Boolean {
-        return sharedPreferences.getBoolean(component.toString(), false)
+    override fun hasBeenDoneTutorial(type: TutorialType): Boolean {
+        return sharedPreferences.getBoolean(type.toString(), false)
     }
 
     override fun updateQRCodesOrder(indexes: List<Int>): Boolean {

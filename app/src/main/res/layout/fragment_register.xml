@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
     <data>
-        <import type="android.view.View"/>
         <import type="android.text.InputType"/>
         <import type="com.qrist.quicker.R"/>
         <variable
@@ -72,7 +72,7 @@
                 android:background="@color/white_transparent"
                 android:layout_marginStart="2dp"
                 android:clickable="@{!viewmodel.isDefaultService}"
-                android:visibility="@{viewmodel.isIconAddButtonVisible ? View.VISIBLE : View.INVISIBLE}"
+                android:isVisible="@{viewmodel.isIconAddButtonVisible}"
                 tools:ignore="ContentDescription"
                 app:srcCompat="@drawable/add_photo"
                 app:layout_constraintStart_toStartOf="parent"

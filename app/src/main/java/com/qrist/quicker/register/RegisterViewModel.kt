@@ -7,7 +7,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.util.Log
 import com.qrist.quicker.data.QRCodeRepository
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.serviceNameToServiceId
 
 
@@ -89,11 +89,11 @@ class RegisterViewModel(
         }
     }
 
-    fun hasNotDoneTutorial(component: TutorialComponent): Boolean {
-        return !repository.hasBeenDoneTutorial(component)
+    fun hasNotDoneTutorial(type: TutorialType): Boolean {
+        return !repository.hasBeenDoneTutorial(type)
     }
 
-    fun doneTutorial(component: TutorialComponent) {
-        repository.doneTutorial(component)
+    fun doneTutorial(type: TutorialType) {
+        repository.doneTutorial(type)
     }
 }

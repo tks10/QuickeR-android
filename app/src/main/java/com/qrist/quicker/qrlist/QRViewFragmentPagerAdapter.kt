@@ -87,13 +87,7 @@ class QRViewFragmentPagerAdapter(
         return (`object` as Fragment).view == view
     }
 
-    override fun getCount(): Int =
-        (qrCodes.size * NUMBER_OF_LOOPS).let {
-            when (qrCodes.size) {
-                1 -> 1
-                else -> it
-            }
-        }
+    override fun getCount(): Int = if (qrCodes.size == 1) 1 else qrCodes.size * NUMBER_OF_LOOPS
 
     override fun getPageTitle(position: Int): CharSequence? = "  $position  "
 
