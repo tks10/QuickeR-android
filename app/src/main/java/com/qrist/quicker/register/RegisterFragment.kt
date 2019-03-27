@@ -257,7 +257,7 @@ class RegisterFragment : Fragment() {
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)
                     .tintTarget(false)
-                    .id(++id)
+                    .id(id++)
             )
 
             components.add(TutorialComponent.DoneButton)
