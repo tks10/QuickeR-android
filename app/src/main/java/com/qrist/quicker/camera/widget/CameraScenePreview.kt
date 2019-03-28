@@ -53,22 +53,23 @@ class CameraScenePreview @JvmOverloads constructor(
     var qrCodeCallback: (QRCodeValue) -> Unit = {}
 
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
-        try {
-            threadPool?.execute {
+        threadPool?.execute {
+            try {
                 val image = reader.acquireLatestImage() ?: return@execute
                 counter = 1 - counter
                 val firebaseImage = when (counter) {
                     0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
                     1 -> {
-                        FirebaseVisionImage.fromByteArray(getNegativeYUVByteArray(image),
+                        FirebaseVisionImage.fromByteArray(
+                            getNegativeYUVByteArray(image),
                             FirebaseVisionImageMetadata.Builder().also {
                                 it.setWidth(image.width)
                                 it.setHeight(image.height)
                                 it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
                                 it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
-                            }.build())
-                    }
-                    else -> {
+                            }.build()
+                        )
+                    } else -> {
                         image.close()
                         return@execute
                     }
@@ -84,9 +85,9 @@ class CameraScenePreview @JvmOverloads constructor(
                     Log.d(TAG, "error occurs: ${exception.stackTrace}")
                 })
                 image.close()
+            } catch (exception: Exception) {
+                Log.d(TAG, "thread is terminated: ${exception.stackTrace}")
             }
-        } catch (exception: Exception) {
-            Log.d(TAG, "thread is terminated: ${exception.stackTrace}")
         }
     }
 
@@ -170,10 +171,6 @@ class CameraScenePreview @JvmOverloads constructor(
     }
 
     private fun stopBackgroundThread() {
-        while (!threadPool!!.isTerminated) {
-            threadPool!!.shutdown()
-        }
-        threadPool = null
         backgroundThread?.quitSafely()
         try {
             backgroundThread?.join()
@@ -182,6 +179,10 @@ class CameraScenePreview @JvmOverloads constructor(
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
         }
+        while (!threadPool!!.isTerminated) {
+            threadPool!!.shutdown()
+        }
+        threadPool = null
     }
 
     private fun setAspectRatio(width: Int, height: Int) {
