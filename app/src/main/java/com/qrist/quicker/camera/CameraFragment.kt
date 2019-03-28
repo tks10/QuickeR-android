@@ -26,6 +26,9 @@ import kotlinx.android.synthetic.main.fragment_camera.*
 class CameraFragment : Fragment() {
     private var isDialogSeen = false
     private var previousValue: QRCodeValue? = null
+    // FIXME: install lifecycle for material dialog and delete it.
+    // https://github.com/afollestad/material-dialogs/blob/ea501b80434b50d1fffffaa939db44bcd8e32563/documentation/LIFECYCLE.md
+    private var dialog: MaterialDialog? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_camera, container, false)
@@ -33,28 +36,31 @@ class CameraFragment : Fragment() {
     private fun displayURLDialog(url: String) {
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
-        MaterialDialog(activity!!).show {
+        dialog = MaterialDialog(context!!).show {
             title(R.string.title_open_url)
             message(text = url)
             positiveButton(R.string.message_open_url) {
                 this@CameraFragment.startActivity(intent)
                 isDialogSeen = false
                 previousValue = null
+                dialog = null
             }
             negativeButton(R.string.cancel) {
                 isDialogSeen = false
                 previousValue = null
+                dialog = null
             }
             setOnCancelListener {
                 isDialogSeen = false
                 previousValue = null
+                dialog = null
             }
         }
         isDialogSeen = true
     }
 
     private fun displayRawDialog(value: String) {
-        MaterialDialog(activity!!).show {
+        dialog = MaterialDialog(context!!).show {
             title(R.string.title_result_non_url)
             message(text = value)
             positiveButton(R.string.message_copy) {
@@ -63,14 +69,17 @@ class CameraFragment : Fragment() {
                 clipboardManager.primaryClip = ClipData.newPlainText("", value)
                 isDialogSeen = false
                 previousValue = null
+                dialog = null
             }
             negativeButton(R.string.cancel) {
                 isDialogSeen = false
                 previousValue = null
+                dialog = null
             }
             setOnCancelListener {
                 isDialogSeen = false
                 previousValue = null
+                dialog = null
             }
         }
         isDialogSeen = true
@@ -111,6 +120,7 @@ class CameraFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        dialog?.dismiss()
         if (checkCameraPermission()) {
             cameraPreview.stopCameraPreview()
         }
