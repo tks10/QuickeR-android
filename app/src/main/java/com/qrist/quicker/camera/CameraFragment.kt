@@ -36,27 +36,7 @@ class CameraFragment : Fragment() {
     private fun displayURLDialog(url: String) {
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
-        dialog = MaterialDialog(context!!).show {
-            title(R.string.title_open_url)
-            message(text = url)
-            positiveButton(R.string.message_open_url) {
-                this@CameraFragment.startActivity(intent)
-                isDialogSeen = false
-                previousValue = null
-                dialog = null
-            }
-            negativeButton(R.string.cancel) {
-                isDialogSeen = false
-                previousValue = null
-                dialog = null
-            }
-            setOnCancelListener {
-                isDialogSeen = false
-                previousValue = null
-                dialog = null
-            }
-        }
-        isDialogSeen = true
+        startActivity(intent)
     }
 
     private fun displayRawDialog(value: String) {
