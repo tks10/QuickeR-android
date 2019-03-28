@@ -3,6 +3,7 @@
     <string name="app_name">QuickeR</string>
     <string name="accept_me">Androidの設定からストレージへの権限を付与してください</string>
     <string name="hint_service_name">サービスの名前</string>
+    <string name="hint_qr_image">登録したいQRコードをスクリーンショットで撮影し、\n下の＋ボタンから選択しましょう</string>
     <string name="button_add">追加</string>
     <string name="other_service">その他のサービスを追加</string>
     <string name="agree_delete">削除</string>

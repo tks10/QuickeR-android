@@ -2,6 +2,7 @@
     <string name="app_name">QuickeR</string>
     <string name="accept_me">Please accept accessing to your storage to use this application from settings</string>
     <string name="hint_service_name">Service name</string>
+    <string name="hint_qr_image">Take a screen shot of the QR Code you want to register,\nand select it from the + button below.</string>
     <string name="button_add">Add</string>
     <string name="other_service">Other service</string>
     <string name="agree_delete">Delete</string>
