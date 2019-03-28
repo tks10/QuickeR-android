@@ -244,8 +244,8 @@ class CameraScenePreview @JvmOverloads constructor(
                             previewRequest = previewRequestBuilder.build()
                             captureSession.setRepeatingRequest(previewRequest,
                                 captureCallback, backgroundHandler)
-                        } catch (e: CameraAccessException) {
-                            Log.e("erfs", e.toString())
+                        } catch (exception: Exception) {
+                            Log.e("erfs", exception.toString())
                         }
                     }
 
