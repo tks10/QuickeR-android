@@ -157,6 +157,7 @@ class RegisterFragment : Fragment() {
                 }
                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
                 this@RegisterFragment.view?.addQRButton?.isVisible = false
+                this@RegisterFragment.view?.qrHintTextView?.isVisible = false
             }
             if (serviceIconUrl.isNotBlank() && !isDefaultService) {
                 serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
@@ -295,6 +296,7 @@ class RegisterFragment : Fragment() {
                                 qrImageBitmap = it
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
                                 this@RegisterFragment.view?.addQRButton?.isVisible = false
+                                this@RegisterFragment.view?.qrHintTextView?.isVisible = false
                                 viewModel.updateQRCodeImageUrl(tmpUri)
                             } ?: run {
                                 kindOfCrop = CROP_QR
