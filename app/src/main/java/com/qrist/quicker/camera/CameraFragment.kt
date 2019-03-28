@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.fragment_camera.*
 
 class CameraFragment : Fragment() {
     private var isDialogSeen = false
+    private var previousValue: QRCodeValue? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_camera, container, false)
@@ -38,12 +39,15 @@ class CameraFragment : Fragment() {
             positiveButton(R.string.message_open_url) {
                 this@CameraFragment.startActivity(intent)
                 isDialogSeen = false
+                previousValue = null
             }
             negativeButton(R.string.cancel) {
                 isDialogSeen = false
+                previousValue = null
             }
             setOnCancelListener {
                 isDialogSeen = false
+                previousValue = null
             }
         }
         isDialogSeen = true
@@ -58,12 +62,15 @@ class CameraFragment : Fragment() {
                     context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboardManager.primaryClip = ClipData.newPlainText("", value)
                 isDialogSeen = false
+                previousValue = null
             }
             negativeButton(R.string.cancel) {
                 isDialogSeen = false
+                previousValue = null
             }
             setOnCancelListener {
                 isDialogSeen = false
+                previousValue = null
             }
         }
         isDialogSeen = true
@@ -75,6 +82,8 @@ class CameraFragment : Fragment() {
         cameraPreview.qrCodeCallback = { value ->
             activity?.runOnUiThread {
                 if (isDialogSeen) return@runOnUiThread
+                if (value == previousValue) return@runOnUiThread
+                previousValue = value
                 when (value) {
                     is QRCodeValue.URLValue -> displayURLDialog(value.url)
                     is QRCodeValue.DeepLinkValue -> displayURLDialog(value.deepLink)
