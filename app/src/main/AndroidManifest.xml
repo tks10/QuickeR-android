@@ -21,7 +21,6 @@
         <activity
                 android:name=".MainActivity"
                 android:screenOrientation="portrait"
-                android:launchMode="singleTask"
                 android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -30,8 +29,8 @@
         </activity>
         <activity
                 android:name=".OnSendActivity"
+                android:taskAffinity=""
                 android:screenOrientation="portrait"
-                android:launchMode="singleInstance"
                 android:finishOnTaskLaunch="true"
                 android:excludeFromRecents="true">
             <intent-filter>

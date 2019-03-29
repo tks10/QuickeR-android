@@ -19,6 +19,7 @@ import androidx.navigation.Navigation
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.qrist.quicker.OnSendActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
 import com.qrist.quicker.extentions.*
@@ -104,6 +105,9 @@ class RegisterFragment : Fragment() {
         }
 
         addButton.setOnClickListener {
+            activity?.let {
+                if (it is OnSendActivity) it.finish()
+            }
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
                 Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
