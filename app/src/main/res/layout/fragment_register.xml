@@ -96,6 +96,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_service_name"
+                android:forceEnableHint="@{viewmodel.isDefaultService}"
                 app:layout_constraintVertical_bias="0.3"
                 app:layout_constraintStart_toEndOf="@id/serviceIconImageView"
                 app:layout_constraintEnd_toEndOf="parent"
