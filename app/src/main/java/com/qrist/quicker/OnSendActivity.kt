@@ -5,12 +5,9 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.qrist.quicker.qrlist.QRContainerFragmentDirections
 
 class OnSendActivity : AppCompatActivity() {
 
@@ -20,36 +17,28 @@ class OnSendActivity : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment)
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        findViewById<Toolbar>(R.id.tool_bar)
-            .setupWithNavController(navController, appBarConfiguration)
+        findViewById<Toolbar>(R.id.tool_bar).setupWithNavController(navController, appBarConfiguration)
 
         // Handle the intent only when savedInstanceState is not null to avoid handling recreating activity.
-        // The activity is must be called by sharing if savedInstanceState is null.
         if (savedInstanceState == null) {
-            handleIntentOnSend()
+            handleIntentOnSend(intent)
         }
     }
 
-
-    // Restart activity to start from QRContainerFragment
-    // (cannot back to QRContainerFragment in current activity because inclusive is `true`)
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        finish()
-        startActivity(intent)
+    override fun onNewIntent(newIntent: Intent?) {
+        super.onNewIntent(newIntent)
+        handleIntentOnSend(newIntent)
     }
 
-    private fun handleIntentOnSend() {
+    private fun handleIntentOnSend(receivedIntent: Intent?) {
         // Check whether or not intent is from sharing.
-        intent.extras?.get(INTENT_BUNDLE_KEY)?.let {
+        // In any case, pop all stacks and start from ServiceAddListFragment.
+        receivedIntent?.extras?.get(INTENT_BUNDLE_KEY)?.let {
             Log.d("Intent", "Intent from other service:, value: $it")
 
             val action =
-                QRContainerFragmentDirections.actionQrContainerToServiceaddlist(it.toString())
-            findNavController(R.id.nav_host_fragment).navigate(
-                action,
-                NavOptions.Builder().setPopUpTo(R.id.qrContainerFragment, true).build()
-            )
+                NavigationGraphDirections.actionGlobalServiceaddlist(it.toString())
+            findNavController(R.id.nav_host_fragment).navigate(action)
         }
     }
 
