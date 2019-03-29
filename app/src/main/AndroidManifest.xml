@@ -17,7 +17,7 @@
             tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <meta-data
                 android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-                android:value="barcode" />
+                android:value="barcode"/>
         <activity
                 android:name=".MainActivity"
                 android:screenOrientation="portrait"
@@ -32,10 +32,11 @@
                 android:taskAffinity=""
                 android:screenOrientation="portrait"
                 android:finishOnTaskLaunch="true"
-                android:excludeFromRecents="true">
+                android:excludeFromRecents="true"
+                android:windowSoftInputMode="adjustPan">
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="image/*"/>
             </intent-filter>
         </activity>
