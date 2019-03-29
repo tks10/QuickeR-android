@@ -107,6 +107,8 @@
                     android:id="@+id/serviceNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    style="@style/EnableEditTextStyle"
+                    android:theme="@style/EnableEditTextStyle"
                     android:enabled="@{!viewmodel.isDefaultService}"
                     android:text="@{viewmodel.serviceName}"
                     android:singleLine="true"
