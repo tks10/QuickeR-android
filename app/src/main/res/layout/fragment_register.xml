@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="12sp"
+                android:textColor="@color/colorSecondaryDark"
                 app:layout_goneMarginBottom="8dp"
                 android:layout_marginBottom="12dp"
                 android:text="@string/hint_qr_image"
