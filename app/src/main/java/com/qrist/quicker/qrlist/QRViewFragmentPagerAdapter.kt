@@ -58,7 +58,7 @@ class QRViewFragmentPagerAdapter(
         fragmentManager.findFragmentByTag("$position")?.let { fragment ->
             currentTransaction ?: fragmentManager.beginTransaction().also {
                 currentTransaction = it
-            }.remove(fragment).commitNow().also {
+            }.remove(fragment).commitNowAllowingStateLoss().also {
                 currentTransaction = null
             }
             Log.d("delete fragment", fragment.toString())
@@ -87,13 +87,7 @@ class QRViewFragmentPagerAdapter(
         return (`object` as Fragment).view == view
     }
 
-    override fun getCount(): Int =
-        (qrCodes.size * NUMBER_OF_LOOPS).let {
-            when (qrCodes.size) {
-                1 -> 1
-                else -> it
-            }
-        }
+    override fun getCount(): Int = if (qrCodes.size == 1) 1 else qrCodes.size * NUMBER_OF_LOOPS
 
     override fun getPageTitle(position: Int): CharSequence? = "  $position  "
 
@@ -103,7 +97,7 @@ class QRViewFragmentPagerAdapter(
             fragment?.let {
                 currentTransaction ?: fragmentManager.beginTransaction().also { transaction ->
                     currentTransaction = transaction
-                }.remove(fragment).commitNow().also {
+                }.remove(fragment).commitNowAllowingStateLoss().also {
                     currentTransaction = null
                 }
             }
@@ -111,6 +105,8 @@ class QRViewFragmentPagerAdapter(
     }
 
     fun getCenterPosition(position: Int): Int = count / 2 + position
+
+    fun getAdapterPosition(centerPosition: Int) = centerPosition - count / 2
 
     private fun getValueAt(position: Int): QRCode? =
         when (qrCodes.size) {

@@ -43,4 +43,9 @@
         <item name="android:textColor">@color/colorAccent</item>
     </style>
 
+    <style name="EnableEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="colorControlNormal">@color/colorSecondary</item>
+        <item name="android:textColor">@color/colorTextOnPrimary</item>
+    </style>
+
 </resources>

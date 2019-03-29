@@ -2,7 +2,7 @@ package com.qrist.quicker.data
 
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
 
 class QRCodeRepository(
     private val local: QRCodeDataSource
@@ -25,12 +25,12 @@ class QRCodeRepository(
     fun deleteQRCode(id: String): Boolean =
         local.deleteQRCode(id)
 
-    fun doneTutorial(component: TutorialComponent) {
-        local.doneTutorial(component)
+    fun doneTutorial(type: TutorialType) {
+        local.doneTutorial(type)
     }
 
-    fun hasBeenDoneTutorial(component: TutorialComponent): Boolean {
-        return local.hasBeenDoneTutorial(component)
+    fun hasBeenDoneTutorial(type: TutorialType): Boolean {
+        return local.hasBeenDoneTutorial(type)
     }
 
     fun updateQRCodesOrder(indexes: List<Int>) {

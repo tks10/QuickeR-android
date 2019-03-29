@@ -4,7 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
 
 class QRContainerViewModel(
     private val context: Application,
@@ -12,16 +12,17 @@ class QRContainerViewModel(
 ) : AndroidViewModel(context) {
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
+    var currentAdapterPosition: Int = 0
 
     fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()
     }
 
-    fun hasNotDoneTutorial(component: TutorialComponent): Boolean {
-        return !repository.hasBeenDoneTutorial(component)
+    fun hasNotDoneTutorial(type: TutorialType): Boolean {
+        return !repository.hasBeenDoneTutorial(type)
     }
 
-    fun doneTutorial(component: TutorialComponent) {
-        repository.doneTutorial(component)
+    fun doneTutorial(type: TutorialType) {
+        repository.doneTutorial(type)
     }
 }

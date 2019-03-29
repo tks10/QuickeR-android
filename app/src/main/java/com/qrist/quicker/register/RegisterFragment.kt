@@ -22,7 +22,7 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
 import com.qrist.quicker.extentions.*
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.*
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_main.*
@@ -114,6 +114,10 @@ class RegisterFragment : Fragment() {
         serviceNameEditText.afterTextChanged {
             viewModel.updateServiceName(it)
         }
+
+        if (viewModel.isDefaultService.value!!) {
+            view.serviceIconImageView.borderWidth = 0
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -157,17 +161,20 @@ class RegisterFragment : Fragment() {
                     getBitmapFromUri(Uri.fromFile(File(qrCodeImageUrl)))
                 }
                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
-                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                this@RegisterFragment.view?.addQRButton?.isVisible = false
+                this@RegisterFragment.view?.qrHintTextView?.isGone = true
             }
             if (serviceIconUrl.isNotBlank() && !isDefaultService) {
                 serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
                 this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
+                this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
             }
         }
     }
 
     override fun onStart() {
         super.onStart()
+        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
 
         // Set QR Code Image if it is attached by other application.
         if (qrImageUrl.isNotBlank() && viewModel.qrCodeImageUrl.value == "") {
@@ -197,6 +204,8 @@ class RegisterFragment : Fragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isEmpty()) return
+
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             makeAppDirectory(directory)
             when (requestCode) {
@@ -209,9 +218,9 @@ class RegisterFragment : Fragment() {
     private fun setupTutorial() {
         var id = 0
         val targets = ArrayList<TapTarget>()
-        val components = LinkedList<TutorialComponent>()
+        val tutorialTypes = LinkedList<TutorialType>()
 
-        if (viewModel.hasNotDoneTutorial(TutorialComponent.QRImageView)) {
+        if (viewModel.hasNotDoneTutorial(TutorialType.QRImageView)) {
             targets.add(
                 TapTarget.forView(view!!.addQRButton, context!!.resources.getString(R.string.tutorial_qr_image))
                     .outerCircleColor(R.color.colorAccent)
@@ -223,10 +232,10 @@ class RegisterFragment : Fragment() {
                     .id(id++)
             )
 
-            components.add(TutorialComponent.QRImageView)
+            tutorialTypes.add(TutorialType.QRImageView)
         }
 
-        if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceIconImageView) && !viewModel.isDefaultService.value!!) {
+        if (viewModel.hasNotDoneTutorial(TutorialType.ServiceIconImageView) && !viewModel.isDefaultService.value!!) {
             targets.add(
                 TapTarget.forView(view!!.addIconButton, context!!.resources.getString(R.string.tutorial_service_icon))
                     .outerCircleColor(R.color.colorAccent)
@@ -238,10 +247,10 @@ class RegisterFragment : Fragment() {
                     .id(id++)
             )
 
-            components.add(TutorialComponent.ServiceIconImageView)
+            tutorialTypes.add(TutorialType.ServiceIconImageView)
         }
 
-        if (viewModel.hasNotDoneTutorial(TutorialComponent.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {
+        if (viewModel.hasNotDoneTutorial(TutorialType.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {
             targets.add(
                 TapTarget.forView(
                     view!!.serviceNameTextInputLayout,
@@ -256,10 +265,10 @@ class RegisterFragment : Fragment() {
                     .id(id++)
             )
 
-            components.add(TutorialComponent.ServiceNameEditText)
+            tutorialTypes.add(TutorialType.ServiceNameEditText)
         }
 
-        if (viewModel.hasNotDoneTutorial(TutorialComponent.DoneButton)) {
+        if (viewModel.hasNotDoneTutorial(TutorialType.DoneButton)) {
             targets.add(
                 TapTarget.forView(view!!.addButton, context!!.resources.getString(R.string.tutorial_done))
                     .outerCircleColor(R.color.colorAccent)
@@ -271,20 +280,20 @@ class RegisterFragment : Fragment() {
                     .id(id++)
             )
 
-            components.add(TutorialComponent.DoneButton)
+            tutorialTypes.add(TutorialType.DoneButton)
         }
 
         sequence = TapTargetSequence(activity).targets(targets).listener(object : TapTargetSequence.Listener {
             override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
                 Log.d("TTV", "Step, $targetClicked")
-                viewModel.doneTutorial(components.poll())
+                viewModel.doneTutorial(tutorialTypes.poll())
             }
 
             override fun onSequenceFinish() {}
 
             override fun onSequenceCanceled(lastTarget: TapTarget?) {
                 Log.d("TTV", "Cancel")
-                viewModel.doneTutorial(components.poll())
+                viewModel.doneTutorial(tutorialTypes.poll())
             }
         })
 
@@ -302,6 +311,7 @@ class RegisterFragment : Fragment() {
                 qrImageBitmap = it
                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
                 this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                this@RegisterFragment.view?.qrHintTextView?.isGone = true
                 viewModel.updateQRCodeImageUrl(tmpUri)
             } ?: run {
                 kindOfCrop = CROP_QR
@@ -357,13 +367,14 @@ class RegisterFragment : Fragment() {
                             onCropImageFile(resultData) { bmp, uri ->
                                 qrImageBitmap = bmp
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
-                                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                                this@RegisterFragment.view?.addQRButton?.isVisible = false
                                 viewModel.updateQRCodeImageUrl(uri.toString())
                             }
                         }
                         CROP_ICON -> {
                             onCropImageFile(resultData) { bmp, uri ->
                                 this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
+                                this@RegisterFragment.serviceIconImageView.borderWidth = 0
                                 viewModel.updateServiceIconUrl(uri.toString())
                                 serviceIconImageBitmap = bmp
                             }

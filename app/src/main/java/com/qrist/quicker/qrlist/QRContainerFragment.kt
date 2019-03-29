@@ -21,8 +21,12 @@ import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.qrist.quicker.R
+import com.qrist.quicker.extentions.isGone
+import com.qrist.quicker.extentions.isInvisible
+import com.qrist.quicker.extentions.isVisible
 import com.qrist.quicker.extentions.obtainViewModel
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
+import com.qrist.quicker.utils.MyApplication
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
@@ -80,6 +84,11 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
+    }
+
     override fun onResume() {
         super.onResume()
         updateViewPager()
@@ -92,7 +101,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     }
 
     private fun tutorial() {
-        if (viewModel.hasNotDoneTutorial(TutorialComponent.AddServiceButton)) {
+        if (viewModel.hasNotDoneTutorial(TutorialType.AddServiceButton)) {
             sequence = TapTargetSequence(activity)
                 .targets(
                     TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
@@ -105,22 +114,25 @@ class QRContainerFragment : Fragment(), CoroutineScope {
                         .id(1)
                 )
             sequence.start()
-            viewModel.doneTutorial(TutorialComponent.AddServiceButton)
+            viewModel.doneTutorial(TutorialType.AddServiceButton)
         }
     }
 
-    inner class MyOnPageChaneListener : ViewPager.OnPageChangeListener {
-        override fun onPageScrollStateChanged(p0: Int) {
+    inner class MyOnPageChangeListener : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {
         }
 
-        override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            viewModel.currentAdapterPosition = adapter.getAdapterPosition(position)
         }
 
         override fun onPageSelected(position: Int) {
             val nearLeftEdge: Boolean = (position <= viewModel.qrCodes.size)
             val nearRightEdge: Boolean = (position >= adapter.count - viewModel.qrCodes.size)
+            val currentAdapterPosition = viewModel.currentAdapterPosition
+
             if (nearLeftEdge || nearRightEdge) {
-                viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
+                viewPager.setCurrentItem(adapter.getCenterPosition(currentAdapterPosition), false)
             }
         }
     }
@@ -128,22 +140,27 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     private fun updateViewPager() {
         viewModel.fetchQRCodes()
 
+        // Fix current adapter position to prevent it is changed by MyOnPageChangeListener#onPageScrolled
+        val currentAdapterPosition = viewModel.currentAdapterPosition
+
         adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
         adapter.detachItems()
+        viewPager.isInvisible = true
+        tabLayout.isInvisible = true
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 0
-        viewPager.addOnPageChangeListener(MyOnPageChaneListener())
-        viewPager.currentItem = adapter.getCenterPosition(-2)
-
-        this.launch {
-            delay(WAIT_TIME_ON_LAUNCH)
-            viewPager.setCurrentItem(adapter.getCenterPosition(0), false)
-        }
-
+        viewPager.addOnPageChangeListener(MyOnPageChangeListener())
+        viewPager.currentItem = adapter.getCenterPosition(currentAdapterPosition - 2)
         tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
 
-        val serviceCount = viewModel.qrCodes.size
-        getStartedTextView.visibility = if (serviceCount == 0) View.VISIBLE else View.GONE
+        getStartedTextView.isGone = !viewModel.qrCodes.isEmpty()
+
+        launch {
+            delay(WAIT_TIME_ON_LAUNCH)
+            viewPager.setCurrentItem(adapter.getCenterPosition(currentAdapterPosition), false)
+            viewPager.isVisible = true
+            tabLayout.isVisible = true
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -158,31 +175,28 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     }
 
     private fun scannedQRCode(resultText: String) {
-        when (URLUtil.isValidUrl(resultText)) {
-            true -> {
-                val uri = Uri.parse(resultText)
-                val intent = Intent(Intent.ACTION_VIEW, uri)
+        if (URLUtil.isValidUrl(resultText)) {
+            val uri = Uri.parse(resultText)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
 
-                MaterialDialog(activity!!).show {
-                    title(R.string.title_open_url)
-                    message(text = uri.toString())
-                    positiveButton(R.string.message_open_url) {
-                        this@QRContainerFragment.startActivity(intent)
-                    }
-                    negativeButton(R.string.cancel)
+            MaterialDialog(activity!!).show {
+                title(R.string.title_open_url)
+                message(text = uri.toString())
+                positiveButton(R.string.message_open_url) {
+                    this@QRContainerFragment.startActivity(intent)
                 }
+                negativeButton(R.string.cancel)
             }
-            false -> {
-                MaterialDialog(activity!!).show {
-                    title(R.string.title_result_non_url)
-                    message(text = resultText)
-                    positiveButton(R.string.message_copy) {
-                        val clipboardManager: ClipboardManager =
-                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboardManager.primaryClip = ClipData.newPlainText("", resultText)
-                    }
-                    negativeButton(R.string.message_close)
+        } else {
+            MaterialDialog(activity!!).show {
+                title(R.string.title_result_non_url)
+                message(text = resultText)
+                positiveButton(R.string.message_copy) {
+                    val clipboardManager: ClipboardManager =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboardManager.primaryClip = ClipData.newPlainText("", resultText)
                 }
+                negativeButton(R.string.message_close)
             }
         }
     }
