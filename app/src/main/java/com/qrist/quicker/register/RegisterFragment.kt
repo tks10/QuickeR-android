@@ -113,6 +113,10 @@ class RegisterFragment : Fragment() {
         serviceNameEditText.afterTextChanged {
             viewModel.updateServiceName(it)
         }
+
+        if (viewModel.isDefaultService.value!!) {
+            view.serviceIconImageView.borderWidth = 0
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -162,6 +166,7 @@ class RegisterFragment : Fragment() {
             if (serviceIconUrl.isNotBlank() && !isDefaultService) {
                 serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
                 this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
+                this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
             }
         }
     }
@@ -351,6 +356,7 @@ class RegisterFragment : Fragment() {
                         CROP_ICON -> {
                             onCropImageFile(resultData) { bmp, uri ->
                                 this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
+                                this@RegisterFragment.serviceIconImageView.borderWidth = 0
                                 viewModel.updateServiceIconUrl(uri.toString())
                                 serviceIconImageBitmap = bmp
                             }
