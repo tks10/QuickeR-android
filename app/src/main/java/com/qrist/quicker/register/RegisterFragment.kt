@@ -113,6 +113,10 @@ class RegisterFragment : Fragment() {
         serviceNameEditText.afterTextChanged {
             viewModel.updateServiceName(it)
         }
+
+        if (viewModel.isDefaultService.value!!) {
+            view.serviceIconImageView.borderWidth = 0
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -157,10 +161,12 @@ class RegisterFragment : Fragment() {
                 }
                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
                 this@RegisterFragment.view?.addQRButton?.isVisible = false
+                this@RegisterFragment.view?.qrHintTextView?.isGone = true
             }
             if (serviceIconUrl.isNotBlank() && !isDefaultService) {
                 serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
                 this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
+                this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
             }
         }
     }
@@ -295,6 +301,7 @@ class RegisterFragment : Fragment() {
                                 qrImageBitmap = it
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
                                 this@RegisterFragment.view?.addQRButton?.isVisible = false
+                                this@RegisterFragment.view?.qrHintTextView?.isGone = true
                                 viewModel.updateQRCodeImageUrl(tmpUri)
                             } ?: run {
                                 kindOfCrop = CROP_QR
@@ -349,6 +356,7 @@ class RegisterFragment : Fragment() {
                         CROP_ICON -> {
                             onCropImageFile(resultData) { bmp, uri ->
                                 this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
+                                this@RegisterFragment.serviceIconImageView.borderWidth = 0
                                 viewModel.updateServiceIconUrl(uri.toString())
                                 serviceIconImageBitmap = bmp
                             }
