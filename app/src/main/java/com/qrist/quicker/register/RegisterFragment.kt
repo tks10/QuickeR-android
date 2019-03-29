@@ -19,6 +19,7 @@ import androidx.navigation.Navigation
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.qrist.quicker.MainActivity
 import com.qrist.quicker.OnSendActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
@@ -49,7 +50,8 @@ class RegisterFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.apply { // in generally, viewmodel is gonna be initialized in onCreate()
+        viewModel.apply {
+            // in generally, viewmodel is gonna be initialized in onCreate()
             if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
                 initServiceInformation(
                     this@RegisterFragment.serviceName,
@@ -105,13 +107,15 @@ class RegisterFragment : Fragment() {
         }
 
         addButton.setOnClickListener {
-            activity?.let {
-                if (it is OnSendActivity) it.finish()
-            }
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
-                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-                    .popBackStack(R.id.qrContainerFragment, false)
+                when (val act = requireActivity()) {
+                    is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                        .popBackStack(R.id.qrContainerFragment, false)
+                    is OnSendActivity -> act.finish()
+                    else -> {
+                    }
+                }
             }
         }
 
@@ -178,7 +182,11 @@ class RegisterFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
+        MyApplication.analytics.setCurrentScreen(
+            requireActivity(),
+            this.javaClass.simpleName,
+            this.javaClass.simpleName
+        )
 
         // Set QR Code Image if it is attached by other application.
         if (qrImageUrl.isNotBlank() && viewModel.qrCodeImageUrl.value == "") {
@@ -372,6 +380,7 @@ class RegisterFragment : Fragment() {
                                 qrImageBitmap = bmp
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
                                 this@RegisterFragment.view?.addQRButton?.isVisible = false
+                                this@RegisterFragment.view?.qrHintTextView?.isGone = true
                                 viewModel.updateQRCodeImageUrl(uri.toString())
                             }
                         }

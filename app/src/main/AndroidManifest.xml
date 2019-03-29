@@ -31,6 +31,7 @@
                 android:name=".OnSendActivity"
                 android:taskAffinity=""
                 android:screenOrientation="portrait"
+                android:launchMode="singleTop"
                 android:finishOnTaskLaunch="true"
                 android:excludeFromRecents="true"
                 android:windowSoftInputMode="adjustPan">
