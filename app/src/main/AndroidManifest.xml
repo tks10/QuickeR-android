@@ -15,6 +15,7 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
+            android:resizeableActivity="false"
             tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <meta-data
                 android:name="com.google.firebase.ml.vision.DEPENDENCIES"
