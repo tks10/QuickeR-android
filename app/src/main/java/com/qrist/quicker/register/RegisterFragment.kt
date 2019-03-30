@@ -202,7 +202,7 @@ class RegisterFragment : Fragment() {
                 detectAndSet(bmp, uri)
             } catch (e: Exception) {
                 Log.d("RegisterFragment", e.toString())
-                Toast.makeText(context!!, R.string.cannot_open_image, Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), R.string.cannot_open_image, Toast.LENGTH_LONG).show()
                 requireActivity().finish()
             }
         }
