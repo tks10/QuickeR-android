@@ -26,4 +26,5 @@
     <string name="tutorial_service_name">Input the service name here.</string>
     <string name="tutorial_done">At last, tap here to complete.\nWell done!!</string>
     <string name="service_deleted">Deleted the service</string>
+    <string name="cannot_open_image">Cannot open Image</string>
 </resources>
