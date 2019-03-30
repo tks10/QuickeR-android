@@ -27,6 +27,6 @@
     <string name="title_result_non_url">スキャン結果</string>
     <string name="message_close">閉じる</string>
     <string name="message_copy">コピー</string>
-    <string name="cannot_open_image">画像を開けませんでした</string>
+    <string name="cannot_open_image">この画像は使用できません。</string>
     <string name="register_iamge">QuickeRに登録</string>
 </resources>
