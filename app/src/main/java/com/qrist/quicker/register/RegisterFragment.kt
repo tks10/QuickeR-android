@@ -197,13 +197,13 @@ class RegisterFragment : Fragment() {
                 Uri.fromFile(File(qrImageUrl))
             }
             try {
-                val bmp = getBitmapFromUri(context!!, uri)
+                val bmp = getBitmapFromUri(requireContext(), uri)
                 viewModel.updateQRCodeImageUrl(qrImageUrl)
                 detectAndSet(bmp, uri)
             } catch (e: Exception) {
                 Log.d("RegisterFragment", e.toString())
                 Toast.makeText(context!!, R.string.cannot_open_image, Toast.LENGTH_LONG).show()
-                activity!!.finish()
+                requireActivity().finish()
             }
         }
 
