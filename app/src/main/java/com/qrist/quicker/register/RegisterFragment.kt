@@ -1,6 +1,7 @@
 package com.qrist.quicker.register
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -19,6 +20,8 @@ import androidx.navigation.Navigation
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.qrist.quicker.MainActivity
+import com.qrist.quicker.OnSendActivity
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentRegisterBinding
 import com.qrist.quicker.extentions.*
@@ -35,6 +38,7 @@ import java.util.*
 class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
+    private val qrImageUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).qrImageUrl }
     private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
     private val directory = File(storeDirectory)
@@ -47,7 +51,8 @@ class RegisterFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.apply { // in generally, viewmodel is gonna be initialized in onCreate()
+        viewModel.apply {
+            // in generally, viewmodel is gonna be initialized in onCreate()
             if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
                 initServiceInformation(
                     this@RegisterFragment.serviceName,
@@ -105,8 +110,13 @@ class RegisterFragment : Fragment() {
         addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
-                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-                    .popBackStack(R.id.qrContainerFragment, false)
+                when (val act = requireActivity()) {
+                    is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                        .popBackStack(R.id.qrContainerFragment, false)
+                    is OnSendActivity -> act.finish()
+                    else -> {
+                    }
+                }
             }
         }
 
@@ -138,42 +148,65 @@ class RegisterFragment : Fragment() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        savedInstanceState ?: return
 
-        if (savedInstanceState != null) {
-            val qrCodeImageUrl = savedInstanceState.getString(QRCODE_IMAGE_URL) ?: ""
-            val serviceName = savedInstanceState.getString(SERVICE_NAME) ?: ""
-            val serviceIconUrl = savedInstanceState.getString(SERVICE_ICON_URL) ?: ""
-            val isDefaultService = savedInstanceState.getBoolean(IS_DEFAULT_SERVICE)
-            kindOfCrop = savedInstanceState.getInt(KIND_OF_CROP)
+        val qrCodeImageUrl = savedInstanceState.getString(QRCODE_IMAGE_URL) ?: ""
+        val serviceName = savedInstanceState.getString(SERVICE_NAME) ?: ""
+        val serviceIconUrl = savedInstanceState.getString(SERVICE_ICON_URL) ?: ""
+        val isDefaultService = savedInstanceState.getBoolean(IS_DEFAULT_SERVICE)
+        kindOfCrop = savedInstanceState.getInt(KIND_OF_CROP)
 
-            viewModel.restoreValues(
-                qrCodeImageUrl,
-                serviceName,
-                serviceIconUrl,
-                isDefaultService
-            )
+        viewModel.restoreValues(
+            qrCodeImageUrl,
+            serviceName,
+            serviceIconUrl,
+            isDefaultService
+        )
 
-            if (qrCodeImageUrl.isNotBlank()) {
-                qrImageBitmap = try {
-                    getBitmapFromUri(Uri.parse(qrCodeImageUrl))
-                } catch (e: FileNotFoundException) {
-                    getBitmapFromUri(Uri.fromFile(File(qrCodeImageUrl)))
-                }
-                this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
-                this@RegisterFragment.view?.addQRButton?.isVisible = false
-                this@RegisterFragment.view?.qrHintTextView?.isGone = true
+        if (qrCodeImageUrl.isNotBlank()) {
+            qrImageBitmap = try {
+                getBitmapFromUri(context!!, Uri.parse(qrCodeImageUrl))
+            } catch (e: FileNotFoundException) {
+                getBitmapFromUri(context!!, Uri.fromFile(File(qrCodeImageUrl)))
             }
-            if (serviceIconUrl.isNotBlank() && !isDefaultService) {
-                serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
-                this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
-                this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
-            }
+            this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
+            this@RegisterFragment.view?.addQRButton?.isVisible = false
+            this@RegisterFragment.view?.qrHintTextView?.isGone = true
+        }
+        if (serviceIconUrl.isNotBlank() && !isDefaultService) {
+            serviceIconImageBitmap = getBitmapFromUri(context!!, Uri.parse(serviceIconUrl))
+            this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
+            this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
         }
     }
 
+    @SuppressLint("ShowToast")
     override fun onStart() {
         super.onStart()
-        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
+        MyApplication.analytics.setCurrentScreen(
+            requireActivity(),
+            this.javaClass.simpleName,
+            this.javaClass.simpleName
+        )
+
+        // Set QR Code Image if it is attached by other application.
+        if (qrImageUrl.isNotBlank() && viewModel.qrCodeImageUrl.value == "") {
+            val uri = try {
+                Uri.parse(qrImageUrl)
+            } catch (e: FileNotFoundException) {
+                Uri.fromFile(File(qrImageUrl))
+            }
+            try {
+                val bmp = getBitmapFromUri(requireContext(), uri)
+                viewModel.updateQRCodeImageUrl(qrImageUrl)
+                detectAndSet(bmp, uri)
+            } catch (e: Exception) {
+                Log.d("RegisterFragment", e.toString())
+                Toast.makeText(requireContext(), R.string.cannot_open_image, Toast.LENGTH_LONG).show()
+                requireActivity().finish()
+            }
+        }
+
         setupTutorial()
         sequence.start()
     }
@@ -255,6 +288,7 @@ class RegisterFragment : Fragment() {
         }
 
         if (viewModel.hasNotDoneTutorial(TutorialType.DoneButton)) {
+            @Suppress("UNUSED_CHANGED_VALUE")
             targets.add(
                 TapTarget.forView(view!!.addButton, context!!.resources.getString(R.string.tutorial_done))
                     .outerCircleColor(R.color.colorAccent)
@@ -287,52 +321,56 @@ class RegisterFragment : Fragment() {
         sequence.considerOuterCircleCanceled(false)
     }
 
+    private fun detectAndSet(bmp: Bitmap, uri: Uri) {
+        val onDetect = { barcodes: List<FirebaseVisionBarcode> ->
+            val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
+            trimmedBitmap?.let {
+                // If Detected
+                val tmpUri = generateTemporaryUri()
+                saveImage(it, tmpUri, IMAGE_QR_MAX)
+                qrImageBitmap = it
+                this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
+                this@RegisterFragment.view?.addQRButton?.visibility = View.INVISIBLE
+                this@RegisterFragment.view?.qrHintTextView?.isGone = true
+                viewModel.updateQRCodeImageUrl(tmpUri)
+            } ?: run {
+                kindOfCrop = CROP_QR
+                CropImage
+                    .activity(uri)
+                    .start(MyApplication.instance, this)
+            }
+        }
+        val onFailure = { func: Exception ->
+            func.printStackTrace()
+            kindOfCrop = CROP_QR
+            CropImage
+                .activity(uri)
+                .start(MyApplication.instance, this)
+        }
+        val onSuccessNegativeImage = { barcodes: List<FirebaseVisionBarcode> ->
+            run { onDetect(barcodes) }
+        }
+        val onSuccessOriginalImage = { barcodes: List<FirebaseVisionBarcode> ->
+            if (barcodes.isEmpty()) {
+                // "The Second Try" using negative bitmap.
+                // `onSuccessNegativeImage` is called when the detection succeeded.
+                QRCodeDetector.detectOnNegativeImage(bmp, onSuccessNegativeImage, onFailure)
+            } else {
+                run { onDetect(barcodes) }
+            }
+        }
+
+        // "The First Try" using original bitmap.
+        // `onSuccessOriginalImage` is called when the detection succeeded.
+        QRCodeDetector.detect(bmp, onSuccessOriginalImage, onFailure)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 IntentActionType.RESULT_PICK_QRCODE -> {
                     onPickImageFile(resultData) { bmp, uri ->
-                        val onDetect = { barcodes: List<FirebaseVisionBarcode> ->
-                            val trimmedBitmap = QRCodeDetector.trimQRCodeIfDetected(bmp, barcodes)
-                            trimmedBitmap?.let {
-                                // If Detected
-                                val tmpUri = generateTemporaryUri()
-                                saveImage(it, tmpUri, IMAGE_QR_MAX)
-                                qrImageBitmap = it
-                                this@RegisterFragment.view?.qrImageView?.setImageBitmap(it)
-                                this@RegisterFragment.view?.addQRButton?.isVisible = false
-                                this@RegisterFragment.view?.qrHintTextView?.isGone = true
-                                viewModel.updateQRCodeImageUrl(tmpUri)
-                            } ?: run {
-                                kindOfCrop = CROP_QR
-                                CropImage
-                                    .activity(uri)
-                                    .start(MyApplication.instance, this)
-                            }
-                        }
-                        val onFailure = { func: Exception ->
-                            func.printStackTrace()
-                            kindOfCrop = CROP_QR
-                            CropImage
-                                .activity(uri)
-                                .start(MyApplication.instance, this)
-                        }
-                        val onSuccessNegativeImage = { barcodes: List<FirebaseVisionBarcode> ->
-                            run { onDetect(barcodes) }
-                        }
-                        val onSuccessOriginalImage = { barcodes: List<FirebaseVisionBarcode> ->
-                            if (barcodes.isEmpty()) {
-                                // "The Second Try" using negative bitmap.
-                                // `onSuccessNegativeImage` is called when the detection succeeded.
-                                QRCodeDetector.detectOnNegativeImage(bmp, onSuccessNegativeImage, onFailure)
-                            } else {
-                                run { onDetect(barcodes) }
-                            }
-                        }
-
-                        // "The First Try" using original bitmap.
-                        // `onSuccessOriginalImage` is called when the detection succeeded.
-                        QRCodeDetector.detect(bmp, onSuccessOriginalImage, onFailure)
+                        detectAndSet(bmp, uri)
                     }
                 }
                 IntentActionType.RESULT_PICK_SERVICE_ICON -> {
@@ -350,6 +388,7 @@ class RegisterFragment : Fragment() {
                                 qrImageBitmap = bmp
                                 this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
                                 this@RegisterFragment.view?.addQRButton?.isVisible = false
+                                this@RegisterFragment.view?.qrHintTextView?.isGone = true
                                 viewModel.updateQRCodeImageUrl(uri.toString())
                             }
                         }

@@ -28,8 +28,8 @@ import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.MyApplication
 
-import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_qrcontainer.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
@@ -49,7 +49,8 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         super.onViewCreated(view, savedInstanceState)
 
         floatingActionButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_qr_container_to_serviceaddlist)
+            val action = QRContainerFragmentDirections.actionQrContainerToServiceaddlist("")
+            Navigation.findNavController(view).navigate(action)
         }
     }
 
