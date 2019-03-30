@@ -15,17 +15,33 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
+            android:resizeableActivity="false"
             tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <meta-data
                 android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-                android:value="barcode" />
+                android:value="barcode"/>
         <activity
                 android:name=".MainActivity"
-                android:screenOrientation="portrait">
+                android:screenOrientation="portrait"
+                android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".OnSendActivity"
+                android:label="@string/register_iamge"
+                android:taskAffinity=""
+                android:screenOrientation="portrait"
+                android:launchMode="singleTop"
+                android:finishOnTaskLaunch="true"
+                android:excludeFromRecents="true"
+                android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="image/*"/>
             </intent-filter>
         </activity>
         <activity

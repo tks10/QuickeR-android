@@ -2,7 +2,7 @@ package com.qrist.quicker.data
 
 import android.graphics.Bitmap
 import com.qrist.quicker.models.QRCode
-import com.qrist.quicker.models.TutorialComponent
+import com.qrist.quicker.models.TutorialType
 
 interface QRCodeDataSource {
     fun getQRCodes(notFoundValidation: Boolean = false): List<QRCode>
@@ -13,7 +13,7 @@ interface QRCodeDataSource {
     fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean
     fun deleteQRCode(id: String): Boolean
     fun deleteIfNotFound(codes: List<QRCode>): List<QRCode>
-    fun doneTutorial(component: TutorialComponent)
-    fun hasBeenDoneTutorial(component: TutorialComponent): Boolean
+    fun doneTutorial(type: TutorialType)
+    fun hasBeenDoneTutorial(type: TutorialType): Boolean
     fun updateQRCodesOrder(indexes: List<Int>): Boolean
 }

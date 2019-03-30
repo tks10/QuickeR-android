@@ -12,12 +12,14 @@ import androidx.navigation.Navigation
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentServiceaddlistBinding
 import com.qrist.quicker.extentions.obtainViewModel
+import com.qrist.quicker.utils.MyApplication
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_serviceaddlist.*
 
 class ServiceAddListFragment : Fragment() {
     private val viewModel: ServiceAddListViewModel
             by lazy { obtainViewModel(ServiceAddListViewModel::class.java) }
+    private val qrImageUrl: String by lazy { ServiceAddListFragmentArgs.fromBundle(arguments!!).qrImageUrl }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         DataBindingUtil.inflate<FragmentServiceaddlistBinding>(inflater, R.layout.fragment_serviceaddlist, container, false).apply{
@@ -42,6 +44,7 @@ class ServiceAddListFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
         serviceAddList.adapter = initAdapter()
         serviceAddList.adapter?.notifyDataSetChanged()
     }
@@ -54,6 +57,7 @@ class ServiceAddListFragment : Fragment() {
                     val service = serviceItems[position]
                     val action =
                         ServiceAddListFragmentDirections.actionServiceaddlistToRegister(
+                            qrImageUrl,
                             service.serviceName,
                             service.serviceIconUrl
                         )
