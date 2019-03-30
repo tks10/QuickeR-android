@@ -76,7 +76,7 @@ class RegisterFragment : Fragment() {
         }
 
         addQRButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+            if (Build.VERSION.SDK_INT >= 23 && !checkStoragePermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
             } else {
                 onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
@@ -84,7 +84,7 @@ class RegisterFragment : Fragment() {
         }
 
         qrImageView.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+            if (Build.VERSION.SDK_INT >= 23 && !checkStoragePermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
             } else {
                 onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
@@ -92,7 +92,7 @@ class RegisterFragment : Fragment() {
         }
 
         addIconButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+            if (Build.VERSION.SDK_INT >= 23 && !checkStoragePermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
             } else {
                 onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
@@ -100,7 +100,7 @@ class RegisterFragment : Fragment() {
         }
 
         serviceIconImageView.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23 && !checkPermission()) {
+            if (Build.VERSION.SDK_INT >= 23 && !checkStoragePermission()) {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
             } else {
                 onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)

@@ -11,7 +11,8 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
+import android.widget.Toast
+import com.qrist.quicker.R
 import com.qrist.quicker.utils.ViewModelFactory
 import com.theartofdev.edmodo.cropper.CropImage
 import java.io.File
@@ -27,7 +28,7 @@ fun <T : ViewModel> Fragment.obtainViewModel(key: String, viewModelClass: Class<
 
 @Throws(SecurityException::class)
 fun Fragment.makeAppDirectory(directory: File): Boolean =
-    when (checkPermission()) {
+    when (checkStoragePermission()) {
         true -> {
             if (!directory.exists())
                 directory.mkdir()
@@ -36,11 +37,27 @@ fun Fragment.makeAppDirectory(directory: File): Boolean =
         false -> false
     }
 
-fun Fragment.checkPermission(): Boolean =
+fun Fragment.checkStoragePermission(): Boolean =
     ActivityCompat.checkSelfPermission(
         this.context!!,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) == PackageManager.PERMISSION_GRANTED
+
+fun Fragment.checkCameraPermission(): Boolean =
+    ActivityCompat.checkSelfPermission(
+        this.context!!,
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
+
+fun Fragment.requestPermission(permissionCode: String, requestCode: Int, toastMessage: String = getString(R.string.accept_me)) {
+    if (!shouldShowRequestPermissionRationale(permissionCode)) {
+        Toast.makeText(activity, toastMessage, Toast.LENGTH_LONG).show()
+    }
+    requestPermissions(
+        arrayOf(permissionCode),
+        requestCode
+    )
+}
 
 object IntentActionType {
     const val RESULT_PICK_QRCODE: Int = 1001
