@@ -164,16 +164,16 @@ class RegisterFragment : Fragment() {
 
         if (qrCodeImageUrl.isNotBlank()) {
             qrImageBitmap = try {
-                getBitmapFromUri(Uri.parse(qrCodeImageUrl))
+                getBitmapFromUri(context!!, Uri.parse(qrCodeImageUrl))
             } catch (e: FileNotFoundException) {
-                getBitmapFromUri(Uri.fromFile(File(qrCodeImageUrl)))
+                getBitmapFromUri(context!!, Uri.fromFile(File(qrCodeImageUrl)))
             }
             this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
             this@RegisterFragment.view?.addQRButton?.isVisible = false
             this@RegisterFragment.view?.qrHintTextView?.isGone = true
         }
         if (serviceIconUrl.isNotBlank() && !isDefaultService) {
-            serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
+            serviceIconImageBitmap = getBitmapFromUri(context!!, Uri.parse(serviceIconUrl))
             this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
             this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
         }
@@ -194,7 +194,7 @@ class RegisterFragment : Fragment() {
             } catch (e: FileNotFoundException) {
                 Uri.fromFile(File(qrImageUrl))
             }
-            val bmp = getBitmapFromUri(uri)
+            val bmp = getBitmapFromUri(context!!, uri)
             viewModel.updateQRCodeImageUrl(qrImageUrl)
             detectAndSet(bmp, uri)
         }

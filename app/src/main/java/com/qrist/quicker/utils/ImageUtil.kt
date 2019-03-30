@@ -7,11 +7,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.support.v4.content.FileProvider
 import android.util.Log
 import android.widget.ImageView
-import java.io.FileDescriptor
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -75,10 +74,13 @@ fun getDrawableFromUri(uri: Uri): Drawable {
     return Drawable.createFromStream(inputStream, uri.toString())
 }
 
-fun getBitmapFromUri(uri: Uri): Bitmap {
-    val pfDescriptor = MyApplication.instance.contentResolver.openFileDescriptor(uri, "r")!!
-    val fileDescriptor: FileDescriptor = pfDescriptor.fileDescriptor
-    val bmp: Bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
-
-    return bmp
+fun getBitmapFromUri(context: Context, uri: Uri): Bitmap {
+    Log.d("ImageUtil", uri.toString())
+    return if (uri.toString().matches("^content://[^/]*[Ff]ile[Pp]rovider[^/]*/.*".toRegex())) {
+        val fileDescriptor = FileProvider().openFile(uri, "r")?.fileDescriptor
+        BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
+    } else {
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        BitmapFactory.decodeStream(BufferedInputStream(inputStream)).copy(Bitmap.Config.ARGB_8888, true)
+    }
 }
