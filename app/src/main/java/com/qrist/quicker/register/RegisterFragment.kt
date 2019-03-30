@@ -147,36 +147,35 @@ class RegisterFragment : Fragment() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        savedInstanceState ?: return
 
-        if (savedInstanceState != null) {
-            val qrCodeImageUrl = savedInstanceState.getString(QRCODE_IMAGE_URL) ?: ""
-            val serviceName = savedInstanceState.getString(SERVICE_NAME) ?: ""
-            val serviceIconUrl = savedInstanceState.getString(SERVICE_ICON_URL) ?: ""
-            val isDefaultService = savedInstanceState.getBoolean(IS_DEFAULT_SERVICE)
-            kindOfCrop = savedInstanceState.getInt(KIND_OF_CROP)
+        val qrCodeImageUrl = savedInstanceState.getString(QRCODE_IMAGE_URL) ?: ""
+        val serviceName = savedInstanceState.getString(SERVICE_NAME) ?: ""
+        val serviceIconUrl = savedInstanceState.getString(SERVICE_ICON_URL) ?: ""
+        val isDefaultService = savedInstanceState.getBoolean(IS_DEFAULT_SERVICE)
+        kindOfCrop = savedInstanceState.getInt(KIND_OF_CROP)
 
-            viewModel.restoreValues(
-                qrCodeImageUrl,
-                serviceName,
-                serviceIconUrl,
-                isDefaultService
-            )
+        viewModel.restoreValues(
+            qrCodeImageUrl,
+            serviceName,
+            serviceIconUrl,
+            isDefaultService
+        )
 
-            if (qrCodeImageUrl.isNotBlank()) {
-                qrImageBitmap = try {
-                    getBitmapFromUri(Uri.parse(qrCodeImageUrl))
-                } catch (e: FileNotFoundException) {
-                    getBitmapFromUri(Uri.fromFile(File(qrCodeImageUrl)))
-                }
-                this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
-                this@RegisterFragment.view?.addQRButton?.isVisible = false
-                this@RegisterFragment.view?.qrHintTextView?.isGone = true
+        if (qrCodeImageUrl.isNotBlank()) {
+            qrImageBitmap = try {
+                getBitmapFromUri(Uri.parse(qrCodeImageUrl))
+            } catch (e: FileNotFoundException) {
+                getBitmapFromUri(Uri.fromFile(File(qrCodeImageUrl)))
             }
-            if (serviceIconUrl.isNotBlank() && !isDefaultService) {
-                serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
-                this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
-                this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
-            }
+            this@RegisterFragment.view?.qrImageView?.setImageBitmap(qrImageBitmap)
+            this@RegisterFragment.view?.addQRButton?.isVisible = false
+            this@RegisterFragment.view?.qrHintTextView?.isGone = true
+        }
+        if (serviceIconUrl.isNotBlank() && !isDefaultService) {
+            serviceIconImageBitmap = getBitmapFromUri(Uri.parse(serviceIconUrl))
+            this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
+            this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
         }
     }
 
@@ -281,6 +280,7 @@ class RegisterFragment : Fragment() {
         }
 
         if (viewModel.hasNotDoneTutorial(TutorialType.DoneButton)) {
+            @Suppress("UNUSED_CHANGED_VALUE")
             targets.add(
                 TapTarget.forView(view!!.addButton, context!!.resources.getString(R.string.tutorial_done))
                     .outerCircleColor(R.color.colorAccent)
