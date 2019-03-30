@@ -76,11 +76,13 @@ fun getDrawableFromUri(uri: Uri): Drawable {
 
 fun getBitmapFromUri(context: Context, uri: Uri): Bitmap {
     Log.d("ImageUtil", uri.toString())
-    return if (uri.toString().matches("^content://[^/]*[Ff]ile[Pp]rovider[^/]*/.*".toRegex())) {
-        val fileDescriptor = FileProvider().openFile(uri, "r")?.fileDescriptor
-        BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
-    } else {
-        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-        BitmapFactory.decodeStream(BufferedInputStream(inputStream)).copy(Bitmap.Config.ARGB_8888, true)
-    }
+//    return if (uri.toString().matches("^content://[^/]*[Ff]ile[Pp]rovider[^/]*/.*".toRegex()) && true) {
+//        val fileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")?.fileDescriptor
+//        BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
+//    } else {
+//        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+//        BitmapFactory.decodeStream(BufferedInputStream(inputStream)).copy(Bitmap.Config.ARGB_8888, true)
+//    }
+    val fileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")?.fileDescriptor
+    return BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
 }
