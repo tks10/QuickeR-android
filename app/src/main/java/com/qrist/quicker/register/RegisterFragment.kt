@@ -1,6 +1,7 @@
 package com.qrist.quicker.register
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -179,6 +180,7 @@ class RegisterFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ShowToast")
     override fun onStart() {
         super.onStart()
         MyApplication.analytics.setCurrentScreen(
@@ -194,9 +196,15 @@ class RegisterFragment : Fragment() {
             } catch (e: FileNotFoundException) {
                 Uri.fromFile(File(qrImageUrl))
             }
-            val bmp = getBitmapFromUri(context!!, uri)
-            viewModel.updateQRCodeImageUrl(qrImageUrl)
-            detectAndSet(bmp, uri)
+            try {
+                val bmp = getBitmapFromUri(context!!, uri)
+                viewModel.updateQRCodeImageUrl(qrImageUrl)
+                detectAndSet(bmp, uri)
+            } catch (e: Exception) {
+                Log.d("RegisterFragment", e.toString())
+                Toast.makeText(context!!, R.string.cannot_open_image, Toast.LENGTH_LONG).show()
+                activity!!.finish()
+            }
         }
 
         setupTutorial()
