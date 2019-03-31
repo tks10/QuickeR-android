@@ -43,8 +43,6 @@ class RegisterFragment : Fragment() {
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
     private val directory = File(storeDirectory)
     private var qrImageBitmap: Bitmap? = null
-    private var kindOfCrop = -1
-
     private lateinit var sequence: TapTargetSequence
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,7 +121,6 @@ class RegisterFragment : Fragment() {
         savedInstanceState.putString(SERVICE_NAME, viewModel.serviceName.value)
         savedInstanceState.putString(SERVICE_ICON_URL, viewModel.serviceIconUrl.value)
         savedInstanceState.putBoolean(IS_DEFAULT_SERVICE, viewModel.isDefaultService.value!!)
-        savedInstanceState.putInt(KIND_OF_CROP, kindOfCrop)
 
         super.onSaveInstanceState(savedInstanceState)
     }
@@ -136,7 +133,6 @@ class RegisterFragment : Fragment() {
         val serviceName = savedInstanceState.getString(SERVICE_NAME) ?: ""
         val serviceIconUrl = savedInstanceState.getString(SERVICE_ICON_URL) ?: ""
         val isDefaultService = savedInstanceState.getBoolean(IS_DEFAULT_SERVICE)
-        kindOfCrop = savedInstanceState.getInt(KIND_OF_CROP)
 
         viewModel.restoreValues(
             qrCodeImageUrl,
@@ -295,7 +291,6 @@ class RegisterFragment : Fragment() {
                 this@RegisterFragment.view?.qrHintTextView?.isGone = true
                 viewModel.updateQRCodeImageUrl(tmpUri)
             } ?: run {
-                kindOfCrop = CROP_QR
                 CropImage
                     .activity(uri)
                     .start(MyApplication.instance, this)
@@ -303,7 +298,6 @@ class RegisterFragment : Fragment() {
         }
         val onFailure = { func: Exception ->
             func.printStackTrace()
-            kindOfCrop = CROP_QR
             CropImage
                 .activity(uri)
                 .start(MyApplication.instance, this)
@@ -335,18 +329,12 @@ class RegisterFragment : Fragment() {
                     }
                 }
                 CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
-                    when (kindOfCrop) {
-                        CROP_QR -> {
-                            onCropImageFile(resultData) { bmp, uri ->
-                                qrImageBitmap = bmp
-                                this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
-                                this@RegisterFragment.view?.addQRButton?.isVisible = false
-                                this@RegisterFragment.view?.qrHintTextView?.isGone = true
-                                viewModel.updateQRCodeImageUrl(uri.toString())
-                            }
-                        }
-                        else -> {
-                        }
+                    onCropImageFile(resultData) { bmp, uri ->
+                        qrImageBitmap = bmp
+                        this@RegisterFragment.view?.qrImageView?.setImageBitmap(bmp)
+                        this@RegisterFragment.view?.addQRButton?.isVisible = false
+                        this@RegisterFragment.view?.qrHintTextView?.isGone = true
+                        viewModel.updateQRCodeImageUrl(uri.toString())
                     }
                 }
             }
@@ -358,9 +346,7 @@ class RegisterFragment : Fragment() {
         const val SERVICE_NAME = "serviceName"
         const val SERVICE_ICON_URL = "serviceIconUrl"
         const val IS_DEFAULT_SERVICE = "isDefaultService"
-        const val KIND_OF_CROP = "kindOfCrop"
 
-        private const val CROP_QR = 0
         private const val REQUEST_PERMISSION_ON_QR: Int = 1000
     }
 }
