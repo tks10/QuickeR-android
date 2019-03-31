@@ -36,6 +36,7 @@ class CameraFragment : Fragment() {
     private fun displayURLDialog(url: String) {
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
+        isDialogSeen = true
         startActivity(intent)
     }
 
@@ -91,6 +92,7 @@ class CameraFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        isDialogSeen = false
         if (!checkCameraPermission()) {
             requestPermission(Manifest.permission.CAMERA, REQUEST_PERMISSION_ON_CAMERA)
         } else {

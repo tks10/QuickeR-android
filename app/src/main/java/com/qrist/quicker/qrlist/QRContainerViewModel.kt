@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
+import com.qrist.quicker.utils.QRCodeDetector
 
 class QRContainerViewModel(
     private val context: Application,
@@ -25,4 +26,10 @@ class QRContainerViewModel(
     fun doneTutorial(type: TutorialType) {
         repository.doneTutorial(type)
     }
+
+    fun fetchQRCodeAvailability() {
+        QRCodeDetector.updateAvailability()
+    }
+
+    fun isQRCodeDetectorAvailable(): Boolean = QRCodeDetector.isAvailable
 }
