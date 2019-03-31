@@ -29,11 +29,15 @@
         <TextView
                 android:id="@+id/serviceNameTextView"
                 android:text="@{serviceItem.serviceName}"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:textSize="20sp"
                 android:layout_marginStart="16dp"
+                android:ellipsize="end"
+                android:singleLine="true"
                 app:layout_constraintStart_toEndOf="@id/serviceIconImageView"
+                app:layout_constraintEnd_toStartOf="@id/deleteButton"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 

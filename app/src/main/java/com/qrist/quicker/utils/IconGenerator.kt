@@ -1,7 +1,7 @@
 package com.qrist.quicker.utils
 
 import android.graphics.*
-import java.lang.IllegalArgumentException
+import com.vdurmont.emoji.EmojiParser
 
 
 object IconGenerator {
@@ -16,7 +16,8 @@ object IconGenerator {
             throw IllegalArgumentException("letterSize must be smaller than iconSize.")
         }
 
-        val letter = if (content.isNotEmpty()) content.first().toString() else " "
+        val filteredContent = EmojiParser.removeAllEmojis(content)
+        val letter = if (filteredContent.isNotEmpty()) filteredContent.first().toString() else " "
         val objPaint = Paint()
         val bounds = Rect()
 
