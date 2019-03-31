@@ -79,3 +79,6 @@ fun getBitmapFromUri(context: Context, uri: Uri): Bitmap {
     val fileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")?.fileDescriptor
     return BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
 }
+
+fun getEmptyImage(width: Int = 32, height: Int = 32): Bitmap
+        = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

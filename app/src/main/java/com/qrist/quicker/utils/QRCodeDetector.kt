@@ -1,16 +1,20 @@
 package com.qrist.quicker.utils
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.qrist.quicker.extentions.isUnder
-import com.qrist.quicker.extentions.trim
-import java.lang.Exception
 import com.qrist.quicker.extentions.negative
+import com.qrist.quicker.extentions.trim
 
 object QRCodeDetector {
+    private val isAvailableLiveData: MutableLiveData<Boolean> = MutableLiveData()
+
     private val options = FirebaseVisionBarcodeDetectorOptions.Builder()
         .setBarcodeFormats(
             FirebaseVisionBarcode.FORMAT_QR_CODE
@@ -18,6 +22,22 @@ object QRCodeDetector {
         .build()
 
     private val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
+
+    fun isAvailable(): LiveData<Boolean> {
+        val emptyFirebaseImage = getEmptyImage().let { FirebaseVisionImage.fromBitmap(it) }
+        detector
+            .detectInImage(emptyFirebaseImage)
+            .addOnSuccessListener {
+                isAvailableLiveData.postValue(true)
+                Log.d(QRCodeDetector.javaClass.simpleName, "Model is available.")
+            }
+            .addOnFailureListener {
+                isAvailableLiveData.postValue(false)
+                Log.e(QRCodeDetector.javaClass.simpleName, "Model is unavailable.")
+            }
+
+        return isAvailableLiveData
+    }
 
     fun detect(
         bitmap: Bitmap,
@@ -33,7 +53,6 @@ object QRCodeDetector {
         onSuccess: (images: List<FirebaseVisionBarcode>) -> Unit,
         onFailure: (func: Exception) -> Unit
     ) {
-
         detector
             .detectInImage(image)
             .addOnSuccessListener(onSuccess)
@@ -57,7 +76,10 @@ object QRCodeDetector {
         return srcBitmap.trim(qrCodeRect)
     }
 
-    private fun dropSmallBarcode(barcodes: List<FirebaseVisionBarcode>, minPixel: Int = 92): List<FirebaseVisionBarcode> {
+    private fun dropSmallBarcode(
+        barcodes: List<FirebaseVisionBarcode>,
+        minPixel: Int = 92
+    ): List<FirebaseVisionBarcode> {
         val droppedBarcodes = mutableListOf<FirebaseVisionBarcode>()
 
         barcodes.forEach {
