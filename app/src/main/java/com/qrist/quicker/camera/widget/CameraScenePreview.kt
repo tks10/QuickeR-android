@@ -55,7 +55,7 @@ class CameraScenePreview @JvmOverloads constructor(
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
         threadPool?.execute {
             try {
-                val image = reader.acquireLatestImage() ?: return@execute
+                val image = reader.acquireNextImage() ?: return@execute
                 counter = 1 - counter
                 val firebaseImage = when (counter) {
                     0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
@@ -133,8 +133,8 @@ class CameraScenePreview @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val width = View.MeasureSpec.getSize(widthMeasureSpec)
-        val height = View.MeasureSpec.getSize(heightMeasureSpec)
+        val width = MeasureSpec.getSize(widthMeasureSpec)
+        val height = MeasureSpec.getSize(heightMeasureSpec)
         if (ratioWidth == 0 || ratioHeight == 0) {
             setMeasuredDimension(width, height)
         } else {
@@ -147,6 +147,7 @@ class CameraScenePreview @JvmOverloads constructor(
     }
 
     fun startCameraPreview() {
+        if (cameraDevice != null) return
         startBackgroundThread()
         if (this.isAvailable) {
             openCamera()
@@ -156,15 +157,15 @@ class CameraScenePreview @JvmOverloads constructor(
     }
 
     fun stopCameraPreview() {
-        stopBackgroundThread()
-        captureSession.close()
-        imageReader.close()
         cameraDevice!!.close()
+        captureSession.close()
+        stopBackgroundThread()
+        imageReader.close()
         cameraDevice = null
     }
 
     private fun startBackgroundThread() {
-        threadPool = Executors.newFixedThreadPool(3)
+        threadPool = Executors.newFixedThreadPool(1)
         backgroundThread = HandlerThread("CameraBackground")
         backgroundThread?.start()
         backgroundHandler = Handler(backgroundThread?.looper)
@@ -179,8 +180,8 @@ class CameraScenePreview @JvmOverloads constructor(
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
         }
+        threadPool!!.shutdown()
         while (!threadPool!!.isTerminated) {
-            threadPool!!.shutdown()
         }
         threadPool = null
     }
@@ -226,7 +227,7 @@ class CameraScenePreview @JvmOverloads constructor(
         try {
             val surface = Surface(surfaceTexture)
             imageReader = ImageReader.newInstance(videoSize.width, videoSize.height,
-                ImageFormat.YUV_420_888, 3)
+                ImageFormat.YUV_420_888, 1)
             Log.d(TAG, "video size is ${videoSize.width}x${videoSize.height}")
             imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
