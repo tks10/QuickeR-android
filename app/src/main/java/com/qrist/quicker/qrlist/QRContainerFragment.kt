@@ -27,10 +27,12 @@ import com.qrist.quicker.extentions.isVisible
 import com.qrist.quicker.extentions.obtainViewModel
 import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.MyApplication
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_qrcontainer.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 class QRContainerFragment : Fragment(), CoroutineScope {
