@@ -80,5 +80,5 @@ fun getBitmapFromUri(context: Context, uri: Uri): Bitmap {
     return BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
 }
 
-fun getEmptyImage(width: Int = 32, height: Int = 32): Bitmap
+fun getEmptyImage(width: Int = 1, height: Int = 1): Bitmap
         = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

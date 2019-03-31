@@ -1,7 +1,5 @@
 package com.qrist.quicker.utils
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.util.Log
 import com.google.firebase.ml.vision.FirebaseVision
@@ -13,7 +11,9 @@ import com.qrist.quicker.extentions.negative
 import com.qrist.quicker.extentions.trim
 
 object QRCodeDetector {
-    private val isAvailableLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private val emptyFirebaseImage = getEmptyImage().let { FirebaseVisionImage.fromBitmap(it) }
+    var isAvailable: Boolean = false
+        private set
 
     private val options = FirebaseVisionBarcodeDetectorOptions.Builder()
         .setBarcodeFormats(
@@ -23,20 +23,22 @@ object QRCodeDetector {
 
     private val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
-    fun isAvailable(): LiveData<Boolean> {
-        val emptyFirebaseImage = getEmptyImage().let { FirebaseVisionImage.fromBitmap(it) }
+    fun updateAvailability() {
+        val start = System.currentTimeMillis()
         detector
             .detectInImage(emptyFirebaseImage)
             .addOnSuccessListener {
-                isAvailableLiveData.postValue(true)
-                Log.d(QRCodeDetector.javaClass.simpleName, "Model is available.")
+                isAvailable = true
+                val elapsed = System.currentTimeMillis() - start
+                Log.d("Firebase Validation", "$elapsed [ms]")
+                Log.d("Firebase Validation", "Model is available.")
             }
             .addOnFailureListener {
-                isAvailableLiveData.postValue(false)
-                Log.e(QRCodeDetector.javaClass.simpleName, "Model is unavailable.")
+                isAvailable = false
+                val elapsed = System.currentTimeMillis() - start
+                Log.d("Firebase Validation", "$elapsed [ms]")
+                Log.e("Firebase Validation", "Model is unavailable.")
             }
-
-        return isAvailableLiveData
     }
 
     fun detect(
