@@ -52,48 +52,44 @@ class CameraScenePreview @JvmOverloads constructor(
     var qrCodeCallback: (QRCodeValue) -> Unit = {}
 
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
-        val image = try {
-            reader.acquireNextImage() ?: return@OnImageAvailableListener
-        } catch (exception: IllegalStateException) {
-            Log.d(TAG, "$exception")
-            return@OnImageAvailableListener
-        }
-        try {
-            counter++
-            threadPool?.execute {
-                val firebaseImage = when (counter) {
-                    0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
-                    10 -> {
-                        counter = -10
-                        FirebaseVisionImage.fromByteArray(
-                            getNegativeYUVByteArray(image),
-                            FirebaseVisionImageMetadata.Builder().also {
-                                it.setWidth(image.width)
-                                it.setHeight(image.height)
-                                it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-                                it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
-                            }.build()
-                        )
-                    }
-                    else -> {
-                        image.close()
-                        return@execute
+        counter++
+        threadPool?.execute {
+            val image = try {
+                reader.acquireLatestImage() ?: return@execute
+            } catch (exception: IllegalStateException) {
+                Log.d(TAG, "$exception")
+                return@execute
+            }
+            val firebaseImage = when (counter) {
+                0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+                10 -> {
+                    counter = -10
+                    FirebaseVisionImage.fromByteArray(
+                        getNegativeYUVByteArray(image),
+                        FirebaseVisionImageMetadata.Builder().also {
+                            it.setWidth(image.width)
+                            it.setHeight(image.height)
+                            it.setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                            it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
+                        }.build()
+                    )
+                }
+                else -> {
+                    image.close()
+                    return@execute
+                }
+            }
+            QRCodeDetector.detect(firebaseImage, {
+                it.forEach { barcode ->
+                    Log.d(TAG, "detect barcode: ${barcode.rawValue}")
+                    barcode.rawValue?.also { value ->
+                        qrCodeCallback(QRCodeValue.create(value))
                     }
                 }
-                QRCodeDetector.detect(firebaseImage, {
-                    it.forEach { barcode ->
-                        Log.d(TAG, "detect barcode: ${barcode.rawValue}")
-                        barcode.rawValue?.also { value ->
-                            qrCodeCallback(QRCodeValue.create(value))
-                        }
-                    }
-                }, { exception ->
-                    Log.d(TAG, "error occurs: ${exception.stackTrace}")
-                })
-                image.close()
-            }
-        } catch (exception: Exception) {
-            Log.d(TAG, "thread is terminated: $exception")
+            }, { exception ->
+                Log.d(TAG, "error occurs: ${exception.stackTrace}")
+            })
+            image.close()
         }
     }
 
