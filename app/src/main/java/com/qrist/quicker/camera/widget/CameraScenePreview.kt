@@ -16,7 +16,6 @@ import android.os.HandlerThread
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
-import android.view.View
 import android.widget.Toast
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
@@ -63,9 +62,9 @@ class CameraScenePreview @JvmOverloads constructor(
             counter++
             threadPool?.execute {
                 val firebaseImage = when (counter) {
-                    10 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
-                    20 -> {
-                        counter = 0
+                    0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+                    10 -> {
+                        counter = -10
                         FirebaseVisionImage.fromByteArray(
                             getNegativeYUVByteArray(image),
                             FirebaseVisionImageMetadata.Builder().also {
@@ -194,9 +193,9 @@ class CameraScenePreview @JvmOverloads constructor(
     }
 
     private fun setAspectRatio(width: Int, height: Int) {
-       if (width < 0 || height < 0) {
-           throw IllegalStateException("size cannot be negative")
-       }
+        if (width < 0 || height < 0) {
+            throw IllegalStateException("size cannot be negative")
+        }
         ratioWidth = width
         ratioHeight = height
         requestLayout()
@@ -235,7 +234,9 @@ class CameraScenePreview @JvmOverloads constructor(
             val surface = Surface(surfaceTexture)
             imageReader = ImageReader.newInstance(videoSize.width, videoSize.height,
                 ImageFormat.YUV_420_888, 2)
+            surfaceTexture.setDefaultBufferSize(previewSize.width, previewSize.height)
             Log.d(TAG, "video size is ${videoSize.width}x${videoSize.height}")
+            Log.d(TAG, "preview size is ${previewSize.width}x${previewSize.height}")
             imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             previewRequestBuilder.addTarget(surface)
@@ -244,6 +245,7 @@ class CameraScenePreview @JvmOverloads constructor(
                 listOf(surface, imageReader.surface),
                 object : CameraCaptureSession.StateCallback() {
                     override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
+                        cameraDevice ?: return
                         captureSession = cameraCaptureSession
                         try {
                             previewRequestBuilder.set(
@@ -309,7 +311,7 @@ class CameraScenePreview @JvmOverloads constructor(
         it.width == it.height * 4 / 3 && it.width <= 1080 } ?: choices[choices.size - 1]
 
     private fun chooseVideoSize(choices: Array<Size>) = choices.firstOrNull {
-        it.width in 125..720 && it.width == it.height * 4 / 3 } ?: choices[choices.size - 1]
+        it.width in 125..(if (Runtime.getRuntime().maxMemory() / 1024 / 1024 < 256) 380 else 730) && it.width == it.height * 4 / 3 } ?: choices[choices.size - 1]
 
     private class CompareSizesByArea : Comparator<Size> {
 
