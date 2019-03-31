@@ -43,8 +43,6 @@ class RegisterFragment : Fragment() {
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
     private val directory = File(storeDirectory)
     private var qrImageBitmap: Bitmap? = null
-    private var serviceIconImageBitmap: Bitmap? = null
-
     private var kindOfCrop = -1
 
     private lateinit var sequence: TapTargetSequence
@@ -93,7 +91,7 @@ class RegisterFragment : Fragment() {
 
         addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
-                viewModel.saveQRCode(bmp, serviceIconImageBitmap)
+                viewModel.saveQRCode(bmp)
                 when (val act = requireActivity()) {
                     is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
                         .popBackStack(R.id.qrContainerFragment, false)
@@ -157,11 +155,6 @@ class RegisterFragment : Fragment() {
             this@RegisterFragment.view?.addQRButton?.isVisible = false
             this@RegisterFragment.view?.qrHintTextView?.isGone = true
         }
-        if (serviceIconUrl.isNotBlank() && !isDefaultService) {
-            serviceIconImageBitmap = getBitmapFromUri(context!!, Uri.parse(serviceIconUrl))
-            this@RegisterFragment.view?.serviceIconImageView?.setImageBitmap(serviceIconImageBitmap)
-            this@RegisterFragment.view?.serviceIconImageView?.borderWidth = 0
-        }
     }
 
     @SuppressLint("ShowToast")
@@ -213,7 +206,6 @@ class RegisterFragment : Fragment() {
             makeAppDirectory(directory)
             when (requestCode) {
                 REQUEST_PERMISSION_ON_QR -> onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
-                REQUEST_PERMISSION_ON_ICON -> onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
             }
         }
     }
@@ -342,14 +334,6 @@ class RegisterFragment : Fragment() {
                         detectAndSet(bmp, uri)
                     }
                 }
-                IntentActionType.RESULT_PICK_SERVICE_ICON -> {
-                    onPickImageFile(resultData) { _, uri ->
-                        kindOfCrop = CROP_ICON
-                        CropImage
-                            .activity(uri)
-                            .start(MyApplication.instance, this)
-                    }
-                }
                 CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
                     when (kindOfCrop) {
                         CROP_QR -> {
@@ -359,14 +343,6 @@ class RegisterFragment : Fragment() {
                                 this@RegisterFragment.view?.addQRButton?.isVisible = false
                                 this@RegisterFragment.view?.qrHintTextView?.isGone = true
                                 viewModel.updateQRCodeImageUrl(uri.toString())
-                            }
-                        }
-                        CROP_ICON -> {
-                            onCropImageFile(resultData) { bmp, uri ->
-                                this@RegisterFragment.serviceIconImageView.setImageBitmap(bmp)
-                                this@RegisterFragment.serviceIconImageView.borderWidth = 0
-                                viewModel.updateServiceIconUrl(uri.toString())
-                                serviceIconImageBitmap = bmp
                             }
                         }
                         else -> {
@@ -385,8 +361,6 @@ class RegisterFragment : Fragment() {
         const val KIND_OF_CROP = "kindOfCrop"
 
         private const val CROP_QR = 0
-        private const val CROP_ICON = 1
         private const val REQUEST_PERMISSION_ON_QR: Int = 1000
-        private const val REQUEST_PERMISSION_ON_ICON: Int = 1001
     }
 }

@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.TutorialType
+import com.qrist.quicker.utils.IconGenerator
 import com.qrist.quicker.utils.serviceNameToServiceId
 
 
@@ -44,11 +45,6 @@ class RegisterViewModel(
         onChangeParameters()
     }
 
-    fun updateServiceIconUrl(value: String) {
-        serviceIconUrlLiveData.value = value
-        onChangeParameters()
-    }
-
     fun updateQRCodeImageUrl(value: String) {
         qrCodeImageUrlLiveData.value = value
         onChangeParameters()
@@ -64,13 +60,12 @@ class RegisterViewModel(
 
     private fun onChangeParameters() {
         val isServiceNameValid = serviceName.value.toString().isNotBlank()
-        val isServiceIconUrlValid = serviceIconUrl.value.toString().isNotBlank()
         val isQRCodeImageUrlValid = qrCodeImageUrl.value.toString().isNotBlank()
         Log.e("values", "${serviceName.value}, ${serviceIconUrl.value}, ${qrCodeImageUrl.value}")
-        isValidAsServiceLiveData.value = isServiceNameValid && isServiceIconUrlValid && isQRCodeImageUrlValid
+        isValidAsServiceLiveData.value = isServiceNameValid && isQRCodeImageUrlValid
     }
 
-    fun saveQRCode(qrImage: Bitmap, serviceIconImage: Bitmap?) {
+    fun saveQRCode(qrImage: Bitmap) {
         if (!isValidAsService.value!!) {
             Log.e("Register", "This implementation must have bugs...")
             return
@@ -78,9 +73,8 @@ class RegisterViewModel(
         if (isDefaultService.value!!) {
             repository.saveQRCode(serviceNameToServiceId(serviceName.value!!), qrImage)
         } else {
-            serviceIconImage?.let {
-                repository.saveQRCode(serviceName.value!!, qrImage, it)
-            }
+            val icon = IconGenerator.generateIcon(serviceName.value!!)
+            repository.saveQRCode(serviceName.value!!, qrImage, icon)
         }
     }
 

@@ -12,7 +12,7 @@
     <color name="twitter">#52ade5</color>
     <color name="facebook">#3c64ad</color>
     <color name="line">#00b900</color>
-    <color name="etc">#cccccc</color>
+    <color name="etc">@color/colorSecondaryLight</color>
     <color name="imageBorderLine">#ff999999</color>
     <color name="white_transparent">#00ffffff</color>
     <color name="white">#ffffff</color>
