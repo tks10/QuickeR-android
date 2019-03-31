@@ -53,13 +53,19 @@ class CameraScenePreview @JvmOverloads constructor(
     var qrCodeCallback: (QRCodeValue) -> Unit = {}
 
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
-        threadPool?.execute {
-            try {
-                val image = reader.acquireNextImage() ?: return@execute
-                counter = 1 - counter
+        val image = try {
+            reader.acquireNextImage() ?: return@OnImageAvailableListener
+        } catch (exception: IllegalStateException) {
+            Log.d(TAG, "$exception")
+            return@OnImageAvailableListener
+        }
+        try {
+            counter++
+            threadPool?.execute {
                 val firebaseImage = when (counter) {
-                    0 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
-                    1 -> {
+                    10 -> FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+                    20 -> {
+                        counter = 0
                         FirebaseVisionImage.fromByteArray(
                             getNegativeYUVByteArray(image),
                             FirebaseVisionImageMetadata.Builder().also {
@@ -69,7 +75,8 @@ class CameraScenePreview @JvmOverloads constructor(
                                 it.setRotation(FirebaseVisionImageMetadata.ROTATION_0)
                             }.build()
                         )
-                    } else -> {
+                    }
+                    else -> {
                         image.close()
                         return@execute
                     }
@@ -85,9 +92,9 @@ class CameraScenePreview @JvmOverloads constructor(
                     Log.d(TAG, "error occurs: ${exception.stackTrace}")
                 })
                 image.close()
-            } catch (exception: Exception) {
-                Log.d(TAG, "thread is terminated: ${exception.stackTrace}")
             }
+        } catch (exception: Exception) {
+            Log.d(TAG, "thread is terminated: $exception")
         }
     }
 
@@ -165,7 +172,7 @@ class CameraScenePreview @JvmOverloads constructor(
     }
 
     private fun startBackgroundThread() {
-        threadPool = Executors.newFixedThreadPool(1)
+        threadPool = Executors.newFixedThreadPool(3)
         backgroundThread = HandlerThread("CameraBackground")
         backgroundThread?.start()
         backgroundHandler = Handler(backgroundThread?.looper)
@@ -227,7 +234,7 @@ class CameraScenePreview @JvmOverloads constructor(
         try {
             val surface = Surface(surfaceTexture)
             imageReader = ImageReader.newInstance(videoSize.width, videoSize.height,
-                ImageFormat.YUV_420_888, 1)
+                ImageFormat.YUV_420_888, 2)
             Log.d(TAG, "video size is ${videoSize.width}x${videoSize.height}")
             imageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
             previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
