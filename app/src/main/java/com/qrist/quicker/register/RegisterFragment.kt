@@ -91,22 +91,6 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        addIconButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23 && !checkStoragePermission()) {
-                requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
-            } else {
-                onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
-            }
-        }
-
-        serviceIconImageView.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 23 && !checkStoragePermission()) {
-                requestExternalStoragePermission(REQUEST_PERMISSION_ON_ICON)
-            } else {
-                onClickImagePicker(IntentActionType.RESULT_PICK_SERVICE_ICON)
-            }
-        }
-
         addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
                 viewModel.saveQRCode(bmp, serviceIconImageBitmap)
@@ -252,21 +236,6 @@ class RegisterFragment : Fragment() {
             )
 
             tutorialTypes.add(TutorialType.QRImageView)
-        }
-
-        if (viewModel.hasNotDoneTutorial(TutorialType.ServiceIconImageView) && !viewModel.isDefaultService.value!!) {
-            targets.add(
-                TapTarget.forView(view!!.addIconButton, context!!.resources.getString(R.string.tutorial_service_icon))
-                    .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
-                    .drawShadow(true)
-                    .outerCircleAlpha(0.9f)
-                    .cancelable(true)
-                    .tintTarget(false)
-                    .id(id++)
-            )
-
-            tutorialTypes.add(TutorialType.ServiceIconImageView)
         }
 
         if (viewModel.hasNotDoneTutorial(TutorialType.ServiceNameEditText) && !viewModel.isDefaultService.value!!) {

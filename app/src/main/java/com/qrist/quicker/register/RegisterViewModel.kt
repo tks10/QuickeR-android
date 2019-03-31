@@ -20,8 +20,6 @@ class RegisterViewModel(
     private val qrCodeImageUrlLiveData: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
-    private val isIconAddButtonVisibleLiveData: MutableLiveData<Boolean> =
-        MutableLiveData<Boolean>().apply { value = true }
 
     val serviceIconUrl: LiveData<String>
         get() = serviceIconUrlLiveData
@@ -33,8 +31,6 @@ class RegisterViewModel(
         get() = isDefaultServiceLiveData
     val isValidAsService: LiveData<Boolean>
         get() = isValidAsServiceLiveData
-    val isIconAddButtonVisible: LiveData<Boolean>
-        get() = isIconAddButtonVisibleLiveData
 
     fun initServiceInformation(serviceName: String, serviceIconUrl: String) {
         serviceNameLiveData.value = serviceName
@@ -72,7 +68,6 @@ class RegisterViewModel(
         val isQRCodeImageUrlValid = qrCodeImageUrl.value.toString().isNotBlank()
         Log.e("values", "${serviceName.value}, ${serviceIconUrl.value}, ${qrCodeImageUrl.value}")
         isValidAsServiceLiveData.value = isServiceNameValid && isServiceIconUrlValid && isQRCodeImageUrlValid
-        isIconAddButtonVisibleLiveData.value = !isDefaultService.value!! && !isServiceIconUrlValid
     }
 
     fun saveQRCode(qrImage: Bitmap, serviceIconImage: Bitmap?) {
