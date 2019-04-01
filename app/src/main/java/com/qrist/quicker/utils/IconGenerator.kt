@@ -8,7 +8,7 @@ object IconGenerator {
     fun generateIcon(
         content: String,
         letterSize: Float = 79f,
-        iconSize: Int = 128,
+        iconSize: Float = 128f,
         backGroundColor: Int = Color.argb(255, 140, 140, 140),
         iconColor: Int = Color.WHITE
     ): Bitmap {
@@ -28,11 +28,12 @@ object IconGenerator {
         objPaint.textAlign = Paint.Align.CENTER
         objPaint.getTextBounds(letter, 0, 1, bounds)
 
-        val textHeight = bounds.height().toFloat()
-        val objBitmap = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888)
+        val fm = objPaint.fontMetrics
+        val centerToLead = -(fm.top + fm.bottom) / 2
+        val objBitmap = Bitmap.createBitmap(iconSize.toInt(), iconSize.toInt(), Bitmap.Config.ARGB_8888)
         val objCanvas = Canvas(objBitmap)
         objCanvas.drawColor(backGroundColor)
-        objCanvas.drawText(letter, iconSize / 2f, (iconSize - textHeight) / 2 + textHeight, objPaint)
+        objCanvas.drawText(letter, iconSize / 2, iconSize / 2 + centerToLead, objPaint)
 
         return objBitmap
     }
