@@ -25,14 +25,14 @@ object IconGenerator {
         objPaint.color = iconColor
         objPaint.textSize = letterSize
         objPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        objPaint.textAlign = Paint.Align.CENTER
         objPaint.getTextBounds(letter, 0, 1, bounds)
 
-        val textWidth = bounds.width().toFloat()
         val textHeight = bounds.height().toFloat()
         val objBitmap = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888)
         val objCanvas = Canvas(objBitmap)
         objCanvas.drawColor(backGroundColor)
-        objCanvas.drawText(letter, (iconSize - textWidth) / 2, (iconSize - textHeight) / 2 + textHeight, objPaint)
+        objCanvas.drawText(letter, iconSize / 2f, (iconSize - textHeight) / 2 + textHeight, objPaint)
 
         return objBitmap
     }
