@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
@@ -69,9 +70,10 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:2.0.0-alpha12'
 
     // FireBase
-    implementation 'com.google.firebase:firebase-ml-vision:19.0.2'
+    implementation 'com.google.firebase:firebase-ml-vision:19.0.3'
     implementation 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
-    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
 
     // Crop
     api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
