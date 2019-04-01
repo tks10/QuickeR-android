@@ -10,7 +10,7 @@ object IconGenerator {
         content: String,
         iconColor: Int,
         backGroundColor: Int,
-        letterSize: Float = 79f,
+        letterSize: Float = 77f,
         iconSize: Float = 128f
     ): Bitmap {
         if (letterSize > iconSize) {
