@@ -298,6 +298,7 @@ class RegisterFragment : Fragment() {
         }
         val onFailure = { func: Exception ->
             func.printStackTrace()
+            Log.e("FirebaseMLKit", func.toString())
             CropImage
                 .activity(uri)
                 .start(MyApplication.instance, this)

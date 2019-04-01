@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
@@ -64,14 +65,16 @@ class QRContainerFragment : Fragment(), CoroutineScope {
             tool_bar.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.menu_capture -> {
-                        //val intentIntegrator = IntentIntegrator.forSupportFragment(this@QRContainerFragment).apply {
-                        //    setPrompt("Scan a QR code")
-                        //    captureActivity = CaptureActivityPortrait::class.java
-                        //}
-                        //intentIntegrator.initiateScan()
-
                         Log.d("Menu", "Capture was tapped.")
-                        Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_camera)
+                        if (viewModel.isQRCodeDetectorAvailable() && Build.VERSION.SDK_INT >= 22) {
+                            Navigation.findNavController(view!!).navigate(R.id.action_qr_container_to_camera)
+                        } else {
+                            val intentIntegrator = IntentIntegrator.forSupportFragment(this@QRContainerFragment).apply {
+                                setPrompt("Scan a QR code")
+                                captureActivity = CaptureActivityPortrait::class.java
+                            }
+                            intentIntegrator.initiateScan()
+                        }
                         true
                     }
                     R.id.menu_settings -> {
@@ -90,6 +93,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     override fun onStart() {
         super.onStart()
         MyApplication.analytics.setCurrentScreen(requireActivity(), this.javaClass.simpleName, this.javaClass.simpleName)
+        viewModel.fetchQRCodeAvailability()
     }
 
     override fun onResume() {
