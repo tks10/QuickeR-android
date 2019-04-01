@@ -7,10 +7,10 @@ import com.vdurmont.emoji.EmojiParser
 object IconGenerator {
     fun generateIcon(
         content: String,
+        iconColor: Int,
+        backGroundColor: Int,
         letterSize: Float = 79f,
-        iconSize: Float = 128f,
-        backGroundColor: Int = Color.argb(255, 140, 140, 140),
-        iconColor: Int = Color.WHITE
+        iconSize: Float = 128f
     ): Bitmap {
         if (letterSize > iconSize) {
             throw IllegalArgumentException("letterSize must be smaller than iconSize.")
@@ -32,6 +32,7 @@ object IconGenerator {
         val centerToLead = -(fm.top + fm.bottom) / 2
         val objBitmap = Bitmap.createBitmap(iconSize.toInt(), iconSize.toInt(), Bitmap.Config.ARGB_8888)
         val objCanvas = Canvas(objBitmap)
+
         objCanvas.drawColor(backGroundColor)
         objCanvas.drawText(letter, iconSize / 2, iconSize / 2 + centerToLead, objPaint)
 

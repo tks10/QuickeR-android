@@ -5,7 +5,10 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.support.v4.content.ContextCompat
 import android.util.Log
+import com.qrist.quicker.R
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.IconGenerator
@@ -73,7 +76,9 @@ class RegisterViewModel(
         if (isDefaultService.value!!) {
             repository.saveQRCode(serviceNameToServiceId(serviceName.value!!), qrImage)
         } else {
-            val icon = IconGenerator.generateIcon(serviceName.value!!)
+            val letterColor = Color.WHITE
+            val backgroundColor = ContextCompat.getColor(context, R.color.etc)
+            val icon = IconGenerator.generateIcon(serviceName.value!!, letterColor, backgroundColor)
             repository.saveQRCode(serviceName.value!!, qrImage, icon)
         }
     }
