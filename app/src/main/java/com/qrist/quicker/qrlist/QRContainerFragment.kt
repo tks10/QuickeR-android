@@ -8,8 +8,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
+import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class QRContainerFragment : Fragment(), CoroutineScope {
+class QRContainerFragment : androidx.fragment.app.Fragment(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
@@ -125,7 +125,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         }
     }
 
-    inner class MyOnPageChangeListener : ViewPager.OnPageChangeListener {
+    inner class MyOnPageChangeListener : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
         override fun onPageScrollStateChanged(state: Int) {
         }
 

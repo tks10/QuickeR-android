@@ -1,9 +1,9 @@
 package com.qrist.quicker.extentions
 
 import android.content.res.ColorStateList
-import android.databinding.BindingAdapter
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
+import androidx.databinding.BindingAdapter
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.ContextCompat
 import com.qrist.quicker.R
 import com.qrist.quicker.utils.MyApplication
 

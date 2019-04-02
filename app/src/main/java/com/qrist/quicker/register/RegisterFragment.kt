@@ -5,12 +5,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -35,7 +35,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
 
-class RegisterFragment : Fragment() {
+class RegisterFragment : androidx.fragment.app.Fragment() {
     private val viewModel: RegisterViewModel
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
     private val qrImageUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).qrImageUrl }

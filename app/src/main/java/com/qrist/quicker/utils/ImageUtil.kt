@@ -2,12 +2,12 @@ package com.qrist.quicker.utils
 
 import android.content.ContentResolver
 import android.content.Context
-import android.databinding.BindingAdapter
+import androidx.databinding.BindingAdapter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 import android.util.Log
 import android.widget.ImageView
 import java.io.*
