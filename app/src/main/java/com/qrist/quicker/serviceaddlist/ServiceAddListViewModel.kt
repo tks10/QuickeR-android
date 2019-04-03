@@ -9,7 +9,6 @@ import com.qrist.quicker.models.ServiceItem
 import com.qrist.quicker.utils.serviceIdToIconUrl
 import com.qrist.quicker.utils.serviceIdToServiceName
 
-
 class ServiceAddListViewModel(
     private val context: Application,
     private val repository: QRCodeRepository

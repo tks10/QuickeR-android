@@ -10,7 +10,6 @@ import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.serviceNameToServiceId
 
-
 class RegisterViewModel(
     private val context: Application,
     private val repository: QRCodeRepository

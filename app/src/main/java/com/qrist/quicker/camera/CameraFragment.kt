@@ -23,7 +23,7 @@ import com.qrist.quicker.extentions.requestPermission
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_camera.*
 
-class CameraFragment : androidx.fragment.app.Fragment() {
+class CameraFragment : Fragment() {
     private var isDialogSeen = false
     private var previousValue: QRCodeValue? = null
     // FIXME: install lifecycle for material dialog and delete it.

@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_registeredservicelist.*
 import java.io.File
 
-class RegisteredServiceListFragment : androidx.fragment.app.Fragment() {
+class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
             by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java) }
 
@@ -38,9 +38,9 @@ class RegisteredServiceListFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registeredServiceList.adapter = this.createAdapter()
-        val itemDecoration = androidx.recyclerview.widget.DividerItemDecoration(
+        val itemDecoration = DividerItemDecoration(
             activity!!,
-            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+            DividerItemDecoration.VERTICAL
         )
         registeredServiceList.addItemDecoration(itemDecoration)
         this.createItemTouchHelper().attachToRecyclerView(registeredServiceList)
@@ -106,7 +106,7 @@ class RegisteredServiceListFragment : androidx.fragment.app.Fragment() {
     private fun createItemTouchHelper(): ItemTouchHelper =
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
 
-            override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 val fromPosition = viewHolder.adapterPosition
                 val toPosition = target.adapterPosition
 
@@ -116,9 +116,9 @@ class RegisteredServiceListFragment : androidx.fragment.app.Fragment() {
                 return false
             }
 
-            override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {}
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
 
-            override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
                 viewModel.reflectIndexChange()
             }

@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.core.content.FileProvider
 import android.util.Log
 import android.widget.ImageView
 import java.io.*

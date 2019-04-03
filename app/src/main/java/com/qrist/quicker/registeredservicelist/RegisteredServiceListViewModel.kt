@@ -9,7 +9,6 @@ import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.ServiceItem
 import java.lang.IllegalArgumentException
 
-
 class RegisteredServiceListViewModel(
     private val context: Application,
     private val repository: QRCodeRepository

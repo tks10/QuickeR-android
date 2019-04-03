@@ -35,7 +35,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
 
-class RegisterFragment : androidx.fragment.app.Fragment() {
+class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
             by lazy { obtainViewModel(RegisterViewModel::class.java) }
     private val qrImageUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).qrImageUrl }

@@ -19,15 +19,15 @@ import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
 
-fun <T : ViewModel> androidx.fragment.app.Fragment.obtainViewModel(viewModelClass: Class<T>) =
+fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>) =
     ViewModelProviders.of(this, ViewModelFactory.getInstance(activity?.application!!)).get(viewModelClass)
 
 // for QRViewFragment
-fun <T : ViewModel> androidx.fragment.app.Fragment.obtainViewModel(key: String, viewModelClass: Class<T>) =
+fun <T : ViewModel> Fragment.obtainViewModel(key: String, viewModelClass: Class<T>) =
     ViewModelProviders.of(parentFragment!!, ViewModelFactory.getInstance(activity?.application!!)).get(key, viewModelClass)
 
 @Throws(SecurityException::class)
-fun androidx.fragment.app.Fragment.makeAppDirectory(directory: File): Boolean =
+fun Fragment.makeAppDirectory(directory: File): Boolean =
     when (checkStoragePermission()) {
         true -> {
             if (!directory.exists())
@@ -37,19 +37,19 @@ fun androidx.fragment.app.Fragment.makeAppDirectory(directory: File): Boolean =
         false -> false
     }
 
-fun androidx.fragment.app.Fragment.checkStoragePermission(): Boolean =
+fun Fragment.checkStoragePermission(): Boolean =
     ActivityCompat.checkSelfPermission(
         this.context!!,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) == PackageManager.PERMISSION_GRANTED
 
-fun androidx.fragment.app.Fragment.checkCameraPermission(): Boolean =
+fun Fragment.checkCameraPermission(): Boolean =
     ActivityCompat.checkSelfPermission(
         this.context!!,
         Manifest.permission.CAMERA
     ) == PackageManager.PERMISSION_GRANTED
 
-fun androidx.fragment.app.Fragment.requestPermission(permissionCode: String, requestCode: Int, toastMessage: String = getString(R.string.accept_me)) {
+fun Fragment.requestPermission(permissionCode: String, requestCode: Int, toastMessage: String = getString(R.string.accept_me)) {
     if (!shouldShowRequestPermissionRationale(permissionCode)) {
         Toast.makeText(activity, toastMessage, Toast.LENGTH_LONG).show()
     }
@@ -64,7 +64,7 @@ object IntentActionType {
     const val RESULT_PICK_SERVICE_ICON: Int = 1002
 }
 
-fun androidx.fragment.app.Fragment.onClickImagePicker(actionType: Int) {
+fun Fragment.onClickImagePicker(actionType: Int) {
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
 
     // Filter to only show results that can be "opened", such as a
@@ -80,7 +80,7 @@ fun androidx.fragment.app.Fragment.onClickImagePicker(actionType: Int) {
 // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
 // response to some other intent, and the code below shouldn't run at all.
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "NAME_SHADOWING")
-fun androidx.fragment.app.Fragment.onPickImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Unit) {
+fun Fragment.onPickImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Unit) {
     // The document selected by the user won't be returned in the intent.
     // Instead, a URI to that document will be contained in the return intent
     // provided to this method as a parameter.
@@ -110,7 +110,7 @@ fun androidx.fragment.app.Fragment.onPickImageFile(resultData: Intent?, callback
 }
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "NAME_SHADOWING")
-fun androidx.fragment.app.Fragment.onCropImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Unit) {
+fun Fragment.onCropImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Unit) {
     // The document selected by the user won't be returned in the intent.
     // Instead, a URI to that document will be contained in the return intent
     // provided to this method as a parameter.

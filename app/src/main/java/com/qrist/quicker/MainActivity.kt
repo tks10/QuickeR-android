@@ -1,15 +1,11 @@
 package com.qrist.quicker
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import android.util.Log
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.qrist.quicker.qrlist.QRContainerFragmentDirections
 
 class MainActivity : AppCompatActivity() {
 
