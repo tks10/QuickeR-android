@@ -5,9 +5,13 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.support.v4.content.ContextCompat
 import android.util.Log
+import com.qrist.quicker.R
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.TutorialType
+import com.qrist.quicker.utils.IconGenerator
 import com.qrist.quicker.utils.serviceNameToServiceId
 
 
@@ -20,8 +24,6 @@ class RegisterViewModel(
     private val qrCodeImageUrlLiveData: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
-    private val isIconAddButtonVisibleLiveData: MutableLiveData<Boolean> =
-        MutableLiveData<Boolean>().apply { value = true }
 
     val serviceIconUrl: LiveData<String>
         get() = serviceIconUrlLiveData
@@ -33,8 +35,6 @@ class RegisterViewModel(
         get() = isDefaultServiceLiveData
     val isValidAsService: LiveData<Boolean>
         get() = isValidAsServiceLiveData
-    val isIconAddButtonVisible: LiveData<Boolean>
-        get() = isIconAddButtonVisibleLiveData
 
     fun initServiceInformation(serviceName: String, serviceIconUrl: String) {
         serviceNameLiveData.value = serviceName
@@ -45,11 +45,6 @@ class RegisterViewModel(
 
     fun updateServiceName(value: String) {
         serviceNameLiveData.value = value
-        onChangeParameters()
-    }
-
-    fun updateServiceIconUrl(value: String) {
-        serviceIconUrlLiveData.value = value
         onChangeParameters()
     }
 
@@ -68,14 +63,12 @@ class RegisterViewModel(
 
     private fun onChangeParameters() {
         val isServiceNameValid = serviceName.value.toString().isNotBlank()
-        val isServiceIconUrlValid = serviceIconUrl.value.toString().isNotBlank()
         val isQRCodeImageUrlValid = qrCodeImageUrl.value.toString().isNotBlank()
         Log.e("values", "${serviceName.value}, ${serviceIconUrl.value}, ${qrCodeImageUrl.value}")
-        isValidAsServiceLiveData.value = isServiceNameValid && isServiceIconUrlValid && isQRCodeImageUrlValid
-        isIconAddButtonVisibleLiveData.value = !isDefaultService.value!! && !isServiceIconUrlValid
+        isValidAsServiceLiveData.value = isServiceNameValid && isQRCodeImageUrlValid
     }
 
-    fun saveQRCode(qrImage: Bitmap, serviceIconImage: Bitmap?) {
+    fun saveQRCode(qrImage: Bitmap) {
         if (!isValidAsService.value!!) {
             Log.e("Register", "This implementation must have bugs...")
             return
@@ -83,9 +76,10 @@ class RegisterViewModel(
         if (isDefaultService.value!!) {
             repository.saveQRCode(serviceNameToServiceId(serviceName.value!!), qrImage)
         } else {
-            serviceIconImage?.let {
-                repository.saveQRCode(serviceName.value!!, qrImage, it)
-            }
+            val letterColor = Color.WHITE
+            val backgroundColor = ContextCompat.getColor(context, R.color.etc)
+            val icon = IconGenerator.generateIcon(serviceName.value!!, letterColor, backgroundColor)
+            repository.saveQRCode(serviceName.value!!, qrImage, icon)
         }
     }
 

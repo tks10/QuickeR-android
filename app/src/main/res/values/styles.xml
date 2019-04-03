@@ -45,7 +45,7 @@
 
     <style name="EnableEditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="colorControlNormal">@color/colorSecondary</item>
-        <item name="android:textColor">@color/colorTextOnPrimary</item>
+        <item name="android:textColor">@color/colorSecondaryDark</item>
     </style>
 
 </resources>
