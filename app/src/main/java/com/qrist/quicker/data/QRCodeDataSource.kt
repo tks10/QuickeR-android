@@ -16,4 +16,6 @@ interface QRCodeDataSource {
     fun doneTutorial(type: TutorialType)
     fun hasBeenDoneTutorial(type: TutorialType): Boolean
     fun updateQRCodesOrder(indexes: List<Int>): Boolean
+    fun isShowServiceNameInQRView(): Boolean
+    fun switchServiceNameVisibilityInQRView()
 }
