@@ -1,6 +1,7 @@
 package com.qrist.quicker.qrlist
 
 import android.annotation.SuppressLint
+import android.arch.lifecycle.MutableLiveData
 import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -18,6 +19,7 @@ class QRViewFragmentPagerAdapter(
 
     private var currentTransaction: FragmentTransaction? = null
     private var currentFragment: Fragment? = null
+    private val serviceNameChangedLiveData: MutableLiveData<Unit> = MutableLiveData()
 
     // begin lifecycle
 
@@ -116,7 +118,7 @@ class QRViewFragmentPagerAdapter(
 
     private fun getItem(position: Int): Fragment? =
         getValueAt(position)?.let {
-            QRViewFragment.newInstance(qrCodeId = it.id)
+            QRViewFragment.newInstance(qrCodeId = it.id, serviceNameChangedLiveData = serviceNameChangedLiveData)
         }
 
     override fun saveState(): Parcelable? = null
