@@ -22,9 +22,6 @@ class QRViewViewModel(
     private val iconImageLiveData: MutableLiveData<String> = MutableLiveData()
     private val serviceIdLiveData: MutableLiveData<Int> = MutableLiveData()
     private val serviceNameLiveData: MutableLiveData<String> = MutableLiveData()
-    private val isShowServiceNameLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
-        value = repository.isShowServiceNameInQRView()
-    }
 
     val qrCodeImage: LiveData<String>
         get() = qrCodeImageLiveData
@@ -34,8 +31,6 @@ class QRViewViewModel(
         get() = serviceIdLiveData
     val serviceName: LiveData<String>
         get() = serviceNameLiveData
-    val isShowServiceName: LiveData<Boolean>
-        get() = isShowServiceNameLiveData
 
     fun fetchImageUrl(codeId: String) {
         val qrCode = repository.getQRCode(codeId)
@@ -68,14 +63,5 @@ class QRViewViewModel(
 
     fun getBackgroundColor(serviceId: Int): ColorDrawable {
         return serviceIdToColorDrawable(serviceId)
-    }
-
-    fun fetchServiceNameVisibility() {
-        isShowServiceNameLiveData.value = repository.isShowServiceNameInQRView()
-    }
-
-    fun switchServiceNameVisibility() {
-        repository.switchServiceNameVisiblityInQRView()
-        fetchServiceNameVisibility()
     }
 }

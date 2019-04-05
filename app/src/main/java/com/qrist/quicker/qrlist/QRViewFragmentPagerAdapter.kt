@@ -19,7 +19,6 @@ class QRViewFragmentPagerAdapter(
 
     private var currentTransaction: FragmentTransaction? = null
     private var currentFragment: Fragment? = null
-    private val serviceNameChangedLiveData: MutableLiveData<Unit> = MutableLiveData()
 
     // begin lifecycle
 
@@ -118,7 +117,7 @@ class QRViewFragmentPagerAdapter(
 
     private fun getItem(position: Int): Fragment? =
         getValueAt(position)?.let {
-            QRViewFragment.newInstance(qrCodeId = it.id, serviceNameChangedLiveData = serviceNameChangedLiveData)
+            QRViewFragment.newInstance(qrCodeId = it.id)
         }
 
     override fun saveState(): Parcelable? = null

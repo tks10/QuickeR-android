@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.fragment_qrview.view.*
 class QRViewFragment : Fragment() {
     private var codeId: String? = null
     private var viewModel: QRViewViewModel? = null
+    private var containerViewModel: QRContainerViewModel? = null
     private var changedServiceNameVisibility: MutableLiveData<Unit>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +28,7 @@ class QRViewFragment : Fragment() {
         viewModel = codeId?.let {
             obtainViewModel(it, QRViewViewModel::class.java)
         }
+        containerViewModel = obtainViewModel(QRContainerViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -35,11 +37,12 @@ class QRViewFragment : Fragment() {
 
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
+        binding.containerViewModel = containerViewModel
 
         binding.root.qrCardView.setOnClickListener {
             val changeBounds = ChangeBounds().apply { duration = 100L }
             TransitionManager.beginDelayedTransition(binding.root.qrCardView, changeBounds)
-            viewModel?.switchServiceNameVisibility()
+            containerViewModel?.switchServiceNameVisibility()
             changedServiceNameVisibility?.notify()
         }
 
@@ -62,14 +65,6 @@ class QRViewFragment : Fragment() {
         changedServiceNameVisibility = null
     }
 
-    private fun setServiceNameChangedLiveData(liveData: MutableLiveData<Unit>) {
-        changedServiceNameVisibility = liveData.apply {
-            observe(this@QRViewFragment, Observer {
-                viewModel?.fetchServiceNameVisibility()
-            })
-        }
-    }
-
     private fun MutableLiveData<Unit>.notify() {
         this.value = Unit
     }
@@ -77,12 +72,11 @@ class QRViewFragment : Fragment() {
     companion object {
         private const val BUNDLE_ARG_ID = "id"
 
-        fun newInstance(qrCodeId: String, serviceNameChangedLiveData: MutableLiveData<Unit>): QRViewFragment =
+        fun newInstance(qrCodeId: String): QRViewFragment =
             QRViewFragment().apply {
                 arguments = Bundle().apply {
                     putString(BUNDLE_ARG_ID, qrCodeId)
                 }
-                setServiceNameChangedLiveData(serviceNameChangedLiveData)
             }
     }
 }

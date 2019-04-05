@@ -8,6 +8,9 @@
         <variable
                 name="viewmodel"
                 type="com.qrist.quicker.qrlist.QRViewViewModel"/>
+        <variable
+                name="containerViewModel"
+                type="com.qrist.quicker.qrlist.QRContainerViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -71,7 +74,7 @@
                         android:layout_marginBottom="24dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:isGone="@{viewmodel.isShowServiceName}"
+                        android:isGone="@{containerViewModel.isShowServiceName}"
                         android:textSize="18sp"
                         android:textColor="@color/colorSecondaryLight"
                         android:ellipsize="end"
