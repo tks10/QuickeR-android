@@ -20,7 +20,7 @@ import java.io.FileDescriptor
 import java.io.IOException
 
 fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>) =
-    ViewModelProviders.of(activity!!, ViewModelFactory.getInstance(activity?.application!!)).get(viewModelClass)
+    ViewModelProviders.of(requireActivity(), ViewModelFactory.getInstance(activity?.application!!)).get(viewModelClass)
 
 // for QRViewFragment
 fun <T : ViewModel> Fragment.obtainViewModel(key: String, viewModelClass: Class<T>) =
