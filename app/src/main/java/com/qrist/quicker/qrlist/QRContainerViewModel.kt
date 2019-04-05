@@ -2,6 +2,9 @@ package com.qrist.quicker.qrlist
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.util.Log
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
@@ -14,6 +17,15 @@ class QRContainerViewModel(
 
     var qrCodes: List<QRCode> = repository.getQRCodes()
     var currentAdapterPosition: Int = 0
+    private val isTextViewVisibleLiveData: MutableLiveData<Boolean> = MutableLiveData()
+
+    val isTextViewVisible: LiveData<Boolean>
+        get() = isTextViewVisibleLiveData
+
+    fun updateViewVisible(value: Boolean) {
+        Log.d("containerViewModel", "update text view visibility: $value")
+        isTextViewVisibleLiveData.value = value
+    }
 
     fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()

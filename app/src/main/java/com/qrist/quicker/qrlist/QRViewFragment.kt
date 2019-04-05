@@ -10,10 +10,12 @@ import android.view.ViewGroup
 import com.qrist.quicker.R
 import com.qrist.quicker.databinding.FragmentQrviewBinding
 import com.qrist.quicker.extentions.obtainViewModel
+import kotlinx.android.synthetic.main.fragment_qrview.*
 
 class QRViewFragment : Fragment() {
     private var codeId: String? = null
     private var viewModel: QRViewViewModel? = null
+    private var containerViewModel: QRContainerViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +23,7 @@ class QRViewFragment : Fragment() {
         viewModel = codeId?.let {
             obtainViewModel(it, QRViewViewModel::class.java)
         }
+        containerViewModel = obtainViewModel(QRContainerViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -29,6 +32,7 @@ class QRViewFragment : Fragment() {
 
         binding.setLifecycleOwner(this)
         binding.viewmodel = viewModel
+        binding.contaierViewModel = containerViewModel
         return binding.root
     }
 
@@ -38,12 +42,16 @@ class QRViewFragment : Fragment() {
         codeId?.let {
             viewModel?.fetchImageUrl(it)
         }
+        qrCardView.setOnClickListener {
+            containerViewModel!!.updateViewVisible(!(containerViewModel!!.isTextViewVisible.value ?: false))
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         Log.e("destroy fragment", "$this $codeId $viewModel")
         viewModel = null
+        containerViewModel = null
         codeId = null
     }
 
