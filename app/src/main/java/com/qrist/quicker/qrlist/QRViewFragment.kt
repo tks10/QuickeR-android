@@ -18,17 +18,15 @@ import kotlinx.android.synthetic.main.fragment_qrview.view.*
 
 class QRViewFragment : Fragment() {
     private var codeId: String? = null
-    private var viewModel: QRViewViewModel? = null
-    private var containerViewModel: QRContainerViewModel? = null
-    private var changedServiceNameVisibility: MutableLiveData<Unit>? = null
+    private lateinit var viewModel: QRViewViewModel
+    private val containerViewModel: QRContainerViewModel by lazy {
+        obtainViewModel(QRContainerViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         codeId = arguments!!.getString(BUNDLE_ARG_ID)
-        viewModel = codeId?.let {
-            obtainViewModel(it, QRViewViewModel::class.java)
-        }
-        containerViewModel = obtainViewModel(QRContainerViewModel::class.java)
+        viewModel = obtainViewModel(codeId!!, QRViewViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,8 +40,7 @@ class QRViewFragment : Fragment() {
         binding.root.qrCardView.setOnClickListener {
             val changeBounds = ChangeBounds().apply { duration = 100L }
             TransitionManager.beginDelayedTransition(binding.root.qrCardView, changeBounds)
-            containerViewModel?.switchServiceNameVisibility()
-            changedServiceNameVisibility?.notify()
+            containerViewModel.switchServiceNameVisibility()
         }
 
         return binding.root
@@ -53,16 +50,13 @@ class QRViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.e("create fragment", "$this $codeId $viewModel")
         codeId?.let {
-            viewModel?.fetchImageUrl(it)
+            viewModel.fetchImageUrl(it)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         Log.e("destroy fragment", "$this $codeId $viewModel")
-        viewModel = null
-        codeId = null
-        changedServiceNameVisibility = null
     }
 
     private fun MutableLiveData<Unit>.notify() {
