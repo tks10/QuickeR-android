@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_serviceaddlist.*
 
 class ServiceAddListFragment : Fragment() {
     private val viewModel: ServiceAddListViewModel
-            by lazy { obtainViewModel(ServiceAddListViewModel::class.java) }
+            by lazy { obtainViewModel(ServiceAddListViewModel::class.java, this) }
     private val qrImageUrl: String by lazy { ServiceAddListFragmentArgs.fromBundle(arguments!!).qrImageUrl }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

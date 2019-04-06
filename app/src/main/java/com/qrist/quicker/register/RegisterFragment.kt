@@ -37,7 +37,7 @@ import java.util.*
 
 class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
-            by lazy { obtainViewModel(RegisterViewModel::class.java) }
+            by lazy { obtainViewModel(RegisterViewModel::class.java, this) }
     private val qrImageUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).qrImageUrl }
     private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
@@ -48,10 +48,13 @@ class RegisterFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.initServiceInformation(
-            this@RegisterFragment.serviceName,
-            this@RegisterFragment.serviceIconUrl
-        )
+        if (serviceIconUrl.isNotBlank()) {
+            // Default Service Init
+            viewModel.initServiceInformation(
+                this@RegisterFragment.serviceName,
+                this@RegisterFragment.serviceIconUrl
+            )
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

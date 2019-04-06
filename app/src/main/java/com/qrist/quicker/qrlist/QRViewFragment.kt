@@ -18,7 +18,7 @@ class QRViewFragment : Fragment() {
     private lateinit var codeId: String
     private lateinit var viewModel: QRViewViewModel
     private val containerViewModel: QRContainerViewModel by lazy {
-        obtainViewModel(QRContainerViewModel::class.java)
+        obtainViewModel(QRContainerViewModel::class.java, requireActivity())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

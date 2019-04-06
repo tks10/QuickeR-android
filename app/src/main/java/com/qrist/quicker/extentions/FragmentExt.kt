@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.widget.Toast
 import com.qrist.quicker.R
 import com.qrist.quicker.utils.ViewModelFactory
@@ -19,8 +20,11 @@ import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
 
-fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>) =
-    ViewModelProviders.of(requireActivity(), ViewModelFactory.getInstance(requireActivity().application!!)).get(viewModelClass)
+fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>, activity: FragmentActivity) =
+    ViewModelProviders.of(activity, ViewModelFactory.getInstance(activity.application!!)).get(viewModelClass)
+
+fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>, fragment: Fragment) =
+    ViewModelProviders.of(fragment, ViewModelFactory.getInstance(requireActivity().application!!)).get(viewModelClass)
 
 // for QRViewFragment
 fun <T : ViewModel> Fragment.obtainViewModel(key: String, viewModelClass: Class<T>) =
