@@ -55,7 +55,7 @@ fun Fragment.checkCameraPermission(): Boolean =
 
 fun Fragment.requestPermission(permissionCode: String, requestCode: Int, toastMessage: String = getString(R.string.accept_me)) {
     if (!shouldShowRequestPermissionRationale(permissionCode)) {
-        Toast.makeText(activity, toastMessage, Toast.LENGTH_LONG).show()
+        showToast(toastMessage)
     }
     requestPermissions(
         arrayOf(permissionCode),
@@ -140,4 +140,12 @@ fun Fragment.onCropImageFile(resultData: Intent?, callback: (Bitmap, Uri) -> Uni
             }
         }
     }
+}
+
+fun Fragment.showToast(resId: Int, duration: Int = Toast.LENGTH_LONG) {
+    Toast.makeText(requireContext(), resId, duration).show()
+}
+
+fun Fragment.showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
+    Toast.makeText(requireContext(), message, duration).show()
 }

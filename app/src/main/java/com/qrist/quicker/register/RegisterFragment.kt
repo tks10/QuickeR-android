@@ -92,10 +92,7 @@ class RegisterFragment : Fragment() {
                 try {
                     viewModel.saveQRCode(bmp)
                 } catch (e: IllegalStateException) {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.error_message_already_registered, Toast.LENGTH_LONG
-                    ).show()
+                    showToast(R.string.error_message_already_registered)
                 } finally {
                     when (val act = requireActivity()) {
                         is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
@@ -183,7 +180,7 @@ class RegisterFragment : Fragment() {
                 detectAndSet(bmp, uri)
             } catch (e: Exception) {
                 Log.d("RegisterFragment", e.toString())
-                Toast.makeText(requireContext(), R.string.cannot_open_image, Toast.LENGTH_LONG).show()
+                showToast(R.string.error_message_already_registered)
                 requireActivity().finish()
             }
         }
@@ -194,7 +191,7 @@ class RegisterFragment : Fragment() {
 
     private fun requestExternalStoragePermission(requestCode: Int) {
         if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Toast.makeText(activity, R.string.accept_me, Toast.LENGTH_LONG).show()
+            showToast(R.string.accept_me)
         }
         requestPermissions(
             arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
