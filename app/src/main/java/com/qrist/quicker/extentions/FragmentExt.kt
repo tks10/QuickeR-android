@@ -20,11 +20,11 @@ import java.io.FileDescriptor
 import java.io.IOException
 
 fun <T : ViewModel> Fragment.obtainViewModel(viewModelClass: Class<T>) =
-    ViewModelProviders.of(requireActivity(), ViewModelFactory.getInstance(activity?.application!!)).get(viewModelClass)
+    ViewModelProviders.of(requireActivity(), ViewModelFactory.getInstance(requireActivity().application!!)).get(viewModelClass)
 
 // for QRViewFragment
 fun <T : ViewModel> Fragment.obtainViewModel(key: String, viewModelClass: Class<T>) =
-    ViewModelProviders.of(parentFragment!!, ViewModelFactory.getInstance(activity?.application!!)).get(key, viewModelClass)
+    ViewModelProviders.of(parentFragment!!, ViewModelFactory.getInstance(requireActivity().application!!)).get(key, viewModelClass)
 
 @Throws(SecurityException::class)
 fun Fragment.makeAppDirectory(directory: File): Boolean =
@@ -61,7 +61,6 @@ fun Fragment.requestPermission(permissionCode: String, requestCode: Int, toastMe
 
 object IntentActionType {
     const val RESULT_PICK_QRCODE: Int = 1001
-    const val RESULT_PICK_SERVICE_ICON: Int = 1002
 }
 
 fun Fragment.onClickImagePicker(actionType: Int) {
