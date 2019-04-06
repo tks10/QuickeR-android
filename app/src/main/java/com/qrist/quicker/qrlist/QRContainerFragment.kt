@@ -50,7 +50,6 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.fetchServiceNameVisibility()
         return inflater.inflate(R.layout.fragment_qrcontainer, container, false)
     }
 

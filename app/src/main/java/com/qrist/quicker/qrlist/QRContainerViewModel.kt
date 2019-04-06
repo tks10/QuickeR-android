@@ -22,7 +22,7 @@ class QRContainerViewModel(
     var qrCodes: List<QRCode> = repository.getQRCodes()
     var currentAdapterPosition: Int = 0
 
-    fun fetchServiceNameVisibility() {
+    private fun fetchServiceNameVisibility() {
         isShowServiceNameLiveData.value = repository.isShowServiceNameInQRView()
     }
 
