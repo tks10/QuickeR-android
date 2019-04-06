@@ -10,9 +10,11 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.qrist.quicker.R
 import com.qrist.quicker.data.QRCodeRepository
+import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.IconGenerator
 import com.qrist.quicker.utils.serviceNameToServiceId
+import java.lang.IllegalStateException
 
 
 class RegisterViewModel(
@@ -74,7 +76,11 @@ class RegisterViewModel(
             return
         }
         if (isDefaultService.value!!) {
-            repository.saveQRCode(serviceNameToServiceId(serviceName.value!!), qrImage)
+            val serviceId = serviceNameToServiceId(serviceName.value!!)
+            if (hasAlreadyRegistered(serviceId)) {
+                throw IllegalStateException("${serviceName.value!!} has already registered.")
+            }
+            repository.saveQRCode(serviceId, qrImage)
         } else {
             val letterColor = Color.WHITE
             val backgroundColor = ContextCompat.getColor(context, R.color.etc)
@@ -89,5 +95,11 @@ class RegisterViewModel(
 
     fun doneTutorial(type: TutorialType) {
         repository.doneTutorial(type)
+    }
+
+    private fun hasAlreadyRegistered(serviceId: Int): Boolean {
+        val qrCodes = repository.getQRCodes()
+        val registeredDefaultQRCodes = qrCodes.filter { it is QRCode.Default && it.serviceId == serviceId }
+        return registeredDefaultQRCodes.isNotEmpty()
     }
 }

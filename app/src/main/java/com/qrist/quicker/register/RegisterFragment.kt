@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 import java.io.File
 import java.io.FileNotFoundException
+import java.lang.IllegalStateException
 import java.util.*
 
 class RegisterFragment : Fragment() {
@@ -88,12 +89,20 @@ class RegisterFragment : Fragment() {
 
         addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
-                viewModel.saveQRCode(bmp)
-                when (val act = requireActivity()) {
-                    is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-                        .popBackStack(R.id.qrContainerFragment, false)
-                    is OnSendActivity -> act.finish()
-                    else -> {
+                try {
+                    viewModel.saveQRCode(bmp)
+                } catch (e: IllegalStateException) {
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.error_message_already_registered, Toast.LENGTH_LONG
+                    ).show()
+                } finally {
+                    when (val act = requireActivity()) {
+                        is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                            .popBackStack(R.id.qrContainerFragment, false)
+                        is OnSendActivity -> act.finish()
+                        else -> {
+                        }
                     }
                 }
             }
