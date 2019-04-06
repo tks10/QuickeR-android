@@ -48,12 +48,10 @@ class RegisterFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
-            viewModel.initServiceInformation(
-                this@RegisterFragment.serviceName,
-                this@RegisterFragment.serviceIconUrl
-            )
-        }
+        viewModel.initServiceInformation(
+            this@RegisterFragment.serviceName,
+            this@RegisterFragment.serviceIconUrl
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
