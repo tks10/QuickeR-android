@@ -39,6 +39,7 @@ class RegisterViewModel(
     fun initServiceInformation(serviceName: String, serviceIconUrl: String) {
         serviceNameLiveData.value = serviceName
         serviceIconUrlLiveData.value = serviceIconUrl
+        qrCodeImageUrlLiveData.value = ""
         isDefaultServiceLiveData.value = true
         onChangeParameters()
     }
