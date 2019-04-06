@@ -7,10 +7,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.support.v4.content.FileProvider
 import android.util.Log
 import android.widget.ImageView
-import java.io.*
+import java.io.FileOutputStream
+import java.io.IOException
 import kotlin.math.ceil
 import kotlin.math.max
 

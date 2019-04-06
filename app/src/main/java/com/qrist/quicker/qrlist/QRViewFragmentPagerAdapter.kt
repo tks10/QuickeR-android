@@ -1,7 +1,6 @@
 package com.qrist.quicker.qrlist
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.MutableLiveData
 import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
