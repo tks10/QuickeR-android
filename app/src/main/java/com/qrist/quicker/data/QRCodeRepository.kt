@@ -37,6 +37,14 @@ class QRCodeRepository(
         local.updateQRCodesOrder(indexes)
     }
 
+    fun isShowServiceNameInQRView(): Boolean {
+        return local.isShowServiceNameInQRView()
+    }
+
+    fun switchServiceNameVisiblityInQRView() {
+        local.switchServiceNameVisibilityInQRView()
+    }
+
     companion object {
         private var INSTANCE: QRCodeRepository? = null
 

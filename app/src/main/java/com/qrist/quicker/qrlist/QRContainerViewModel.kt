@@ -2,6 +2,8 @@ package com.qrist.quicker.qrlist
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
@@ -12,8 +14,22 @@ class QRContainerViewModel(
     private val repository: QRCodeRepository
 ) : AndroidViewModel(context) {
 
+    private val isShowServiceNameLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
+        value = repository.isShowServiceNameInQRView()
+    }
+    val isShowServiceName: LiveData<Boolean>
+        get() = isShowServiceNameLiveData
     var qrCodes: List<QRCode> = repository.getQRCodes()
     var currentAdapterPosition: Int = 0
+
+    private fun fetchServiceNameVisibility() {
+        isShowServiceNameLiveData.value = repository.isShowServiceNameInQRView()
+    }
+
+    fun switchServiceNameVisibility() {
+        repository.switchServiceNameVisiblityInQRView()
+        fetchServiceNameVisibility()
+    }
 
     fun fetchQRCodes() {
         qrCodes = repository.getQRCodes()

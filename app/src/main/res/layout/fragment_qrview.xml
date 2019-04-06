@@ -7,7 +7,10 @@
     <data>
         <variable
                 name="viewmodel"
-                type="com.qrist.quicker.qrlist.QRViewViewModel" />
+                type="com.qrist.quicker.qrlist.QRViewViewModel"/>
+        <variable
+                name="containerViewModel"
+                type="com.qrist.quicker.qrlist.QRContainerViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -16,15 +19,16 @@
             tools:context=".qrlist.QRViewFragment">
 
         <android.support.v7.widget.CardView
+                android:id="@+id/qrCardView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="48dp"
+                android:background="@color/white"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:cardCornerRadius="8dp"
-                android:foreground="?android:attr/selectableItemBackground">
+                app:cardCornerRadius="8dp">
 
             <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
@@ -32,7 +36,7 @@
 
                 <ImageView
                         android:id="@+id/headerImageView"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="64dp"
                         android:background="@{viewmodel.getBackgroundColor(viewmodel.serviceId)}"
                         android:scaleType="fitCenter"
@@ -46,16 +50,40 @@
 
                 <ImageView
                         android:id="@+id/qrImageView"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:scaleType="fitCenter"
-                        android:padding="40dp"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginEnd="40dp"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginBottom="22dp"
+                        app:layout_goneMarginBottom="40dp"
                         app:imageUrl="@{viewmodel.qrCodeImage}"
                         app:layout_constraintTop_toBottomOf="@id/headerImageView"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/serviceNameTextView"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         tools:ignore="ContentDescription"/>
+
+                <TextView
+                        android:id="@+id/serviceNameTextView"
+                        android:text="@{viewmodel.serviceName}"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_marginBottom="24dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:isGone="@{containerViewModel.isShowServiceName}"
+                        android:textSize="18sp"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        app:layout_constraintTop_toBottomOf="@id/qrImageView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
             </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
     </android.support.constraint.ConstraintLayout>

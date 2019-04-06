@@ -25,7 +25,7 @@ class QRCodeLocalDataSource(
         .build().adapter(Types.newParameterizedType(List::class.java, QRCode::class.java))
 
     override fun getQRCodes(notFoundValidation: Boolean): List<QRCode> {
-        val json: String? = sharedPreferences.getString(PREF_NAME, "[]")
+        val json: String? = sharedPreferences.getString(PREF_NAME_MAIN, "[]")
         val codes = qrCodeListAdapter.fromJson(
             json ?: "[]"
         )!!
@@ -46,7 +46,7 @@ class QRCodeLocalDataSource(
 
     override fun saveQRCodes(codes: List<QRCode>): Boolean {
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
-        editor.putString(PREF_NAME, qrCodeListAdapter.toJson(codes.toList()))
+        editor.putString(PREF_NAME_MAIN, qrCodeListAdapter.toJson(codes.toList()))
         editor.apply()
 
         return true
@@ -56,7 +56,7 @@ class QRCodeLocalDataSource(
         // if there are same id in the shared preference, overwrite the QRCodes
         val qrCodes = getQRCodes().filter { it.id != code.id } + listOf(code)
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
-        editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
+        editor.putString(PREF_NAME_MAIN, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
         
         return saveImage(image, code.qrCodeUrl, IMAGE_QR_MAX)
@@ -69,7 +69,7 @@ class QRCodeLocalDataSource(
         val qrCode = QRCode.Default(id, qrCodeUrl, serviceId)
         val qrCodes = getQRCodes().filter { it.id != qrCode.id } + listOf(qrCode)
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
-        editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
+        editor.putString(PREF_NAME_MAIN, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
 
         return saveImage(qrImage, qrCode.qrCodeUrl, IMAGE_QR_MAX)
@@ -83,7 +83,7 @@ class QRCodeLocalDataSource(
         val qrCode = QRCode.User(id, qrCodeUrl, serviceName, serviceIconUrl)
         val qrCodes = getQRCodes().filter { it.id != qrCode.id } + listOf(qrCode)
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
-        editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
+        editor.putString(PREF_NAME_MAIN, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
 
         Log.d("RegisterViewModel", "Registered $id, $serviceName")
@@ -95,7 +95,7 @@ class QRCodeLocalDataSource(
     override fun deleteQRCode(id: String): Boolean {
         val qrCodes = getQRCodes().filter { it.id != id }
         val editor: SharedPreferences.Editor = sharedPreferences.edit() ?: return false
-        editor.putString(PREF_NAME, qrCodeListAdapter.toJson(qrCodes.toList()))
+        editor.putString(PREF_NAME_MAIN, qrCodeListAdapter.toJson(qrCodes.toList()))
         editor.apply()
 
         return true
@@ -133,9 +133,20 @@ class QRCodeLocalDataSource(
         return this.saveQRCodes(updatedQRCodes)
     }
 
+    override fun isShowServiceNameInQRView(): Boolean {
+        return sharedPreferences.getBoolean(PREF_NAME_SERVICE_NAME, true)
+    }
+
+    override fun switchServiceNameVisibilityInQRView() {
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putBoolean(PREF_NAME_SERVICE_NAME, !isShowServiceNameInQRView())
+        editor.apply()
+    }
+
     companion object {
         private var INSTANCE: QRCodeLocalDataSource? = null
-        private const val PREF_NAME = "QRCodesJson"
+        private const val PREF_NAME_MAIN = "QRCodesJson"
+        private const val PREF_NAME_SERVICE_NAME = "IsShowServiceNameInQRView"
 
         @JvmStatic
         fun getInstance(sharedPreferences: SharedPreferences) =

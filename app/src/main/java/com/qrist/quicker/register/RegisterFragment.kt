@@ -47,14 +47,12 @@ class RegisterFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.apply {
-            // in generally, viewmodel is gonna be initialized in onCreate()
-            if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
-                initServiceInformation(
-                    this@RegisterFragment.serviceName,
-                    this@RegisterFragment.serviceIconUrl
-                )
-            }
+
+        if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
+            viewModel.initServiceInformation(
+                this@RegisterFragment.serviceName,
+                this@RegisterFragment.serviceIconUrl
+            )
         }
     }
 
