@@ -27,7 +27,7 @@ import java.io.File
 
 class RegisteredServiceListFragment : Fragment() {
     private val viewModel: RegisteredServiceListViewModel
-            by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java) }
+            by lazy { obtainViewModel(RegisteredServiceListViewModel::class.java, this) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         DataBindingUtil.inflate<FragmentRegisteredservicelistBinding>(inflater, R.layout.fragment_registeredservicelist, container, false).apply {

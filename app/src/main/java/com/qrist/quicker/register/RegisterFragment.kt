@@ -33,11 +33,12 @@ import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
 import java.io.File
 import java.io.FileNotFoundException
+import java.lang.IllegalStateException
 import java.util.*
 
 class RegisterFragment : Fragment() {
     private val viewModel: RegisterViewModel
-            by lazy { obtainViewModel(RegisterViewModel::class.java) }
+            by lazy { obtainViewModel(RegisterViewModel::class.java, this) }
     private val qrImageUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).qrImageUrl }
     private val serviceName by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceName }
     private val serviceIconUrl by lazy { RegisterFragmentArgs.fromBundle(arguments!!).serviceIconUrl }
@@ -48,7 +49,8 @@ class RegisterFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (this@RegisterFragment.serviceIconUrl.isNotBlank()) {
+        if (serviceIconUrl.isNotBlank()) {
+            // Default Service Init
             viewModel.initServiceInformation(
                 this@RegisterFragment.serviceName,
                 this@RegisterFragment.serviceIconUrl
@@ -87,12 +89,17 @@ class RegisterFragment : Fragment() {
 
         addButton.setOnClickListener {
             qrImageBitmap?.let { bmp ->
-                viewModel.saveQRCode(bmp)
-                when (val act = requireActivity()) {
-                    is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-                        .popBackStack(R.id.qrContainerFragment, false)
-                    is OnSendActivity -> act.finish()
-                    else -> {
+                try {
+                    viewModel.saveQRCode(bmp)
+                } catch (e: IllegalStateException) {
+                    showToast(R.string.error_message_already_registered)
+                } finally {
+                    when (val act = requireActivity()) {
+                        is MainActivity -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                            .popBackStack(R.id.qrContainerFragment, false)
+                        is OnSendActivity -> act.finish()
+                        else -> {
+                        }
                     }
                 }
             }
@@ -173,7 +180,7 @@ class RegisterFragment : Fragment() {
                 detectAndSet(bmp, uri)
             } catch (e: Exception) {
                 Log.d("RegisterFragment", e.toString())
-                Toast.makeText(requireContext(), R.string.cannot_open_image, Toast.LENGTH_LONG).show()
+                showToast(R.string.error_message_already_registered)
                 requireActivity().finish()
             }
         }
@@ -184,7 +191,7 @@ class RegisterFragment : Fragment() {
 
     private fun requestExternalStoragePermission(requestCode: Int) {
         if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Toast.makeText(activity, R.string.accept_me, Toast.LENGTH_LONG).show()
+            showToast(R.string.accept_me)
         }
         requestPermissions(
             arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),

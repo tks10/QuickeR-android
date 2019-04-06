@@ -41,7 +41,8 @@ class QRContainerFragment : Fragment(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
 
-    private val viewModel: QRContainerViewModel by lazy { obtainViewModel(QRContainerViewModel::class.java) }
+    private val viewModel: QRContainerViewModel
+            by lazy { obtainViewModel(QRContainerViewModel::class.java, requireActivity()) }
     private lateinit var adapter: QRViewFragmentPagerAdapter
     private lateinit var sequence: TapTargetSequence
 
