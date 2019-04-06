@@ -17,7 +17,7 @@ import com.qrist.quicker.extentions.obtainViewModel
 import kotlinx.android.synthetic.main.fragment_qrview.view.*
 
 class QRViewFragment : Fragment() {
-    private var codeId: String? = null
+    private lateinit var codeId: String
     private lateinit var viewModel: QRViewViewModel
     private val containerViewModel: QRContainerViewModel by lazy {
         obtainViewModel(QRContainerViewModel::class.java)
@@ -25,8 +25,8 @@ class QRViewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        codeId = arguments!!.getString(BUNDLE_ARG_ID)
-        viewModel = obtainViewModel(codeId!!, QRViewViewModel::class.java)
+        codeId = arguments!!.getString(BUNDLE_ARG_ID)!!
+        viewModel = obtainViewModel(codeId, QRViewViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,18 +49,12 @@ class QRViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e("create fragment", "$this $codeId $viewModel")
-        codeId?.let {
-            viewModel.fetchImageUrl(it)
-        }
+        viewModel.fetchImageUrl(codeId)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         Log.e("destroy fragment", "$this $codeId $viewModel")
-    }
-
-    private fun MutableLiveData<Unit>.notify() {
-        this.value = Unit
     }
 
     companion object {
