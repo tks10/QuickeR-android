@@ -11,6 +11,8 @@ sealed class QRCode(
     open val id: String,
     open val qrCodeUrl: String
 ) {
+    abstract val serviceName: String
+    abstract val serviceIconUrl: String
 
     @JsonClass(generateAdapter = true)
     data class Default(
@@ -19,7 +21,7 @@ sealed class QRCode(
         val serviceId: Int
     ) : QRCode(id, qrCodeUrl) {
 
-        val serviceName: String =
+        override val serviceName: String =
             if (serviceId in DEFAULT_SERVICES_ID) {
                 serviceIdToServiceName(serviceId)
             }
@@ -27,7 +29,7 @@ sealed class QRCode(
                 throw IllegalStateException("Service id does not fit.")
             }
 
-        val serviceIconUrl: String = when(serviceId) {
+        override val serviceIconUrl: String = when(serviceId) {
             TWITTER_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.twitter_logo)
             FACEBOOK_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.facebook_logo)
             LINE_SERVICE_ID -> convertUrlFromDrawableResId(MyApplication.instance, R.drawable.line_logo)
@@ -54,8 +56,8 @@ sealed class QRCode(
     data class User(
         override val id: String,
         override val qrCodeUrl: String,
-        val serviceName: String,
-        val serviceIconUrl: String
+        override val serviceName: String,
+        override val serviceIconUrl: String
     ) : QRCode(id, qrCodeUrl)
 }
 

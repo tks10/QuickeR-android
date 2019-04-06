@@ -38,12 +38,7 @@ class QRViewViewModel(
             Log.e("qr code", "qr code image is null $codeId")
             convertUrlFromDrawableResId(context, R.drawable.ic_error_24dp)
         }
-        iconImageLiveData.value = qrCode?.let {
-            when (qrCode) {
-                is QRCode.User -> qrCode.serviceIconUrl
-                is QRCode.Default -> qrCode.serviceIconUrl
-            }
-        } ?: run {
+        iconImageLiveData.value = qrCode?.serviceIconUrl ?: run {
             Log.e("service", "service image is null: $codeId")
             convertUrlFromDrawableResId(context, R.drawable.ic_error_24dp)
         }
@@ -53,11 +48,9 @@ class QRViewViewModel(
                 is QRCode.Default -> qrCode.serviceId
             }
         } ?: -1
-        serviceNameLiveData.value = qrCode?.let {
-            when (qrCode) {
-                is QRCode.User -> qrCode.serviceName
-                is QRCode.Default -> qrCode.serviceName
-            }
+        serviceNameLiveData.value = qrCode?.serviceName ?: run {
+            Log.e("service", "service name is null: $codeId")
+            ""
         }
     }
 
