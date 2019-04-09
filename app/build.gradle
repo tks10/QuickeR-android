@@ -13,7 +13,7 @@ android {
         applicationId "com.qrist.quicker"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 14
+        versionCode 15
         versionName "1.1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "APPLICATION_STORE_DIRECTORY", "\"android/data/$applicationId/\""
@@ -77,7 +77,6 @@ dependencies {
 
     // FireBase
     implementation 'com.google.firebase:firebase-ml-vision:19.0.3'
-    implementation 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
     implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
 
