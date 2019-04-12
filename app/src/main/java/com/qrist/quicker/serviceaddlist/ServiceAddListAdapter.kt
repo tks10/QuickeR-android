@@ -12,10 +12,10 @@ import com.qrist.quicker.databinding.UserServiceaddlistItemBinding
 import com.qrist.quicker.models.ServiceItem
 
 class ServiceAddListAdapter(val context: Context, private val serviceItems: List<ServiceItem>)
-    : androidx.recyclerview.widget.RecyclerView.Adapter<ServiceAddListAdapter.ViewHolder>() {
+    : RecyclerView.Adapter<ServiceAddListAdapter.ViewHolder>() {
     private var listener: View.OnClickListener? = null
 
-    class ViewHolder(val binding: ViewDataBinding) : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)

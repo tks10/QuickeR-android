@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class QRContainerFragment : androidx.fragment.app.Fragment(), CoroutineScope {
+class QRContainerFragment : Fragment(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
@@ -131,7 +131,7 @@ class QRContainerFragment : androidx.fragment.app.Fragment(), CoroutineScope {
         }
     }
 
-    inner class MyOnPageChangeListener : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
+    inner class MyOnPageChangeListener : ViewPager.OnPageChangeListener {
         override fun onPageScrollStateChanged(state: Int) {
         }
 

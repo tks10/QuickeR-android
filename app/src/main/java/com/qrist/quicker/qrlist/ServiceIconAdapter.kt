@@ -18,7 +18,7 @@ import java.io.File
 import kotlin.math.min
 
 class ServiceIconAdapter(
-    viewPager: androidx.viewpager.widget.ViewPager,
+    viewPager: ViewPager,
     private val qrCodes: List<QRCode>
 ) : RecyclerTabLayout.Adapter<ServiceIconAdapter.ViewHolder>(viewPager) {
 
@@ -73,8 +73,8 @@ class ServiceIconAdapter(
 
     inner class ViewHolder(
         view: View,
-        viewPager: androidx.viewpager.widget.ViewPager
-    ) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+        viewPager: ViewPager
+    ) : RecyclerView.ViewHolder(view) {
 
         val imageView: ImageView? = view.tab_icon
 

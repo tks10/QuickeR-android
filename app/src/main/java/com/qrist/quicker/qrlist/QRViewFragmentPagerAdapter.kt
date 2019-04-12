@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.viewpager.widget.PagerAdapter
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +12,11 @@ import com.qrist.quicker.models.QRCode
 
 class QRViewFragmentPagerAdapter(
     private var qrCodes: List<QRCode>,
-    internal val fragmentManager: androidx.fragment.app.FragmentManager
+    internal val fragmentManager: FragmentManager
 ) : androidx.viewpager.widget.PagerAdapter() {
 
-    private var currentTransaction: androidx.fragment.app.FragmentTransaction? = null
-    private var currentFragment: androidx.fragment.app.Fragment? = null
+    private var currentTransaction: FragmentTransaction? = null
+    private var currentFragment: Fragment? = null
 
     // begin lifecycle
 
@@ -66,7 +65,7 @@ class QRViewFragmentPagerAdapter(
     }
 
     override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
-        val fragment = `object` as androidx.fragment.app.Fragment
+        val fragment = `object` as Fragment
         if (fragment != currentFragment) {
             fragment.setMenuVisibility(true)
             fragment.userVisibleHint = true
@@ -84,7 +83,7 @@ class QRViewFragmentPagerAdapter(
     // finish lifecycle
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
-        return (`object` as androidx.fragment.app.Fragment).view == view
+        return (`object` as Fragment).view == view
     }
 
     override fun getCount(): Int = if (qrCodes.size == 1) 1 else qrCodes.size * NUMBER_OF_LOOPS
@@ -114,7 +113,7 @@ class QRViewFragmentPagerAdapter(
             else -> qrCodes[position % qrCodes.size]
         }
 
-    private fun getItem(position: Int): androidx.fragment.app.Fragment? =
+    private fun getItem(position: Int): Fragment? =
         getValueAt(position)?.let {
             QRViewFragment.newInstance(qrCodeId = it.id)
         }
@@ -129,7 +128,7 @@ class QRViewFragmentPagerAdapter(
 
         private var INSTANCE: QRViewFragmentPagerAdapter? = null
 
-        fun getInstance(qrCodes: List<QRCode>, fm: androidx.fragment.app.FragmentManager): QRViewFragmentPagerAdapter {
+        fun getInstance(qrCodes: List<QRCode>, fm: FragmentManager): QRViewFragmentPagerAdapter {
             if (INSTANCE?.fragmentManager !== fm) INSTANCE = null
             return INSTANCE?.apply {
                 // if qrCodes is changed, the reference is gonna be changed because of LiveData.
