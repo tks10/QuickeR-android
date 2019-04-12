@@ -9,7 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
@@ -23,7 +23,7 @@ import com.qrist.quicker.extentions.requestPermission
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_camera.*
 
-class CameraFragment : Fragment() {
+class CameraFragment : androidx.fragment.app.Fragment() {
     private var isDialogSeen = false
     private var previousValue: QRCodeValue? = null
     // FIXME: install lifecycle for material dialog and delete it.

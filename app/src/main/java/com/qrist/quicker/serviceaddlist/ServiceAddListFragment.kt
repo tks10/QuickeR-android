@@ -1,10 +1,10 @@
 package com.qrist.quicker.serviceaddlist
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +16,7 @@ import com.qrist.quicker.utils.MyApplication
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_serviceaddlist.*
 
-class ServiceAddListFragment : Fragment() {
+class ServiceAddListFragment : androidx.fragment.app.Fragment() {
     private val viewModel: ServiceAddListViewModel
             by lazy { obtainViewModel(ServiceAddListViewModel::class.java, this) }
     private val qrImageUrl: String by lazy { ServiceAddListFragmentArgs.fromBundle(arguments!!).qrImageUrl }
@@ -31,7 +31,10 @@ class ServiceAddListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         serviceAddList.adapter = initAdapter()
 
-        val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
+        val itemDecoration = androidx.recyclerview.widget.DividerItemDecoration(
+            activity!!,
+            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+        )
         serviceAddList.addItemDecoration(itemDecoration)
     }
 

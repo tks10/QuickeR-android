@@ -2,7 +2,7 @@ package com.qrist.quicker.utils
 
 import android.content.ContentResolver
 import android.content.Context
-import android.databinding.BindingAdapter
+import androidx.databinding.BindingAdapter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable

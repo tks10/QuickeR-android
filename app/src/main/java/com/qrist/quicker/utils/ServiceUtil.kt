@@ -1,7 +1,7 @@
 package com.qrist.quicker.utils
 
 import android.graphics.drawable.ColorDrawable
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import com.qrist.quicker.R
 import com.qrist.quicker.models.QRCode
 

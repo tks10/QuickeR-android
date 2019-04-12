@@ -2,7 +2,7 @@ package com.qrist.quicker.registeredservicelist
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,10 +11,10 @@ import com.qrist.quicker.models.ServiceItem
 import kotlinx.android.synthetic.main.registeredservicelist_item.view.*
 
 class RegisteredServiceListAdapter(val context: Context, private val serviceItems: List<ServiceItem>)
-    : RecyclerView.Adapter<RegisteredServiceListAdapter.ViewHolder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<RegisteredServiceListAdapter.ViewHolder>() {
     private var listener: View.OnClickListener? = null
 
-    class ViewHolder(val binding: RegisteredservicelistItemBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: RegisteredservicelistItemBinding) : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)

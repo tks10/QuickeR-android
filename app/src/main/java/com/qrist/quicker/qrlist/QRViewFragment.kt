@@ -1,8 +1,8 @@
 package com.qrist.quicker.qrlist
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.util.Log
@@ -14,7 +14,7 @@ import com.qrist.quicker.databinding.FragmentQrviewBinding
 import com.qrist.quicker.extentions.obtainViewModel
 import kotlinx.android.synthetic.main.fragment_qrview.view.*
 
-class QRViewFragment : Fragment() {
+class QRViewFragment : androidx.fragment.app.Fragment() {
     private lateinit var codeId: String
     private var viewModel: QRViewViewModel? = null
     private var containerViewModel: QRContainerViewModel? = null

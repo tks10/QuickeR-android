@@ -1,6 +1,6 @@
 package com.qrist.quicker.extentions
 
-import android.databinding.BindingAdapter
+import androidx.databinding.BindingAdapter
 import android.view.View
 
 var View.isVisible: Boolean

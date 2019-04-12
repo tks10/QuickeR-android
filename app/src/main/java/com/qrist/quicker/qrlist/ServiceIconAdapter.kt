@@ -2,8 +2,8 @@ package com.qrist.quicker.qrlist
 
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.support.v4.view.ViewPager
-import android.support.v7.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +18,7 @@ import java.io.File
 import kotlin.math.min
 
 class ServiceIconAdapter(
-    viewPager: ViewPager,
+    viewPager: androidx.viewpager.widget.ViewPager,
     private val qrCodes: List<QRCode>
 ) : RecyclerTabLayout.Adapter<ServiceIconAdapter.ViewHolder>(viewPager) {
 
@@ -73,8 +73,8 @@ class ServiceIconAdapter(
 
     inner class ViewHolder(
         view: View,
-        viewPager: ViewPager
-    ) : RecyclerView.ViewHolder(view) {
+        viewPager: androidx.viewpager.widget.ViewPager
+    ) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
 
         val imageView: ImageView? = view.tab_icon
 
