@@ -2,10 +2,7 @@ package com.qrist.quicker.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -36,8 +33,25 @@ class CameraFragment : Fragment() {
     private fun displayURLDialog(url: String) {
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
+        try {
+            startActivity(intent)
+        } catch (exception: ActivityNotFoundException) {
+            dialog = MaterialDialog(context!!).show {
+                title(R.string.code_scan_failed_title)
+                message(text = getString(R.string.code_scan_failed, url.split("://")[0]))
+                positiveButton(R.string.zxing_button_ok) {
+                    isDialogSeen = false
+                    previousValue = null
+                    dialog = null
+                }
+                setOnCancelListener{
+                    isDialogSeen = false
+                    previousValue = null
+                    dialog = null
+                }
+            }
+        }
         isDialogSeen = true
-        startActivity(intent)
     }
 
     private fun displayRawDialog(value: String) {
