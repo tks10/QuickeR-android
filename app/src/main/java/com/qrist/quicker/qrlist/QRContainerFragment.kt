@@ -156,15 +156,20 @@ class QRContainerFragment : Fragment(), CoroutineScope {
         // Fix current adapter position to prevent it is changed by MyOnPageChangeListener#onPageScrolled
         val currentAdapterPosition = viewModel.currentAdapterPosition
 
-        adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager)
-        adapter.detachItems()
-        viewPager.isInvisible = true
-        tabLayout.isInvisible = true
-        viewPager.adapter = adapter
-        viewPager.offscreenPageLimit = 0
-        viewPager.addOnPageChangeListener(MyOnPageChangeListener())
-        viewPager.currentItem = adapter.getCenterPosition(currentAdapterPosition - 2)
-        tabLayout.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
+        adapter = QRViewFragmentPagerAdapter.getInstance(viewModel.qrCodes, childFragmentManager).also {
+            it.detachItems()
+        }
+        viewPager.also {
+            it.isInvisible = true
+            it.adapter = adapter
+            it.offscreenPageLimit = 0
+            it.addOnPageChangeListener(MyOnPageChangeListener())
+            it.currentItem = adapter.getCenterPosition(currentAdapterPosition - 2)
+        }
+        tabLayout.also {
+            it.isInvisible = true
+            it.setUpWithAdapter(ServiceIconAdapter(viewPager, viewModel.qrCodes))
+        }
 
         getStartedTextView.isGone = !viewModel.qrCodes.isEmpty()
 

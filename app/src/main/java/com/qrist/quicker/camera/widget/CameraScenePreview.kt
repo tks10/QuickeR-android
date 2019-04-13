@@ -111,9 +111,27 @@ class CameraScenePreview @JvmOverloads constructor(
         val y = image.planes[0].buffer
         val buffer = ByteArray(y.capacity())
         y.get(buffer)
-        return buffer.map {
-            it.inv()
-        }.toByteArray()
+        for (i in 0 until buffer.size / 16) {
+            val base = i * 16
+            buffer[base] = buffer[base].inv()
+            buffer[base + 1] = buffer[base + 1].inv()
+            buffer[base + 2] = buffer[base + 2].inv()
+            buffer[base + 3] = buffer[base + 3].inv()
+            buffer[base + 4] = buffer[base + 4].inv()
+            buffer[base + 5] = buffer[base + 5].inv()
+            buffer[base + 6] = buffer[base + 6].inv()
+            buffer[base + 7] = buffer[base + 7].inv()
+            buffer[base + 8] = buffer[base + 8].inv()
+            buffer[base + 9] = buffer[base + 9].inv()
+            buffer[base + 10] = buffer[base + 10].inv()
+            buffer[base + 11] = buffer[base + 11].inv()
+            buffer[base + 12] = buffer[base + 12].inv()
+            buffer[base + 13] = buffer[base + 13].inv()
+            buffer[base + 14] = buffer[base + 14].inv()
+            buffer[base + 15] = buffer[base + 15].inv()
+        }
+
+        return buffer
     }
 
     private val captureCallback = object : CameraCaptureSession.CaptureCallback() {}
