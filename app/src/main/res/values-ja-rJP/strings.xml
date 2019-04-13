@@ -29,5 +29,7 @@
     <string name="message_copy">コピー</string>
     <string name="cannot_open_image">この画像は使用できません。</string>
     <string name="register_iamge">QuickeRに登録</string>
+    <string name="code_scan_failed_title">読み取り失敗</string>
+    <string name="code_scan_failed">QRコードのコンテンツを表示する%1$sというアプリが見つかりませんでした</string>
     <string name="error_message_already_registered">そのサービスはすでに登録されています</string>>
 </resources>
