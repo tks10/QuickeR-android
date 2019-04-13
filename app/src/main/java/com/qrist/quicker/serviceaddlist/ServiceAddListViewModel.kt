@@ -1,7 +1,7 @@
 package com.qrist.quicker.serviceaddlist
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.qrist.quicker.R
 import com.qrist.quicker.data.QRCodeRepository
 import com.qrist.quicker.models.QRCode

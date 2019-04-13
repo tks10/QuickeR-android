@@ -4,7 +4,6 @@ import android.graphics.*
 import android.util.Log
 import com.vdurmont.emoji.EmojiParser
 
-
 object IconGenerator {
     fun generateIcon(
         content: String,

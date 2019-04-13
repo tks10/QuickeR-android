@@ -2,10 +2,9 @@ package com.qrist.quicker.qrlist
 
 import android.annotation.SuppressLint
 import android.os.Parcelable
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
-import android.support.v4.view.PagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,7 @@ import com.qrist.quicker.models.QRCode
 class QRViewFragmentPagerAdapter(
     private var qrCodes: List<QRCode>,
     internal val fragmentManager: FragmentManager
-) : PagerAdapter() {
+) : androidx.viewpager.widget.PagerAdapter() {
 
     private var currentTransaction: FragmentTransaction? = null
     private var currentFragment: Fragment? = null

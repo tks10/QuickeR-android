@@ -1,10 +1,10 @@
 package com.qrist.quicker.serviceaddlist
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +31,10 @@ class ServiceAddListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         serviceAddList.adapter = initAdapter()
 
-        val itemDecoration = DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL)
+        val itemDecoration = DividerItemDecoration(
+            activity!!,
+            DividerItemDecoration.VERTICAL
+        )
         serviceAddList.addItemDecoration(itemDecoration)
     }
 
