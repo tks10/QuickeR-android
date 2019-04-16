@@ -7,14 +7,17 @@ import com.qrist.quicker.models.QRCode
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(InstantExecutorExtension::class)
 internal class QRViewViewModelTest {
 
+    @DisplayName("QRコードの画像URLのフェッチテスト")
     @Test
-    fun basicTest() {
+    fun fetchImageUrlTest() {
         // Arrange
         val mockedRepo = mockk<QRCodeRepository>(relaxed = true)
         val mockedApp = mockk<Application>(relaxed = true)
@@ -31,5 +34,9 @@ internal class QRViewViewModelTest {
 
         // Assert
         verify { mockedRepo.getQRCode("test") }
+        assertEquals("https://hoge.com", viewModel.qrCodeImage.value)
+        assertEquals("test", viewModel.iconImage.value)
+        assertEquals(-1, viewModel.serviceId.value)
+        assertEquals("test", viewModel.serviceName.value)
     }
 }
