@@ -44,7 +44,7 @@ class CameraFragment : Fragment() {
                     previousValue = null
                     dialog = null
                 }
-                setOnCancelListener{
+                setOnCancelListener {
                     isDialogSeen = false
                     previousValue = null
                     dialog = null
