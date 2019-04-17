@@ -12,6 +12,7 @@ import android.widget.ImageView
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Exception
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
@@ -66,6 +67,15 @@ fun saveImageAsCache(bitmap: Bitmap, cacheDir: File): Uri? {
         }
 
         return uri
+    }
+}
+
+fun deleteCacheImage(uri: String) {
+    try {
+        val file = File(uri)
+        file.delete()
+    } catch (e: Exception) {
+        Log.e("Cache", e.toString())
     }
 }
 

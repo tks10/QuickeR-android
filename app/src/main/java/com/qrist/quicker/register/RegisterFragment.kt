@@ -104,7 +104,7 @@ class RegisterFragment : Fragment() {
                         this@RegisterFragment.view?.qrImageView?.setImageBitmap(bitmap)
                         this@RegisterFragment.view?.addQRButton?.isVisible = false
                         this@RegisterFragment.view?.qrHintTextView?.isGone = true
-                        viewModel.updateQRCodeImageUrl(uri.toString())
+                        viewModel.updateQRCodeImageUrl(uri.toString(), useCache = true)
                     }
                 }
                 lifecycleOwner(this@RegisterFragment)

@@ -14,6 +14,7 @@ interface QRCodeDataSource {
     fun saveQRCode(serviceId: Int, qrImage: Bitmap): Boolean
     fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean
     fun cacheQRCode(qrImage: Bitmap, cacheDir: File): Uri?
+    fun deleteCache(uri: String)
     fun deleteQRCode(id: String): Boolean
     fun deleteIfNotFound(codes: List<QRCode>): List<QRCode>
     fun doneTutorial(type: TutorialType)

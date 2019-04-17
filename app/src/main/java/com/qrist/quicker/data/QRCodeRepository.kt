@@ -27,6 +27,10 @@ class QRCodeRepository(
     fun cacheQRCode(qrImage: Bitmap, cacheDir: File): Uri? =
             local.cacheQRCode(qrImage, cacheDir)
 
+    fun deleteCache(uri: String) {
+        local.deleteCache(uri)
+    }
+
     fun deleteQRCode(id: String): Boolean =
         local.deleteQRCode(id)
 

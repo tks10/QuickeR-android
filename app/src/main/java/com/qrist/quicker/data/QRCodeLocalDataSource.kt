@@ -106,6 +106,11 @@ class QRCodeLocalDataSource(
     override fun cacheQRCode(qrImage: Bitmap, cacheDir: File): Uri? =
         saveImageAsCache(qrImage, cacheDir)
 
+    override fun deleteCache(uri: String) {
+        deleteCacheImage(uri)
+    }
+
+
     override fun deleteIfNotFound(codes: List<QRCode>): List<QRCode> {
         val existingCodes = mutableListOf<QRCode>()
 

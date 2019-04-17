@@ -40,6 +40,8 @@ class RegisterViewModel(
     val isValidAsService: LiveData<Boolean>
         get() = isValidAsServiceLiveData
 
+    var currentCacheUri: String? = null
+
     fun initServiceInformation(serviceName: String, serviceIconUrl: String) {
         serviceNameLiveData.value = serviceName
         serviceIconUrlLiveData.value = serviceIconUrl
@@ -52,9 +54,20 @@ class RegisterViewModel(
         onChangeParameters()
     }
 
-    fun updateQRCodeImageUrl(value: String) {
+    fun updateQRCodeImageUrl(value: String, useCache: Boolean = false) {
         qrCodeImageUrlLiveData.value = value
+        if (useCache) {
+            deleteCache()
+            currentCacheUri = value
+        }
         onChangeParameters()
+    }
+
+    private fun deleteCache() {
+        currentCacheUri?.let {
+            repository.deleteCache(it)
+            currentCacheUri = null
+        }
     }
 
     fun restoreValues(qrCodeImageUrl: String, serviceName: String, serviceIconUrl: String, isDefaultService: Boolean) {
@@ -88,6 +101,7 @@ class RegisterViewModel(
             val backgroundColor = ContextCompat.getColor(context, R.color.etc)
             val icon = IconGenerator.generateIcon(serviceName.value!!, letterColor, backgroundColor)
             repository.saveQRCode(serviceName.value!!, qrImage, icon)
+            deleteCache()
         }
     }
 
