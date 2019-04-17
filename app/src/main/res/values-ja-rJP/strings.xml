@@ -29,5 +29,7 @@
     <string name="message_copy">コピー</string>
     <string name="cannot_open_image">この画像は使用できません。</string>
     <string name="register_iamge">QuickeRに登録</string>
+    <string name="code_scan_failed_title">リンクが開けません</string>
+    <string name="code_scan_failed">%1$sがインストールされていない為、表示できません。%2$sをインストールしてください。</string>
     <string name="error_message_already_registered">そのサービスはすでに登録されています</string>>
 </resources>

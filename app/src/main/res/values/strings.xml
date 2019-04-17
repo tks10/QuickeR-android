@@ -28,5 +28,7 @@
     <string name="service_deleted">Deleted the service</string>
     <string name="cannot_open_image">The Image is unavailable.</string>
     <string name="register_iamge">Register with QuickeR</string>
-    <string name="error_message_already_registered">The service has been already registered.</string>>
+    <string name="code_scan_failed_title">Can not open the link.</string>
+    <string name="code_scan_failed">Can not open the link because %1$s is not installed. Please install %2$s.</string>
+    <string name="error_message_already_registered">The service has been already registered.</string>
 </resources>
