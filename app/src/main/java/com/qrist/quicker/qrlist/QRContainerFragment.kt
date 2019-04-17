@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.webkit.URLUtil
 import androidx.navigation.Navigation
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.zxing.integration.android.IntentIntegrator
@@ -204,6 +205,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
                     this@QRContainerFragment.startActivity(intent)
                 }
                 negativeButton(R.string.cancel)
+                lifecycleOwner(this@QRContainerFragment)
             }
         } else {
             MaterialDialog(activity!!).show {

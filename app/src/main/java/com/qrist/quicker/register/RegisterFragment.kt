@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.input
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
@@ -61,7 +62,7 @@ class RegisterFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         DataBindingUtil.inflate<FragmentRegisterBinding>(inflater, R.layout.fragment_register, container, false).apply {
-            setLifecycleOwner(this@RegisterFragment)
+            lifecycleOwner = this@RegisterFragment
             viewmodel = viewModel
         }.root
 
@@ -98,6 +99,7 @@ class RegisterFragment : Fragment() {
                     showToast(text.toString())
                     val bitmap = QRCodeGenerator.generate(text.toString())
                 }
+                lifecycleOwner(this@RegisterFragment)
             }
         }
 
