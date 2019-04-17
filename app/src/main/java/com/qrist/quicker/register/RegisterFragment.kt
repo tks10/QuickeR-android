@@ -95,7 +95,7 @@ class RegisterFragment : Fragment() {
                 message(R.string.message_generate_from_url)
                 positiveButton(R.string.generate)
                 negativeButton(R.string.cancel)
-                input { _, text ->
+                input(hintRes = R.string.hint_generate_from_url) { _, text ->
                     showToast(text.toString())
                     val bitmap = QRCodeGenerator.generate(text.toString())
                     val uri = viewModel.cacheQRCode(bitmap, requireActivity().cacheDir)
