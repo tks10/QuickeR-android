@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import androidx.core.content.ContextCompat
 import android.util.Log
 import com.qrist.quicker.R
@@ -14,6 +15,7 @@ import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.IconGenerator
 import com.qrist.quicker.utils.serviceNameToServiceId
+import java.io.File
 import java.lang.IllegalStateException
 
 
@@ -96,6 +98,9 @@ class RegisterViewModel(
     fun doneTutorial(type: TutorialType) {
         repository.doneTutorial(type)
     }
+
+    fun cacheQRCode(qrImage: Bitmap, cacheDir: File): Uri? =
+        repository.cacheQRCode(qrImage, cacheDir)
 
     private fun hasAlreadyRegistered(serviceId: Int): Boolean {
         val qrCodes = repository.getQRCodes()

@@ -98,6 +98,14 @@ class RegisterFragment : Fragment() {
                 input { _, text ->
                     showToast(text.toString())
                     val bitmap = QRCodeGenerator.generate(text.toString())
+                    val uri = viewModel.cacheQRCode(bitmap, requireActivity().cacheDir)
+                    uri?.let {
+                        qrImageBitmap = bitmap
+                        this@RegisterFragment.view?.qrImageView?.setImageBitmap(bitmap)
+                        this@RegisterFragment.view?.addQRButton?.isVisible = false
+                        this@RegisterFragment.view?.qrHintTextView?.isGone = true
+                        viewModel.updateQRCodeImageUrl(uri.toString())
+                    }
                 }
                 lifecycleOwner(this@RegisterFragment)
             }
