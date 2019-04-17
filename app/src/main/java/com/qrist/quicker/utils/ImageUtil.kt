@@ -9,8 +9,10 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -39,6 +41,33 @@ fun saveImage(bitmap: Bitmap, imageUrl: String, clipTo: Float): Boolean =
         exception.printStackTrace()
         false
     }
+
+fun saveImageAsCache(bitmap: Bitmap, cacheDir: File): Uri? {
+    var outputStream: FileOutputStream? = null
+    var uri: Uri? = null
+
+    try {
+        // キャッシュ領域にファイルを作成し、書き込む。
+        val filename = UUID.randomUUID().toString()
+        val file = File(cacheDir, filename)
+        file.createNewFile()
+        if (file.exists()) {
+            outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            uri = Uri.fromFile(file)
+        }
+    } catch (e: IOException) {
+        Log.e("Cache", e.toString())
+    } finally {
+        try {
+            outputStream?.close()
+        } catch (e: IOException) {
+            Log.e("Cache", e.toString())
+        }
+
+        return uri
+    }
+}
 
 @BindingAdapter("app:imageUrl")
 fun imageUrl(imageView: ImageView, url: String?) {
@@ -80,5 +109,4 @@ fun getBitmapFromUri(context: Context, uri: Uri): Bitmap {
     return BitmapFactory.decodeFileDescriptor(fileDescriptor).copy(Bitmap.Config.ARGB_8888, true)
 }
 
-fun getEmptyImage(width: Int = 1, height: Int = 1): Bitmap
-        = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+fun getEmptyImage(width: Int = 1, height: Int = 1): Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
