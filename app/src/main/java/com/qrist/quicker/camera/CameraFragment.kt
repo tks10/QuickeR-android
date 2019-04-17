@@ -36,9 +36,10 @@ class CameraFragment : Fragment() {
         try {
             startActivity(intent)
         } catch (exception: ActivityNotFoundException) {
+            val appName = url.split("://")[0]
             dialog = MaterialDialog(context!!).show {
                 title(R.string.code_scan_failed_title)
-                message(text = getString(R.string.code_scan_failed, url.split("://")[0]))
+                message(text = getString(R.string.code_scan_failed, appName, appName))
                 positiveButton(R.string.zxing_button_ok) {
                     isDialogSeen = false
                     previousValue = null
