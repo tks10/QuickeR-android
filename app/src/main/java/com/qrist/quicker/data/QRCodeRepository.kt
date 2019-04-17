@@ -1,8 +1,10 @@
 package com.qrist.quicker.data
 
 import android.graphics.Bitmap
+import android.net.Uri
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
+import java.io.File
 
 class QRCodeRepository(
     private val local: QRCodeDataSource
@@ -21,6 +23,9 @@ class QRCodeRepository(
 
     fun saveQRCode(serviceName: String, qrImage: Bitmap, iconImage: Bitmap): Boolean =
         local.saveQRCode(serviceName, qrImage, iconImage)
+
+    fun cacheQRCode(qrImage: Bitmap, cacheDir: File): Uri? =
+            local.cacheQRCode(qrImage, cacheDir)
 
     fun deleteQRCode(id: String): Boolean =
         local.deleteQRCode(id)
