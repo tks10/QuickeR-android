@@ -234,7 +234,7 @@ class RegisterFragment : Fragment() {
             targets.add(
                 TapTarget.forView(view!!.addQRButton, context!!.resources.getString(R.string.tutorial_qr_image))
                     .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .titleTextColor(R.color.textColorSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)
@@ -252,7 +252,7 @@ class RegisterFragment : Fragment() {
                     context!!.resources.getString(R.string.tutorial_service_name)
                 )
                     .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .titleTextColor(R.color.textColorSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)
@@ -268,7 +268,7 @@ class RegisterFragment : Fragment() {
             targets.add(
                 TapTarget.forView(view!!.addButton, context!!.resources.getString(R.string.tutorial_done))
                     .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .titleTextColor(R.color.textColorSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)

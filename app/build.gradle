@@ -73,8 +73,9 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
     // Material Dialogs
-    implementation 'com.afollestad.material-dialogs:core:2.0.0-alpha12'
-    implementation 'com.afollestad.material-dialogs:input:2.0.0-alpha12'
+    implementation 'com.afollestad.material-dialogs:core:2.7.0'
+    implementation 'com.afollestad.material-dialogs:input:2.7.0'
+    implementation 'com.afollestad.material-dialogs:lifecycle:2.7.0'
 
     // FireBase
     implementation 'com.google.firebase:firebase-ml-vision:19.0.3'

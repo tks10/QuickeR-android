@@ -119,7 +119,7 @@ class QRContainerFragment : Fragment(), CoroutineScope {
                 .targets(
                     TapTarget.forView(floatingActionButton, context!!.resources.getString(R.string.message_start))
                         .outerCircleColor(R.color.colorAccent)
-                        .titleTextColor(R.color.colorTextOnSecondary)
+                        .titleTextColor(R.color.textColorSecondary)
                         .drawShadow(true)
                         .outerCircleAlpha(1.0f)
                         .cancelable(false)
