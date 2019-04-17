@@ -74,6 +74,7 @@ dependencies {
 
     // Material Dialogs
     implementation 'com.afollestad.material-dialogs:core:2.0.0-alpha12'
+    implementation 'com.afollestad.material-dialogs:input:2.0.0-alpha12'
 
     // FireBase
     implementation 'com.google.firebase:firebase-ml-vision:19.0.3'

@@ -16,6 +16,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
@@ -83,6 +85,19 @@ class RegisterFragment : Fragment() {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
             } else {
                 onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+            }
+        }
+
+        generateQRCodeButton.setOnClickListener {
+            MaterialDialog(requireActivity()).show {
+                title(R.string.generate_from_url)
+                message(R.string.message_generate_from_url)
+                positiveButton(R.string.generate)
+                negativeButton(R.string.cancel)
+                input { _, text ->
+                    showToast(text.toString())
+                    val bitmap = QRCodeGenerator.generate(text.toString())
+                }
             }
         }
 
