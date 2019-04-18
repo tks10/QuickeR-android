@@ -28,6 +28,7 @@ class RegisterViewModel(
     private val qrCodeImageUrlLiveData: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
+    private var currentCacheUri: String? = null
 
     val serviceIconUrl: LiveData<String>
         get() = serviceIconUrlLiveData
@@ -39,8 +40,6 @@ class RegisterViewModel(
         get() = isDefaultServiceLiveData
     val isValidAsService: LiveData<Boolean>
         get() = isValidAsServiceLiveData
-
-    var currentCacheUri: String? = null
 
     fun initServiceInformation(serviceName: String, serviceIconUrl: String) {
         serviceNameLiveData.value = serviceName

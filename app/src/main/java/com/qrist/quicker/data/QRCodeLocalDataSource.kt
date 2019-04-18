@@ -110,7 +110,6 @@ class QRCodeLocalDataSource(
         deleteCacheImage(uri)
     }
 
-
     override fun deleteIfNotFound(codes: List<QRCode>): List<QRCode> {
         val existingCodes = mutableListOf<QRCode>()
 
