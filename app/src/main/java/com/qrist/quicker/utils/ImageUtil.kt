@@ -44,29 +44,18 @@ fun saveImage(bitmap: Bitmap, imageUrl: String, clipTo: Float): Boolean =
     }
 
 fun saveImageAsCache(bitmap: Bitmap, cacheDir: File): Uri? {
-    var outputStream: FileOutputStream? = null
-    var uri: Uri? = null
-
     try {
-        // キャッシュ領域にファイルを作成し、書き込む。
         val filename = UUID.randomUUID().toString()
         val file = File(cacheDir, filename)
         file.createNewFile()
-        if (file.exists()) {
-            outputStream = FileOutputStream(file)
+        FileOutputStream(file).use { outputStream ->
+            if (!file.exists()) return null
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            uri = Uri.fromFile(file)
+            return Uri.fromFile(file)
         }
-    } catch (e: IOException) {
-        Log.e("Cache", e.toString())
-    } finally {
-        try {
-            outputStream?.close()
-        } catch (e: IOException) {
-            Log.e("Cache", e.toString())
-        }
-
-        return uri
+    } catch (exception: IOException) {
+        Log.e("Cache", exception.stackTrace.toString())
+        return null
     }
 }
 
