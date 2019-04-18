@@ -48,8 +48,8 @@ fun saveImageAsCache(bitmap: Bitmap, cacheDir: File): Uri? {
         val filename = UUID.randomUUID().toString()
         val file = File(cacheDir, filename)
         file.createNewFile()
+        if (!file.exists()) return null
         FileOutputStream(file).use { outputStream ->
-            if (!file.exists()) return null
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
             return Uri.fromFile(file)
         }
