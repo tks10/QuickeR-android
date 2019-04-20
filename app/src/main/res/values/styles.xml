@@ -5,6 +5,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Material dialog styles -->
+        <item name="md_color_title">@color/textColorPrimary</item>
+        <item name="md_color_content">@color/colorAccent</item>
+        <item name="md_color_button_text">@color/colorSecondaryDark</item>
     </style>
 
     <style name="OssLicenseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -16,8 +21,8 @@
     </style>
 
     <style name="ToolbarTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:textColorPrimary">@color/colorTextOnPrimary</item>
-        <item name="android:textColorSecondary">@color/colorTextOnPrimary</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorPrimary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>

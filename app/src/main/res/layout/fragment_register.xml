@@ -48,6 +48,16 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"/>
 
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/generateQRCodeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/generate_from_url"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/qrImageView"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
         <ImageButton
                 android:id="@+id/addQRButton"
                 android:layout_width="64dp"
@@ -83,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_service_name"
                 android:forceEnableHint="@{viewmodel.isDefaultService}"
-                app:layout_constraintVertical_bias="0.3"
+                app:layout_constraintVertical_bias="0.4"
                 app:layout_constraintStart_toEndOf="@id/serviceIconImageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/qrImageView"

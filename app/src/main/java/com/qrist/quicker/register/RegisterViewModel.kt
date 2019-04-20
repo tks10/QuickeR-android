@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import androidx.core.content.ContextCompat
 import android.util.Log
 import com.qrist.quicker.R
@@ -14,6 +15,7 @@ import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
 import com.qrist.quicker.utils.IconGenerator
 import com.qrist.quicker.utils.serviceNameToServiceId
+import java.io.File
 import java.lang.IllegalStateException
 
 
@@ -26,6 +28,7 @@ class RegisterViewModel(
     private val qrCodeImageUrlLiveData: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     private val isDefaultServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
     private val isValidAsServiceLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
+    private var currentCacheUri: String? = null
 
     val serviceIconUrl: LiveData<String>
         get() = serviceIconUrlLiveData
@@ -50,9 +53,20 @@ class RegisterViewModel(
         onChangeParameters()
     }
 
-    fun updateQRCodeImageUrl(value: String) {
+    fun updateQRCodeImageUrl(value: String, useCache: Boolean = false) {
         qrCodeImageUrlLiveData.value = value
+        if (useCache) {
+            deleteCache()
+            currentCacheUri = value
+        }
         onChangeParameters()
+    }
+
+    private fun deleteCache() {
+        currentCacheUri?.let {
+            repository.deleteCache(it)
+            currentCacheUri = null
+        }
     }
 
     fun restoreValues(qrCodeImageUrl: String, serviceName: String, serviceIconUrl: String, isDefaultService: Boolean) {
@@ -86,6 +100,7 @@ class RegisterViewModel(
             val backgroundColor = ContextCompat.getColor(context, R.color.etc)
             val icon = IconGenerator.generateIcon(serviceName.value!!, letterColor, backgroundColor)
             repository.saveQRCode(serviceName.value!!, qrImage, icon)
+            deleteCache()
         }
     }
 
@@ -96,6 +111,9 @@ class RegisterViewModel(
     fun doneTutorial(type: TutorialType) {
         repository.doneTutorial(type)
     }
+
+    fun cacheQRCode(qrImage: Bitmap, cacheDir: File): Uri? =
+        repository.cacheQRCode(qrImage, cacheDir)
 
     private fun hasAlreadyRegistered(serviceId: Int): Boolean {
         val qrCodes = repository.getQRCodes()

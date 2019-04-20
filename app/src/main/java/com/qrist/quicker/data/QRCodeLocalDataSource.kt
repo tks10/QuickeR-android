@@ -2,6 +2,7 @@ package com.qrist.quicker.data
 
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
 import com.qrist.quicker.models.QRCode
 import com.qrist.quicker.models.TutorialType
@@ -10,6 +11,7 @@ import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import java.io.File
 import java.util.*
 
 class QRCodeLocalDataSource(
@@ -99,6 +101,13 @@ class QRCodeLocalDataSource(
         editor.apply()
 
         return true
+    }
+
+    override fun cacheQRCode(qrImage: Bitmap, cacheDir: File): Uri? =
+        saveImageAsCache(qrImage, cacheDir)
+
+    override fun deleteCache(uri: String) {
+        deleteCacheImage(uri)
     }
 
     override fun deleteIfNotFound(codes: List<QRCode>): List<QRCode> {

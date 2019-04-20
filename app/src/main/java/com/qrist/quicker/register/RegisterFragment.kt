@@ -16,6 +16,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
@@ -59,7 +62,7 @@ class RegisterFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         DataBindingUtil.inflate<FragmentRegisterBinding>(inflater, R.layout.fragment_register, container, false).apply {
-            setLifecycleOwner(this@RegisterFragment)
+            lifecycleOwner = this@RegisterFragment
             viewmodel = viewModel
         }.root
 
@@ -83,6 +86,28 @@ class RegisterFragment : Fragment() {
                 requestExternalStoragePermission(REQUEST_PERMISSION_ON_QR)
             } else {
                 onClickImagePicker(IntentActionType.RESULT_PICK_QRCODE)
+            }
+        }
+
+        generateQRCodeButton.setOnClickListener {
+            MaterialDialog(requireActivity()).show {
+                title(R.string.generate_from_url)
+                message(R.string.message_generate_from_url)
+                positiveButton(R.string.generate)
+                negativeButton(R.string.cancel)
+                input(hintRes = R.string.hint_generate_from_url) { _, text ->
+                    showToast(text.toString())
+                    val bitmap = QRCodeGenerator.generate(text.toString())
+                    val uri = viewModel.cacheQRCode(bitmap, requireActivity().cacheDir)
+                    uri?.let {
+                        qrImageBitmap = bitmap
+                        this@RegisterFragment.view?.qrImageView?.setImageBitmap(bitmap)
+                        this@RegisterFragment.view?.addQRButton?.isVisible = false
+                        this@RegisterFragment.view?.qrHintTextView?.isGone = true
+                        viewModel.updateQRCodeImageUrl(uri.toString(), useCache = true)
+                    }
+                }
+                lifecycleOwner(this@RegisterFragment)
             }
         }
 
@@ -219,7 +244,7 @@ class RegisterFragment : Fragment() {
             targets.add(
                 TapTarget.forView(view!!.addQRButton, context!!.resources.getString(R.string.tutorial_qr_image))
                     .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .titleTextColor(R.color.textColorSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)
@@ -237,7 +262,7 @@ class RegisterFragment : Fragment() {
                     context!!.resources.getString(R.string.tutorial_service_name)
                 )
                     .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .titleTextColor(R.color.textColorSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)
@@ -253,7 +278,7 @@ class RegisterFragment : Fragment() {
             targets.add(
                 TapTarget.forView(view!!.addButton, context!!.resources.getString(R.string.tutorial_done))
                     .outerCircleColor(R.color.colorAccent)
-                    .titleTextColor(R.color.colorTextOnSecondary)
+                    .titleTextColor(R.color.textColorSecondary)
                     .drawShadow(true)
                     .outerCircleAlpha(0.9f)
                     .cancelable(true)

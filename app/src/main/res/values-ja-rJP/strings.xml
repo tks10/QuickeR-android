@@ -28,6 +28,10 @@
     <string name="message_close">閉じる</string>
     <string name="message_copy">コピー</string>
     <string name="cannot_open_image">この画像は使用できません。</string>
-    <string name="register_iamge">QuickeRに登録</string>
-    <string name="error_message_already_registered">そのサービスはすでに登録されています</string>>
+    <string name="register_image">QuickeRに登録</string>
+    <string name="error_message_already_registered">そのサービスはすでに登録されています</string>
+    <string name="message_generate_from_url">QRコードとして生成するURLを入力してください</string>
+    <string name="hint_generate_from_url">https://…</string>
+    <string name="generate_from_url">URLからQRコードを生成する</string>
+    <string name="generate">生成</string>
 </resources>

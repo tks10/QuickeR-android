@@ -6,8 +6,8 @@
     <color name="colorSecondary">#616161</color>
     <color name="colorSecondaryLight">#8e8e8e</color>
     <color name="colorSecondaryDark">#373737</color>
-    <color name="colorTextOnPrimary">#000000</color>
-    <color name="colorTextOnSecondary">#ffffff</color>
+    <color name="textColorPrimary">#000000</color>
+    <color name="textColorSecondary">#ffffff</color>
     <color name="colorAccent">@color/colorSecondary</color>
     <color name="twitter">#52ade5</color>
     <color name="facebook">#3c64ad</color>
