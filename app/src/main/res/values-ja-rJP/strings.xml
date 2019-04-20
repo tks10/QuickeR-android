@@ -34,4 +34,6 @@
     <string name="hint_generate_from_url">https://…</string>
     <string name="generate_from_url">URLからQRコードを生成する</string>
     <string name="generate">生成</string>
+    <string name="code_scan_failed_title">リンクが開けません</string>
+    <string name="code_scan_failed">%1$sがインストールされていない為、表示できません。%2$sをインストールしてください。</string>
 </resources>
