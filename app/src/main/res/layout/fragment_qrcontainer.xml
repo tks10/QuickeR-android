@@ -36,6 +36,7 @@
             android:elevation="0dp"
             app:rtl_scrollEnabled="true"
             app:rtl_tabIndicatorColor="@color/white_transparent"
+            app:rtl_tabBackground="?attr/selectableItemBackground"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
