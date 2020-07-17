@@ -2,6 +2,9 @@
 
 A simple QRCode management app for Android
 
+## Get App in Google Play
+https://play.google.com/store/apps/details?id=com.qrist.quicker&hl=ja
+
 ## API specification
 * getQRCodes(): List<QRCode>
     - Get all of registered QR codes.
